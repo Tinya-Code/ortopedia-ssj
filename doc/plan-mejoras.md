@@ -36,7 +36,7 @@ Extras por fase que lo requiera (se listan en su criterio).
 
 | # | Decisión | Default que voy a aplicar |
 |---|---|---|
-| 1 | Token `secondary` incumple contraste con texto blanco (≈3.0:1) | Oscurecer `--color-secondary` a `#178582` |
+| 1 | Token `secondary` incumple contraste con texto blanco (≈3.0:1) | Oscurecer `--color-secondary` → **`#167f7d`** (el `#178582` del spec da 4.455:1 y no alcanza AA; `#167f7d` da 4.81:1) |
 | 2 | `FeaturedCategories`: overlay con gradiente vs. imagen+texto | **Mantener imagen arriba / texto abajo** (consistente con `CategoryCard`) |
 | 3 | Fondo de `CtaBand` | `bg-primary` con texto blanco |
 | 4 | `CtaBand` en `/contacto/` | **No ponerlo** (ya hay WhatsApp visible en `LocationCta`; no duplicar CTA) |
@@ -65,14 +65,19 @@ nada de `.env`/`dist`/`node_modules`/`.astro`/`.atl` en el stage.
 
 Objetivo: sistema de diseño accesible antes de componer nada encima.
 
-- [ ] `src/styles/global.css` → `@theme` con los tokens nuevos: `--color-ink #111827`, `--color-accent-text #b45309`, `--color-success #15803d`, `--color-warning #b45309`, `--color-danger #b91c1c`, `--radius-card 0.75rem`, `--shadow-card`.
-- [ ] Corregir `--color-secondary: #21a7a5` → `#178582` (decisión 1).
-- [ ] `ReclamacionesLink`: texto `text-accent` → `text-accent-text` (el ícono puede quedar `text-accent`).
-- [ ] Foco global: `:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }`.
-- [ ] `html { scroll-padding-top: 4rem }` (anticipa el header sticky de M3).
-- [ ] Regla de títulos aplicada a componentes existentes: `text-ink` en h1/h2/h3/títulos de tarjeta y precios; cuerpo en `text-neutral`.
+- [x] `src/styles/global.css` → `@theme` con los tokens nuevos: `--color-ink #111827`, `--color-accent-text #b45309`, `--color-success #15803d`, `--color-warning #b45309`, `--color-danger #b91c1c`, `--radius-card 0.75rem`, `--shadow-card`.
+- [x] Corregir `--color-secondary: #21a7a5` → **`#167f7d`** (decisión 1; el `#178582` propuesto daba 4.455:1).
+- [x] `ReclamacionesLink`: texto `text-accent` → `text-accent-text` (el ícono queda `text-accent`).
+- [x] Foco global: `:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }`.
+- [x] `html { scroll-padding-top: 4rem }` (anticipa el header sticky de M3).
+- [x] Regla de títulos aplicada: `text-ink` en **todos** los `h1`/`h2`/`h3` del sitio y en los precios; cuerpo en `text-neutral`. Los `dt` de `Faq` y `ProductSpecs` quedan para M5/M4, que los reescriben.
 
-**Criterio de salida**: gates globales en verde + `grep -rn "text-accent" src/components` solo en usos decorativos (ícono) + `grep -rln 'text-ink' src/components | wc -l` ≥ 1 (títulos migrados) + contraste blanco sobre `secondary` ≥ 4.5:1.
+**Criterio de salida**: ✅ Cumplido — gates globales en verde (17 páginas, 1 `h1` c/u, sin
+`blue-*`/`primary-N`, sin hex fuera de `WhatsAppButton`, sin `astro:content`, `pnpm check` 0 en 42
+archivos) + `text-accent` solo en el ícono de `ReclamacionesLink` + `text-ink` presente en 11
+archivos de componentes y **0 encabezados sin `text-ink`** + CSS compilado con `--color-ink`,
+`.text-ink`, `scroll-padding-top:4rem` y `outline:3px solid` + contraste: blanco/`secondary` **4.81:1**
+(AA), blanco/`accent-text` 5.02:1, `text-secondary` sobre `bg-neutral/5` 4.53:1.
 **Riesgo**: al oscurecer `secondary`, revisar que `text-secondary` sobre blanco siga legible.
 **Rollback**: revert de `global.css` + `ReclamacionesLink`.
 
@@ -106,6 +111,7 @@ Objetivo: navegación accesible y chrome consistente en las 17 páginas.
 - [ ] `aria-current="page"` activo (`text-primary font-semibold` + `border-b-2 border-primary`).
 - [ ] Enlace "Servicios" → `/#servicios`.
 - [ ] Footer: fondo `bg-neutral/5`, `border-t`, `py-10`, enlaces `min-h-11 inline-flex items-center` en móvil, fila inferior con `©` (sin duplicar el aviso IGV de `LegalFooter`).
+- [ ] `Breadcrumbs` (§4): texto `text-sm` y, en móvil, `overflow-x-auto whitespace-nowrap` para que no parta el trail.
 
 **Criterio de salida**: gates globales + `grep -c 'sticky top-0' dist/index.html` = 1 + `<details` presente en las 17 páginas + skip link es el primer hijo de `<body>` en el HTML de salida.
 **Riesgo**: el header sticky tape anclas → verificar `/#servicios` y `#ubicacion` (agregar `scroll-mt-20` si hace falta; M8 lo hace en legales).
@@ -186,6 +192,7 @@ Objetivo: terminar las páginas de lectura larga y los estados de contacto/error
 
 - [ ] **Legales**: fecha "Última actualización" (`text-sm`) bajo el `PageHeader`; índice interno (`<ol>` de anclas) si > 6 secciones; `scroll-mt-20` en cada `h2` con `id`; prosa manual (`space-y-4`, `list-disc pl-6`); `Callout tone="legal"` para avisos clave.
 - [ ] **Libro**: `Callout tone="warning"` para plazo de respuesta + conservación 2 años (reemplaza el `div` de aviso).
+- [ ] **`ReclamacionForm`** (§4): inputs `min-h-11 rounded-lg border-neutral/30 focus:border-primary`, etiquetas siempre visibles (nunca placeholder-as-label) y errores en `text-danger` con `aria-describedby` + `aria-live="polite"` en `data-status`.
 - [ ] **Contacto**: tarjetas de canales `grid sm:grid-cols-3` (WhatsApp · Teléfono · Correo) reutilizando estilo de tarjeta; resolver el TODO del punto de referencia con un dato concreto.
 - [ ] **404**: `PageHeader`, `CategoryChips` (sin activa), `Button` primary "Volver al inicio" + outline "Escribir por WhatsApp"; `noindex` se mantiene.
 - [ ] **P3**: `product/RegistroBadge.astro` ("Registro sanitario N · Clase II") junto al precio en `ProductInfo`.
