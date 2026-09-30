@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets';
 import AvailabilityBadge from '../product/AvailabilityBadge.astro';
 import PriceTag from '../ui/PriceTag.astro';
+import { imageSrc } from '../../lib/image';
 
 // Slice mínimo que consume la tarjeta (ISP): no el objeto entero.
 interface Props {
@@ -10,7 +11,7 @@ interface Props {
     name: string;
     price?: number;
     availability: string;
-    images: { src: ImageMetadata; alt: string }[];
+    images: { src: ImageMetadata | string; alt: string }[];
   };
   priority?: boolean; // los 4 primeros se cargan con eager
 }
@@ -22,7 +23,7 @@ const { slug, name, price, availability, images } = product;
 >
   <a href={`/producto/${slug}/`} class="relative block">
     <Image
-      src={images[0].src}
+      src={imageSrc(images[0].src)}
       alt={images[0].alt}
       width={400}
       height={400}

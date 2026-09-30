@@ -3,14 +3,14 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/layout/Breadcrumbs.astro';
 import CategoryCard from '../../components/catalog/CategoryCard.astro';
 import CtaBand from '../../components/ui/CtaBand.astro';
-import { api } from '../../data/api';
+import { api } from '../../api';
 import { breadcrumbSchema, itemListSchema } from '../../lib/schema';
-import { SITE } from '../../lib/site';
-import { generalWhatsappMessage } from '../../lib/whatsapp';
+import { SITE } from '../../data/site';
+import { generalWhatsappMessage } from '../../data/whatsapp';
 import Container from '../../components/ui/Container.astro';
 import PageHeader from '../../components/ui/PageHeader.astro';
 
-const categories = api.categories.list();
+const categories = await api.categories.list();
 
 const title = 'Catálogo de productos ortopédicos';
 const description =

@@ -1,16 +1,16 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { api } from '../data/api';
+import { api } from '../api';
 import Container from '../components/ui/Container.astro';
 import PageHeader from '../components/ui/PageHeader.astro';
 import CategoryChips from '../components/catalog/CategoryChips.astro';
 import Button from '../components/ui/Button.astro';
-import { whatsappLink, generalWhatsappMessage } from '../lib/whatsapp';
+import { whatsappLink, generalWhatsappMessage } from '../data/whatsapp';
 
 // Página de error: no se indexa y ofrece rutas reales para recuperarse.
 const title = 'Página no encontrada';
 const description = 'La página que busca no existe. Vuelva al inicio o explore el catálogo.';
-const categories = api.categories.list();
+const categories = await api.categories.list();
 ---
 
 <BaseLayout {title} {description} noindex>

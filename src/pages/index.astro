@@ -11,10 +11,10 @@ import LocationCta from '../components/home/LocationCta.astro';
 import CtaBand from '../components/ui/CtaBand.astro';
 import Button from '../components/ui/Button.astro';
 import heroImage from '../assets/home/hero.jpg';
-import { api } from '../data/api';
+import { api } from '../api';
 import { faqSchema } from '../lib/schema';
-import { whatsappLink, categoryWhatsappMessage, generalWhatsappMessage } from '../lib/whatsapp';
-import { SITE, LEGAL } from '../lib/site';
+import { whatsappLink, categoryWhatsappMessage, generalWhatsappMessage } from '../data/whatsapp';
+import { SITE, LEGAL } from '../data/site';
 import { formatHours } from '../lib/hours';
 import type { IconName } from '../components/icons/index';
 
@@ -22,7 +22,7 @@ const title = `Centro ortopédico en ${SITE.address.city}`;
 const description =
   'Centro ortopédico con evaluación, ortesis a medida y venta de productos ortopédicos. Atención personalizada y respuesta por WhatsApp.';
 
-const categories = api.categories.list();
+const categories = await api.categories.list();
 
 // Datos de la sección: viven en la página (smart), no en data/
 const services: { title: string; text: string; href: string; icon: IconName }[] = [

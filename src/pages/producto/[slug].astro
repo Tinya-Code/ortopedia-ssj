@@ -1,5 +1,5 @@
 ---
-import { api } from '../../data/api';
+import { api } from '../../api';
 import { getImage } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/layout/Breadcrumbs.astro';
@@ -10,23 +10,27 @@ import RelatedProducts from '../../components/product/RelatedProducts.astro';
 import ProductLegal from '../../components/legal/ProductLegal.astro';
 import StickyProductBar from '../../components/product/StickyProductBar.astro';
 import { breadcrumbSchema, productSchema, faqSchema } from '../../lib/schema';
-import { productWhatsappMessage } from '../../lib/whatsapp';
-import { SITE, LEGAL } from '../../lib/site';
+import { productWhatsappMessage } from '../../data/whatsapp';
+import { SITE, LEGAL } from '../../data/site';
 import Container from '../../components/ui/Container.astro';
 
 export async function getStaticPaths() {
   // api.products.list() solo devuelve productos publicables (con registro sanitario).
   // Si un producto apunta a una categoría inexistente, no genera ruta.
-  return api.products.list().flatMap((product) => {
-    const category = api.categories.bySlug(product.category);
-    if (!category) return [];
-    return [
-      {
-        params: { slug: product.slug },
-        props: { product, category, related: api.products.related(product.slug) },
-      },
-    ];
-  });
+  const products = await api.products.list();
+  const paths = await Promise.all(
+    products.map(async (product) => {
+      const category = await api.categories.bySlug(product.category);
+      if (!category) return [];
+      return [
+        {
+          params: { slug: product.slug },
+          props: { product, category, related: await api.products.related(product.slug) },
+        },
+      ];
+    }),
+  );
+  return paths.flat();
 }
 
 const { product, category, related } = Astro.props;
@@ -66,8 +70,8 @@ const abs = (p: string) => new URL(p, SITE.url).href;
       brand,
       price,
       availability,
-      // api.js es JS sin anotaciones: el shape se fija en Fase 2 y se valida en runtime
-      condition: product.condition as 'new' | 'refurbished' | 'used',
+      // condition ya viene tipado como vocabulario restringido (src/data/types.ts)
+      condition: product.condition,
     }),
     ...(faq ? [faqSchema(faq)] : []),
   ]}

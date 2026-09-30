@@ -1,4 +1,4 @@
-import { SITE, LEGAL } from './site';
+import { SITE, LEGAL } from '../data/site';
 
 type Condition = 'new' | 'refurbished' | 'used';
 

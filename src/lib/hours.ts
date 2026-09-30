@@ -1,6 +1,6 @@
 // Horario legible a partir de SITE.hours — usado en el footer, en la home
 // y en /contacto/ para mantener una única redacción (coherencia NAP).
-import { SITE } from './site';
+import { SITE } from '../data/site';
 
 const dayShort: Record<string, string> = {
   Monday: 'Lun',

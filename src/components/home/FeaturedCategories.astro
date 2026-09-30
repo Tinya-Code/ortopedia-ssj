@@ -2,12 +2,13 @@
 // Categorías con enlace interno a su landing (/catalogo/[slug]/) y anchor text descriptivo.
 import { Image } from 'astro:assets';
 import Container from '../ui/Container.astro';
+import { imageSrc } from '../../lib/image';
 
 interface Category {
   slug: string;
   name: string;
   seoDescription: string;
-  image: ImageMetadata;
+  image: ImageMetadata | string;
   imageAlt: string;
 }
 interface Props {
@@ -26,7 +27,7 @@ const { categories } = Astro.props;
             class="group block rounded-card border border-neutral/20 bg-white p-4 shadow-card transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md motion-reduce:transition-none"
           >
             <Image
-              src={c.image}
+              src={imageSrc(c.image)}
               alt={c.imageAlt}
               width={600}
               height={600}

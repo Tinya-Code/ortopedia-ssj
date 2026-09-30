@@ -1,14 +1,15 @@
 ---
 import { Image } from 'astro:assets';
+import { imageSrc } from '../../lib/image';
 
 interface Props {
-  images: { src: ImageMetadata; alt: string }[];
+  images: { src: ImageMetadata | string; alt: string }[];
 }
 const { images } = Astro.props;
 ---
 <div>
   <Image
-    src={images[0].src}
+    src={imageSrc(images[0].src)}
     alt={images[0].alt}
     width={800}
     height={800}
@@ -23,7 +24,7 @@ const { images } = Astro.props;
       {images.slice(1).map((img) => (
         <li>
           <Image
-            src={img.src}
+            src={imageSrc(img.src)}
             alt={img.alt}
             width={160}
             height={160}

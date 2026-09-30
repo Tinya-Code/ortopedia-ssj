@@ -5,15 +5,19 @@ import baston2 from '../assets/products/baston-2.jpg';
 import silla1 from '../assets/products/silla-ruedas-1.jpg';
 import silla2 from '../assets/products/silla-ruedas-2.jpg';
 
+import type { Database } from './types';
+
 /**
- * "API" simulada — la forma de db ES la forma de la respuesta de la API.
- * Único punto de acceso a los datos: páginas usan `api.*`, nunca `db` (doc/seo.md §3).
+ * Datos crudos del repo (rama `repo` de la bandera de src/api).
+ * La forma de db ES la forma de la respuesta de la API remota (doc/seo.md §3),
+ * validada por TS con la anotación `: Database`.
+ * Las páginas NO importan db: usan `api.*` (src/api), nunca `db`.
  *
  * Textos: intros de categoría (~150 palabras, únicas) y descripciones breves de producto.
  * Con datos reales se amplían las descripciones (150–300 palabras únicas por producto).
  */
 
-const db = {
+export const db: Database = {
   categories: [
     {
       slug: 'rodilleras',
@@ -189,39 +193,4 @@ const db = {
       featured: false,
     },
   ],
-};
-
-// --- Regla editorial --------------------------------------------------------
-const isPublishable = (p) => Boolean(p.registroSanitario);
-const published = db.products.filter(isPublishable);
-const hidden = db.products.filter((p) => !isPublishable(p));
-
-if (hidden.length > 0) {
-  console.warn(
-    `[data] ${hidden.length} producto(s) sin registro sanitario NO se publicarán:`,
-    hidden.map((p) => p.slug).join(', '),
-  );
-}
-// ----------------------------------------------------------------------------
-
-export const api = {
-  categories: {
-    list: () => [...db.categories].sort((a, b) => a.order - b.order),
-    bySlug: (slug) => db.categories.find((c) => c.slug === slug),
-  },
-  products: {
-    list: () => published,
-    bySlug: (slug) => published.find((p) => p.slug === slug),
-    byCategory: (slug) => published.filter((p) => p.category === slug),
-    featured: (limit = 6) => published.filter((p) => p.featured).slice(0, limit),
-    related: (slug, limit = 4) => {
-      const current = published.find((p) => p.slug === slug);
-      if (!current) return [];
-      return published
-        .filter((p) => p.category === current.category && p.slug !== slug)
-        .slice(0, limit);
-    },
-    // Auditoría editorial: qué quedó fuera de publicación
-    hidden: () => hidden,
-  },
 };

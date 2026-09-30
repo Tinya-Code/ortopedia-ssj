@@ -6,7 +6,7 @@ type CardProduct = {
   name: string;
   price?: number;
   availability: string;
-  images: { src: ImageMetadata; alt: string }[];
+  images: { src: ImageMetadata | string; alt: string }[];
 };
 interface Props {
   products: CardProduct[]; // slice que consume, no la entidad entera

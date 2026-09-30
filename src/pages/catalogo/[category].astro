@@ -1,5 +1,5 @@
 ---
-import { api } from '../../data/api';
+import { api } from '../../api';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/layout/Breadcrumbs.astro';
 import ProductGrid from '../../components/catalog/ProductGrid.astro';
@@ -8,22 +8,25 @@ import WhatsAppButton from '../../components/ui/WhatsAppButton.astro';
 import Callout from '../../components/ui/Callout.astro';
 import CtaBand from '../../components/ui/CtaBand.astro';
 import { breadcrumbSchema, itemListSchema } from '../../lib/schema';
-import { categoryWhatsappMessage } from '../../lib/whatsapp';
-import { SITE } from '../../lib/site';
+import { categoryWhatsappMessage } from '../../data/whatsapp';
+import { SITE } from '../../data/site';
 import Container from '../../components/ui/Container.astro';
 import PageHeader from '../../components/ui/PageHeader.astro';
 
 export async function getStaticPaths() {
   // api.products.byCategory ya excluye los productos sin registro sanitario,
   // por lo que esas fichas nunca generan ruta.
-  return api.categories.list().map((cat) => ({
-    params: { category: cat.slug },
-    props: { cat, products: api.products.byCategory(cat.slug) },
-  }));
+  const categories = await api.categories.list();
+  return Promise.all(
+    categories.map(async (cat) => ({
+      params: { category: cat.slug },
+      props: { cat, products: await api.products.byCategory(cat.slug) },
+    })),
+  );
 }
 
 const { cat, products } = Astro.props;
-const categories = api.categories.list();
+const categories = await api.categories.list();
 
 const crumbs = [
   { name: 'Inicio', href: '/' },

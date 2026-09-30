@@ -1,12 +1,13 @@
 ---
 import { Image } from 'astro:assets';
+import { imageSrc } from '../../lib/image';
 
 interface Props {
   category: {
     slug: string;
     name: string;
     seoDescription: string;
-    image: ImageMetadata;
+    image: ImageMetadata | string;
     imageAlt: string;
   };
 }
@@ -19,7 +20,7 @@ const { category } = Astro.props;
 >
   <a href={`/catalogo/${category.slug}/`} class="group block">
     <Image
-      src={category.image}
+      src={imageSrc(category.image)}
       alt={category.imageAlt}
       width={600}
       height={600}
