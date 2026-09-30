@@ -87,17 +87,19 @@ archivos de componentes y **0 encabezados sin `text-ink`** + CSS compilado con `
 
 Objetivo: eliminar la repetición de clases de contenedor/cabecera/aviso y unificar las páginas interiores.
 
-- [ ] `ui/Container.astro` — `size?: 'wide'|'narrow'` (clases de §3.1, con `sm:px-6`).
-- [ ] `ui/PageHeader.astro` — `title`, `lead?`; `<h1>` + lead `max-w-prose`, `pt-8 pb-6`.
-- [ ] `ui/Callout.astro` — `tone?: 'info'|'warning'|'legal'`, `title?`; `rounded-card border-l-4 p-4` + `role="note"`.
-- [ ] Adoptar `Container` en **todas** las páginas (wide: home, catálogo, categoría, producto, contacto; narrow: 3 legales, libro, 404) y en las secciones de home que hoy repiten `mx-auto max-w-6xl px-4` (Header/Footer pueden quedarse con su inner wrapper propio).
-- [ ] Adoptar `PageHeader` en catálogo, categoría, contacto, libro, 404 y las 3 legales.
-- [ ] Adoptar `Callout`: aviso de plazo en libro de reclamaciones (`warning`) y aviso médico de `ProductLegal` (`legal`).
-- [ ] Ritmo de página (§2.3): secciones internas `py-8`, `mt-6` después de cada `h2`, gaps de grilla `gap-4` → `sm:gap-6`, padding `px-4 sm:px-6` vía `Container`.
+- [x] `ui/Container.astro` — `size?: 'wide'|'narrow'` (clases de §3.1, con `sm:px-6`).
+- [x] `ui/PageHeader.astro` — `title`, `lead?`; `<h1>` + lead `max-w-prose`, `pt-8 pb-6`.
+- [x] `ui/Callout.astro` — `tone?: 'info'|'warning'|'legal'`, `title?`; `rounded-card border-l-4 p-4` + `role="note"`.
+- [x] Adoptar `Container` en **todas** las páginas (wide: home, catálogo, categoría, producto, contacto; narrow: 3 legales, libro, 404) y en las secciones de home que hoy repiten `mx-auto max-w-6xl px-4` (Header/Footer pueden quedarse con su inner wrapper propio).
+- [x] Adoptar `PageHeader` en catálogo, categoría, contacto, libro, 404 y las 3 legales.
+- [x] Adoptar `Callout`: aviso de plazo en libro de reclamaciones (`warning`) y aviso médico de `ProductLegal` (`legal`).
+- [x] Ritmo de página (§2.3): secciones internas `py-8`, `mt-6` después de cada `h2`, gaps de grilla `gap-4` → `sm:gap-6`, padding `px-4 sm:px-6` vía `Container`; bandas de home `py-12 md:py-16` (§3).
 
 **Criterio de salida**: gates globales + `grep -rn 'max-w-6xl\|max-w-3xl' src/pages src/components | grep -v 'ui/Container.astro' | grep -v 'components/layout/'` **vacío** (nadie repite el ancho salvo el helper) + `grep -rln '<Container' src | wc -l` ≥ 10 + `grep -rln '<PageHeader' src/pages | wc -l` = **8 archivos** (catálogo, categoría, contacto, libro, 404 y los 3 legales).
 **Riesgo**: `PageHeader` duplica el `h1` si una página lo deja en su markup → revisar 1 `h1` por página (gate).
 **Rollback**: borrar los 3 componentes y revert de páginas (commit aislado).
+
+**Evidencia** (commits `f0044e8` + `0b43b1d`): build 17 HTML / check 0 (45 archivos) / 1 `h1` por página / grep de `max-w-*` vacío / `<Container` en 15 archivos / `<PageHeader` en 8 páginas / sin tokens prohibidos / sin `astro:content`.
 
 ---
 
