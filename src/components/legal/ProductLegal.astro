@@ -1,0 +1,36 @@
+---
+// legal.md 9.5 — información legal y sanitaria visible en cada ficha de producto.
+interface Props {
+  registroSanitario?: string;
+  claseRiesgo?: string;
+  titularRegistro?: string;
+  priceIncludesIGV?: boolean;
+}
+const {
+  registroSanitario,
+  claseRiesgo,
+  titularRegistro,
+  priceIncludesIGV = true,
+} = Astro.props;
+---
+<aside
+  aria-label="Información legal y sanitaria del producto"
+  class="mt-8 rounded-xl border border-neutral/20 bg-neutral/5 p-5 text-sm text-neutral"
+>
+  <ul class="space-y-2">
+    {registroSanitario && (
+      <li>
+        <strong class="text-primary">Registro sanitario:</strong> {registroSanitario}
+        {claseRiesgo && <> · Clase {claseRiesgo}</>}
+        {titularRegistro && <> · Titular: {titularRegistro}</>}
+      </li>
+    )}
+    {priceIncludesIGV && (
+      <li>Precio en soles, incluye IGV y demás cargos. Emitimos boleta o factura electrónica.</li>
+    )}
+    <li>
+      Producto de uso ortopédico. Lea las instrucciones y consulte a un profesional de la salud
+      antes de usarlo.
+    </li>
+  </ul>
+</aside>

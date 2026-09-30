@@ -1,0 +1,20 @@
+---
+// El JSON-LD (faqSchema) lo arma pages/index.astro y lo pasa a BaseLayout; aquí solo HTML.
+interface Props {
+  items: { q: string; a: string }[];
+}
+const { items } = Astro.props;
+---
+<section class="py-12">
+  <div class="mx-auto max-w-3xl px-4">
+    <h2 class="font-display text-3xl font-semibold">Preguntas frecuentes</h2>
+    <dl class="mt-6 divide-y divide-neutral/20">
+      {items.map((it) => (
+        <div class="py-4">
+          <dt class="font-semibold text-primary">{it.q}</dt>
+          <dd class="mt-2 text-neutral">{it.a}</dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>

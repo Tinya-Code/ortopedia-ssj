@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# TODO: dominio real (Previas Fase 0)
+Sitemap: https://www.example.com/sitemap-index.xml

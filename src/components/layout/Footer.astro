@@ -1,0 +1,26 @@
+---
+import { SITE } from '../../lib/site';
+import { formatHours } from '../../lib/hours';
+import LegalFooter from '../legal/LegalFooter.astro';
+---
+<footer class="mt-16 border-t border-neutral/20 bg-white">
+  <div class="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-2">
+    <div class="text-sm text-neutral">
+      <p class="font-display text-base font-semibold text-primary">{SITE.name}</p>
+      <p class="mt-2">
+        {SITE.address.street}, {SITE.address.city}<br />
+        <a href={`tel:${SITE.phone.replace(/\s/g, '')}`} class="hover:text-primary">{SITE.phone}</a><br />
+        <a href={`mailto:${SITE.email}`} class="hover:text-primary">{SITE.email}</a><br />
+        Horario: {formatHours()}
+      </p>
+      <nav aria-label="Enlaces principales" class="mt-4 flex flex-wrap gap-x-4 gap-y-2">
+        <a href="/" class="hover:text-primary">Inicio</a>
+        <a href="/catalogo/" class="hover:text-primary">Catálogo</a>
+        <a href="/#servicios" class="hover:text-primary">Servicios</a>
+        <a href="/contacto/" class="hover:text-primary">Contacto</a>
+      </nav>
+    </div>
+
+    <LegalFooter />
+  </div>
+</footer>

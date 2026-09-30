@@ -1,0 +1,22 @@
+---
+// Usar SIEMPRE el mismo array que breadcrumbSchema para que HTML visible y
+// JSON-LD coincidan (doc/seo.md §5).
+interface Props {
+  items: { name: string; href?: string }[];
+}
+const { items } = Astro.props;
+---
+<nav aria-label="Migas de pan" class="mx-auto max-w-6xl px-4 py-3 text-sm text-neutral">
+  <ol class="flex flex-wrap items-center gap-x-2">
+    {items.map((it, i) => (
+      <li class="flex items-center gap-2">
+        {i > 0 && <span aria-hidden="true">›</span>}
+        {it.href && i < items.length - 1 ? (
+          <a href={it.href} class="hover:text-primary">{it.name}</a>
+        ) : (
+          <span aria-current="page" class="text-neutral">{it.name}</span>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>

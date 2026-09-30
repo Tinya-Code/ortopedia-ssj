@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ReclamacionForm from '../components/legal/ReclamacionForm.astro';
+import { SITE, LEGAL } from '../lib/site';
+
+// Hoja de reclamación virtual (Ley N.° 32495).
+// El formulario envía los datos por POST a este endpoint. Reemplazá la URL por la
+// real (webhook de Apps Script, Make, Zapier o el endpoint propio) antes de publicar.
+const ENDPOINT = 'https://example.com/api/reclamos';
+
+const title = 'Libro de Reclamaciones';
+const description = `Registra tu reclamo o queja. Respondemos en un máximo de ${LEGAL.reclamosResponseDays} días hábiles.`;
+---
+
+<BaseLayout {title} {description}>
+  <article class="mx-auto max-w-3xl px-4 py-10">
+    <h1 class="font-display text-3xl font-semibold">Libro de Reclamaciones</h1>
+
+    <!-- TODO: reemplazar por el aviso oficial de INDECOPI descargado de
+         "Tu Libro de Reclamaciones" (legal.md 9.8). -->
+
+    <p class="mt-4 text-neutral">
+      <strong class="text-primary">{LEGAL.legalName}</strong> · RUC {LEGAL.ruc} · {LEGAL.fiscalAddress}
+      <br />
+      {SITE.phone} · {SITE.email}
+    </p>
+
+    <p class="mt-4 rounded-xl border border-neutral/20 bg-neutral/5 p-4 text-sm text-neutral">
+      Registra tu hoja y te responderemos en un máximo de{' '}
+      <strong class="text-primary">{LEGAL.reclamosResponseDays} días hábiles</strong>. Conservamos
+      las hojas registradas por al menos dos años y puedes pedir tu copia en cualquier momento.
+    </p>
+
+    <ReclamacionForm endpoint={ENDPOINT} />
+
+    <p class="mt-6 text-sm text-neutral">
+      Si prefieres, también puedes escribirnos por{' '}
+      <a href="/" class="text-primary underline underline-offset-4">WhatsApp</a>.
+    </p>
+  </article>
+</BaseLayout>

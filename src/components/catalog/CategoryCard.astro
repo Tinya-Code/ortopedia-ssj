@@ -1,0 +1,33 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  category: {
+    slug: string;
+    name: string;
+    seoDescription: string;
+    image: ImageMetadata;
+    imageAlt: string;
+  };
+}
+const { category } = Astro.props;
+// `src` debe ser el ImageMetadata, no `.src`: si Astro recibe el string no puede
+// transformar y entrega el jpg original ignorando `format`.
+---
+<article class="rounded-xl border border-neutral/20 p-4">
+  <a href={`/catalogo/${category.slug}/`} class="group block">
+    <Image
+      src={category.image}
+      alt={category.imageAlt}
+      width={600}
+      height={600}
+      decoding="async"
+      format="webp"
+      class="aspect-square w-full rounded-lg object-cover"
+    />
+    <h2 class="mt-3 font-display text-lg font-semibold text-primary group-hover:underline">
+      Ver {category.name.toLowerCase()}
+    </h2>
+    <p class="mt-1 text-sm text-neutral">{category.seoDescription}</p>
+  </a>
+</article>

@@ -1,0 +1,39 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  images: { src: ImageMetadata; alt: string }[];
+}
+const { images } = Astro.props;
+---
+<div>
+  <Image
+    src={images[0].src}
+    alt={images[0].alt}
+    width={800}
+    height={800}
+    loading="eager"
+    fetchpriority="high"
+    decoding="async"
+    format="webp"
+    class="aspect-square w-full rounded-xl border border-neutral/20 object-cover"
+  />
+  {images.length > 1 && (
+    <ul class="mt-3 flex flex-wrap gap-3" role="list">
+      {images.slice(1).map((img) => (
+        <li>
+          <Image
+            src={img.src}
+            alt={img.alt}
+            width={160}
+            height={160}
+            loading="lazy"
+            decoding="async"
+            format="webp"
+            class="h-20 w-20 rounded-lg border border-neutral/20 object-cover"
+          />
+        </li>
+      ))}
+    </ul>
+  )}
+</div>

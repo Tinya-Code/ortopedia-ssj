@@ -1,0 +1,39 @@
+---
+// Los datos viven en pages/index.astro (capa smart), no en data/.
+// id="servicios" es obligatorio: el header enlaza a /#servicios.
+interface Service {
+  title: string;
+  text: string;
+  href: string;
+}
+interface Props {
+  services: Service[];
+}
+const { services } = Astro.props;
+---
+<section id="servicios" class="bg-neutral/5 py-12">
+  <div class="mx-auto max-w-6xl px-4">
+    <h2 class="font-display text-3xl font-semibold">Servicios</h2>
+    <p class="mt-2 max-w-prose text-neutral">
+      Acompañamiento personalizado en cada etapa: desde la evaluación hasta la elección del
+      producto ortopédico adecuado.
+    </p>
+    <ul class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {services.map((s) => (
+        <li>
+          <a
+            href={s.href}
+            class="flex h-full flex-col rounded-xl border border-neutral/20 bg-white p-6 hover:border-primary"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <h3 class="font-display text-lg font-semibold text-primary">{s.title}</h3>
+            <p class="mt-2 flex-1 text-sm text-neutral">{s.text}</p>
+            <span class="mt-4 text-sm font-semibold text-secondary">Consultar por WhatsApp</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+    {/* TODO Fase 9+: si existen páginas /servicios/[slug]/, apuntar href ahí en vez de WhatsApp. */}
+  </div>
+</section>

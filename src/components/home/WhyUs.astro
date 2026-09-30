@@ -1,0 +1,35 @@
+---
+// Solo afirmaciones verificables del negocio. Lenguaje YMYL: sin promesas de cura
+// ("brinda soporte", "ayuda a estabilizar"), nunca "cura" o "recuperación garantizada".
+const points = [
+  {
+    title: 'Productos con registro sanitario',
+    text: 'Publicamos únicamente productos con registro sanitario verificado y datos de titular visibles en la ficha.',
+  },
+  {
+    title: 'Asesoramiento personalizado',
+    text: 'Te orientamos según tu caso y tus medidas para que elijas el producto que brinda soporte adecuado.',
+  },
+  {
+    title: 'Atención directa por WhatsApp',
+    text: 'Resolvemos dudas de talla, stock, precios con IGV y comprobante de pago sin demoras.',
+  },
+  {
+    title: 'Comprobante y entrega coordinada',
+    text: 'Emitimos comprobante electrónico en cada venta y coordinamos la entrega contigo.',
+  },
+];
+---
+<section class="bg-neutral/5 py-12">
+  <div class="mx-auto max-w-6xl px-4">
+    <h2 class="font-display text-3xl font-semibold">Por qué elegirnos</h2>
+    <ul class="mt-8 grid gap-6 sm:grid-cols-2">
+      {points.map((p) => (
+        <li class="rounded-xl border border-neutral/20 bg-white p-6">
+          <h3 class="font-display text-lg font-semibold text-primary">{p.title}</h3>
+          <p class="mt-2 text-sm text-neutral">{p.text}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

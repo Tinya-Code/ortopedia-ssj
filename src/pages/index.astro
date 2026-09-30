@@ -1,11 +1,76 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/home/Hero.astro';
+import ServicesGrid from '../components/home/ServicesGrid.astro';
+import FeaturedCategories from '../components/home/FeaturedCategories.astro';
+import WhyUs from '../components/home/WhyUs.astro';
+import Faq from '../components/home/Faq.astro';
+import LocationCta from '../components/home/LocationCta.astro';
+import heroImage from '../assets/home/hero.jpg';
+import { api } from '../data/api';
+import { faqSchema } from '../lib/schema';
+import { whatsappLink, categoryWhatsappMessage } from '../lib/whatsapp';
+import { SITE, LEGAL } from '../lib/site';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const title = `Centro ortopédico en ${SITE.address.city}`;
+const description =
+  'Centro ortopédico con evaluación, ortesis a medida y venta de productos ortopédicos. Atención personalizada y respuesta por WhatsApp.';
+
+const categories = api.categories.list();
+
+// Datos de la sección: viven en la página (smart), no en data/
+const services = [
+  {
+    title: 'Evaluación ortopédica',
+    text: 'Valoración personalizada de tu caso y recomendación de producto según tus medidas.',
+    href: whatsappLink(categoryWhatsappMessage('Evaluación ortopédica')),
+  },
+  {
+    title: 'Ortesis a medida',
+    text: 'Soportes y ortesis adaptados a tu cuerpo y a tu actividad diaria.',
+    href: whatsappLink(categoryWhatsappMessage('Ortesis a medida')),
+  },
+  {
+    title: 'Rehabilitación y asesoría',
+    text: 'Acompañamiento y orientación sobre el uso correcto de cada producto.',
+    href: whatsappLink(categoryWhatsappMessage('Rehabilitación y asesoría')),
+  },
+];
+
+const igvAnswer = LEGAL.pricesIncludeIGV
+  ? 'Sí: todos los precios están expresados en soles e incluyen IGV, y emitimos comprobante de pago electrónico en cada venta.'
+  : 'Sí: todos los precios están expresados en soles y no incluyen IGV, y emitimos comprobante de pago electrónico en cada venta.';
+
+const faqs = [
+  {
+    q: '¿Atienden con cita previa?',
+    a: 'Puedes visitarnos en el horario indicado o coordinar tu evaluación por WhatsApp para que te atiendan sin esperas.',
+  },
+  {
+    q: '¿Realizan envíos?',
+    a: 'Sí, coordinamos envíos. Consúltanos por WhatsApp para verificar cobertura, costos y tiempos.',
+  },
+  {
+    q: '¿Cómo elijo la talla correcta?',
+    a: 'Te recomendamos medir antes de comprar y consultar tus dudas por WhatsApp; en los productos con evaluación, el personal te orienta personalmente.',
+  },
+  {
+    q: '¿Los precios incluyen IGV?',
+    a: igvAnswer,
+  },
+];
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<BaseLayout {title} {description} schemas={[faqSchema(faqs)]}>
+  <Hero
+    title={title}
+    text="Productos ortopédicos, ortesis y asesoramiento para acompañar tu movilidad. Te atendemos en el centro ortopédico y por WhatsApp."
+    image={heroImage}
+    imageAlt="Interior del centro ortopédico con productos ortopédicos a la vista"
+  />
+  <ServicesGrid {services} />
+  <FeaturedCategories categories={categories} />
+  <WhyUs />
+  <Faq items={faqs} />
+  <LocationCta />
+</BaseLayout>

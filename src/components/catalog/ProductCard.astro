@@ -1,0 +1,32 @@
+---
+import { Image } from 'astro:assets';
+
+// Slice mínimo que consume la tarjeta (ISP): no el objeto entero.
+interface Props {
+  product: {
+    slug: string;
+    name: string;
+    price?: number;
+    images: { src: ImageMetadata; alt: string }[];
+  };
+  priority?: boolean; // los 4 primeros se cargan con eager
+}
+const { product, priority = false } = Astro.props;
+const { slug, name, price, images } = product;
+---
+<article class="rounded-xl border border-neutral/20 p-4">
+  <a href={`/producto/${slug}/`} class="block">
+    <Image
+      src={images[0].src}
+      alt={images[0].alt}
+      width={400}
+      height={400}
+      loading={priority ? 'eager' : 'lazy'}
+      decoding="async"
+      format="webp"
+      class="aspect-square w-full rounded-lg object-cover"
+    />
+    <h2 class="mt-3 font-display text-lg font-semibold text-primary">{name}</h2>
+  </a>
+  <p class="mt-1 text-sm text-neutral">{price ? `S/ ${price.toFixed(2)}` : 'Consultar precio'}</p>
+</article>

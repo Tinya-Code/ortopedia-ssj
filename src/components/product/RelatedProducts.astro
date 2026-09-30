@@ -1,0 +1,23 @@
+---
+// Productos relacionados: enlaces simples bajo un <h2> propio (no repetir <h2>
+// por tarjeta dentro de esta sección, para no romper la jerarquía de encabezados).
+interface Props {
+  products: { slug: string; name: string; price?: number }[];
+}
+const { products } = Astro.props;
+---
+{products.length > 0 && (
+  <section class="mt-10">
+    <h2 class="font-display text-2xl font-semibold">Productos relacionados</h2>
+    <ul class="mt-4 grid gap-4 sm:grid-cols-2">
+      {products.map((p) => (
+        <li class="rounded-xl border border-neutral/20 p-4">
+          <a href={`/producto/${p.slug}/`} class="font-semibold text-primary hover:underline">
+            {p.name}
+          </a>
+          <p class="mt-1 text-sm text-neutral">{p.price ? `S/ ${p.price.toFixed(2)}` : 'Consultar precio'}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}

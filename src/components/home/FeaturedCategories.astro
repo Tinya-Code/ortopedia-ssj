@@ -1,0 +1,43 @@
+---
+// Categorías con enlace interno a su landing (/catalogo/[slug]/) y anchor text descriptivo.
+import { Image } from 'astro:assets';
+
+interface Category {
+  slug: string;
+  name: string;
+  seoDescription: string;
+  image: ImageMetadata;
+  imageAlt: string;
+}
+interface Props {
+  categories: Category[];
+}
+const { categories } = Astro.props;
+---
+<section class="py-12">
+  <div class="mx-auto max-w-6xl px-4">
+    <h2 class="font-display text-3xl font-semibold">Categorías de productos</h2>
+    <ul class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {categories.map((c) => (
+        <li>
+          <a href={`/catalogo/${c.slug}/`} class="group block rounded-xl border border-neutral/20 p-4 hover:border-primary">
+            <Image
+              src={c.image}
+              alt={c.imageAlt}
+              width={600}
+              height={600}
+              format="webp"
+              loading="lazy"
+              decoding="async"
+              class="aspect-square h-auto w-full rounded-lg object-cover"
+            />
+            <h3 class="mt-4 font-display text-lg font-semibold text-primary group-hover:underline">
+              Ver {c.name.toLowerCase()} disponibles
+            </h3>
+            <p class="mt-1 text-sm text-neutral">{c.seoDescription}</p>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

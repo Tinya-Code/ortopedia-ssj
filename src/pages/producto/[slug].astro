@@ -1,0 +1,101 @@
+---
+import { api } from '../../data/api';
+import { getImage } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/layout/Breadcrumbs.astro';
+import ProductGallery from '../../components/product/ProductGallery.astro';
+import ProductInfo from '../../components/product/ProductInfo.astro';
+import ProductSpecs from '../../components/product/ProductSpecs.astro';
+import RelatedProducts from '../../components/product/RelatedProducts.astro';
+import ProductLegal from '../../components/legal/ProductLegal.astro';
+import { breadcrumbSchema, productSchema, faqSchema } from '../../lib/schema';
+import { productWhatsappMessage } from '../../lib/whatsapp';
+import { SITE, LEGAL } from '../../lib/site';
+
+export async function getStaticPaths() {
+  // api.products.list() solo devuelve productos publicables (con registro sanitario).
+  // Si un producto apunta a una categoría inexistente, no genera ruta.
+  return api.products.list().flatMap((product) => {
+    const category = api.categories.bySlug(product.category);
+    if (!category) return [];
+    return [
+      {
+        params: { slug: product.slug },
+        props: { product, category, related: api.products.related(product.slug) },
+      },
+    ];
+  });
+}
+
+const { product, category, related } = Astro.props;
+const { name, seoTitle, seoDescription, description, images, price, availability, sku, brand, faq, specs } = product;
+
+const pageUrl = new URL(Astro.url.pathname, SITE.url).href;
+
+// OG 1200×630 a partir de la primera imagen del producto
+const ogImage = await getImage({ src: images[0].src, width: 1200, height: 630, format: 'jpg' });
+const imageUrls = await Promise.all(
+  images.map(
+    async (i) => new URL((await getImage({ src: i.src, width: 1200, format: 'jpg' })).src, SITE.url).href,
+  ),
+);
+
+const crumbs = [
+  { name: 'Inicio', href: '/' },
+  { name: category.name, href: `/catalogo/${category.slug}/` },
+  { name },
+];
+const abs = (p: string) => new URL(p, SITE.url).href;
+---
+<BaseLayout
+  title={seoTitle ?? name}
+  description={seoDescription ?? description}
+  image={ogImage.src}
+  type="product"
+  schemas={[
+    breadcrumbSchema(crumbs.map((c) => ({ name: c.name, url: abs(c.href ?? Astro.url.pathname) }))),
+    productSchema({
+      name,
+      description: seoDescription ?? description,
+      images: imageUrls,
+      url: pageUrl,
+      sku,
+      brand,
+      price,
+      availability,
+      // api.js es JS sin anotaciones: el shape se fija en Fase 2 y se valida en runtime
+      condition: product.condition as 'new' | 'refurbished' | 'used',
+    }),
+    ...(faq ? [faqSchema(faq)] : []),
+  ]}
+>
+  <Breadcrumbs items={crumbs} />
+
+  <section class="mx-auto max-w-6xl px-4 py-8">
+    <div class="grid gap-8 md:grid-cols-2">
+      <ProductGallery images={images} />
+      <ProductInfo
+        {name}
+        {price}
+        {availability}
+        whatsappMessage={productWhatsappMessage(name, pageUrl)}
+      />
+    </div>
+
+    <section class="mt-10">
+      <h2 class="font-display text-2xl font-semibold">Descripción</h2>
+      <p class="mt-3 max-w-prose text-neutral">{description}</p>
+    </section>
+
+    {specs && <ProductSpecs specs={specs} />}
+
+    <RelatedProducts products={related} />
+
+    <ProductLegal
+      registroSanitario={product.registroSanitario}
+      claseRiesgo={product.claseRiesgo}
+      titularRegistro={product.titularRegistro}
+      priceIncludesIGV={LEGAL.pricesIncludeIGV}
+    />
+  </section>
+</BaseLayout>

@@ -1,0 +1,58 @@
+---
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/600.css';
+import '../styles/global.css';
+
+import SEO from '../components/seo/SEO.astro';
+import JsonLd from '../components/seo/JsonLd.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import WhatsAppButton from '../components/ui/WhatsAppButton.astro';
+import { organizationSchema } from '../lib/schema';
+import { generalWhatsappMessage } from '../lib/whatsapp';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  type?: 'website' | 'product' | 'article';
+  schemas?: Record<string, unknown>[]; // JSON-LD específico de cada página
+  noindex?: boolean;
+}
+const { title, description, image, type, schemas = [], noindex } = Astro.props;
+---
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <SEO {title} {description} {image} {type} {noindex} />
+    <JsonLd data={[organizationSchema(), ...schemas]} />
+  </head>
+  <body class="flex min-h-screen flex-col bg-white text-neutral">
+    <Header />
+    <main id="main" class="flex-1"><slot /></main>
+    <Footer />
+    <!-- Región opcional para CTA específico de la página (p. ej. CTA de campaña) -->
+    <slot name="cta" />
+    <!-- CTA global de contacto -->
+    <WhatsAppButton variant="floating" label="Escríbenos" message={generalWhatsappMessage()} />
+  </body>
+</html>
+
+<script>
+  // Registro de clics en CTAs: cualquier <a data-event="..."> empuja un evento a
+  // dataLayer (estándar GA4/GTM). No carga analítica por sí solo: hasta que no se
+  // añada la etiqueta de medición no hay tracking ni aviso de cookies (legal.md 8.4).
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const link = target.closest('a[data-event]');
+    if (!link) return;
+    const store = window as Window & { dataLayer?: Record<string, unknown>[] };
+    store.dataLayer ??= [];
+    store.dataLayer.push({ event: link.getAttribute('data-event'), href: link.getAttribute('href') });
+  });
+</script>

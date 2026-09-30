@@ -1,0 +1,164 @@
+---
+// Hoja de reclamación virtual — envía los datos al endpoint definido en el frontmatter
+// de pages/libro-de-reclamaciones.astro (action del formulario).
+// Con JS: envía por fetch y muestra la confirmación en la misma página.
+// Sin JS: el POST nativo del navegador sigue funcionando (va al endpoint igual).
+// El correlativo y la fecha de registro los genera el endpoint, no el formulario.
+import { SITE, LEGAL } from '../../lib/site';
+
+interface Props {
+  endpoint: string;
+}
+const { endpoint } = Astro.props;
+---
+<form action={endpoint} method="post" data-reclamacion class="mt-8 space-y-8">
+  <div data-fields class="space-y-8">
+    {/* Datos del proveedor que el endpoint necesita y no puede leer del HTML */}
+    <input type="hidden" name="proveedor_razon_social" value={LEGAL.legalName} />
+    <input type="hidden" name="proveedor_ruc" value={LEGAL.ruc} />
+    <input type="hidden" name="proveedor_domicilio" value={LEGAL.fiscalAddress} />
+    <input type="hidden" name="proveedor_sitio" value={SITE.url} />
+
+    <fieldset class="rounded-xl border border-neutral/20 p-5">
+      <legend class="px-2 font-semibold text-primary">1. Identificación del consumidor</legend>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <label class="block text-sm">
+          Nombres y apellidos
+          <input name="nombres" required class="mt-1 w-full rounded-lg border border-neutral/30 px-3 py-2" />
+        </label>
+        <label class="block text-sm">
+          DNI / CE
+          <input name="documento" required class="mt-1 w-full rounded-lg border border-neutral/30 px-3 py-2" />
+        </label>
+        <label class="block text-sm">
+          Domicilio
+          <input name="domicilio" required class="mt-1 w-full rounded-lg border border-neutral/30 px-3 py-2" />
+        </label>
+        <label class="block text-sm">
+          Teléfono
+          <input name="telefono" type="tel" required class="mt-1 w-full rounded-lg border border-neutral/30 px-3 py-2" />
+        </label>
+        <label class="block text-sm sm:col-span-2">
+          Correo electrónico
+          <input name="email" type="email" required class="mt-1 w-full rounded-lg border border-neutral/30 px-3 py-2" />
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset class="rounded-xl border border-neutral/20 p-5">
+      <legend class="px-2 font-semibold text-primary">2. Bien o servicio</legend>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <label class="block text-sm">
+          Tipo
+          <select name="tipoBien" required class="mt-1 w-full rounded-lg border border-neutral/30 px-3 py-2">
+            <option value="producto">Producto</option>
+            <option value="servicio">Servicio</option>
+          </select>
+        </label>
+        <label class="block text-sm">
+          Monto reclamado (S/)
+          <input name="monto" type="number" step="0.01" min="0" class="mt-1 w-full rounded-lg border border-neutral/30 px-3 py-2" />
+        </label>
+        <label class="block text-sm sm:col-span-2">
+          Descripción del bien o servicio
+          <input name="bien" required class="mt-1 w-full rounded-lg border border-neutral/30 px-3 py-2" />
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset class="rounded-xl border border-neutral/20 p-5">
+      <legend class="px-2 font-semibold text-primary">3. Detalle</legend>
+      <label class="block text-sm">
+        Tipo
+        <select name="tipo" required class="mt-1 w-full rounded-lg border border-neutral/30 px-3 py-2">
+          <option value="reclamo">Reclamo (disconformidad con el producto o servicio)</option>
+          <option value="queja">Queja (disconformidad con la atención)</option>
+        </select>
+      </label>
+      <label class="mt-4 block text-sm">
+        Detalle del hecho
+        <textarea name="detalle" rows="5" required class="mt-1 w-full rounded-lg border border-neutral/30 px-3 py-2"></textarea>
+      </label>
+      <label class="mt-4 block text-sm">
+        Pedido del consumidor
+        <textarea name="pedido" rows="3" required class="mt-1 w-full rounded-lg border border-neutral/30 px-3 py-2"></textarea>
+      </label>
+    </fieldset>
+
+    <label class="flex items-start gap-3 text-sm text-neutral">
+      <input type="checkbox" name="consentimiento" required class="mt-1" />
+      <span>
+        Autorizo el tratamiento de mis datos personales según la
+        <a href="/politica-de-privacidad/" class="text-primary underline underline-offset-4">política de privacidad</a>.
+      </span>
+    </label>
+
+    <button
+      type="submit"
+      class="rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-white hover:opacity-90"
+    >
+      Enviar hoja de reclamación
+    </button>
+  </div>
+
+  <div data-status role="status" aria-live="polite" hidden class="rounded-xl border border-primary/40 bg-primary/5 p-5">
+    <div data-success hidden>
+      <p class="font-semibold text-primary">Tu hoja fue enviada.</p>
+      <p class="mt-2 text-sm text-neutral">
+        Te responderemos en un máximo de {LEGAL.reclamosResponseDays} días hábiles. Si necesitás una
+        copia, escribinos por WhatsApp y te la mandamos.
+      </p>
+    </div>
+    <div data-error hidden>
+      <p class="font-semibold text-primary">No pudimos confirmar el envío.</p>
+      <p class="mt-2 text-sm text-neutral">
+        Revisá tu conexión e intentá de nuevo. Si tu reclamo ya llegó, no lo repitas: escribinos por
+        WhatsApp y lo verificamos.
+      </p>
+    </div>
+  </div>
+</form>
+
+<script>
+  document.addEventListener('submit', async (event) => {
+    const form = event.target;
+    if (!(form instanceof HTMLFormElement) || !form.matches('[data-reclamacion]')) return;
+    // Sin JS o si fetch falla a nivel de red crítico, el POST nativo sigue siendo el respaldo.
+    event.preventDefault();
+
+    const fields = form.querySelector<HTMLElement>('[data-fields]');
+    const status = form.querySelector<HTMLElement>('[data-status]');
+    const success = form.querySelector<HTMLElement>('[data-success]');
+    const error = form.querySelector<HTMLElement>('[data-error]');
+    const button = form.querySelector('button[type="submit"]');
+    if (!fields || !status || !success || !error || !(button instanceof HTMLButtonElement)) return;
+    if (button.disabled) return;
+
+    button.disabled = true;
+    const label = button.textContent;
+    button.textContent = 'Enviando…';
+    status.hidden = true;
+    success.hidden = true;
+    error.hidden = true;
+
+    const body = new URLSearchParams();
+    new FormData(form).forEach((value, key) => {
+      body.append(key, typeof value === 'string' ? value : value.name);
+    });
+
+    try {
+      const response = await fetch(form.action, { method: 'POST', body });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      fields.hidden = true;
+      status.hidden = false;
+      success.hidden = false;
+    } catch {
+      // El request pudo llegar igual (el navegador bloquea leer la respuesta de
+      // endpoints sin CORS): por eso el mensaje habla de "confirmar", no de "enviar".
+      status.hidden = false;
+      error.hidden = false;
+      button.disabled = false;
+      if (label) button.textContent = label;
+    }
+  });
+</script>

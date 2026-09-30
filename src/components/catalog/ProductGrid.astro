@@ -1,0 +1,19 @@
+---
+import ProductCard from './ProductCard.astro';
+
+type CardProduct = {
+  slug: string;
+  name: string;
+  price?: number;
+  images: { src: ImageMetadata; alt: string }[];
+};
+interface Props {
+  products: CardProduct[]; // slice que consume, no la entidad entera
+}
+const { products } = Astro.props;
+---
+<ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+  {products.map((p, i) => (
+    <li><ProductCard product={p} priority={i < 4} /></li>
+  ))}
+</ul>

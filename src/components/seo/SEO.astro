@@ -1,0 +1,44 @@
+---
+import { SITE } from '../../lib/site';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  type?: 'website' | 'product' | 'article';
+  noindex?: boolean;
+}
+const { title, description, image = '/og-default.jpg', type = 'website', noindex = false } = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL(image, Astro.site).href;
+const fullTitle = title.includes(SITE.name) ? title : `${title} | ${SITE.name}`;
+
+// Aviso de longitud en desarrollo: no truncamos, avisamos (title ≤60, description ≤160)
+if (import.meta.env.DEV) {
+  if (fullTitle.length > 60) {
+    console.warn(`[SEO] title de ${fullTitle.length} caracteres (recomendado ≤60): ${fullTitle}`);
+  }
+  if (description.length > 160) {
+    console.warn(`[SEO] description de ${description.length} caracteres (recomendado ≤160): ${description.slice(0, 80)}…`);
+  }
+}
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={SITE.name} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:locale" content="es_PE" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
