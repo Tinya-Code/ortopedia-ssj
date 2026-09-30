@@ -226,18 +226,23 @@ Objetivo: terminar las páginas de lectura larga y los estados de contacto/error
 
 Objetivo: cerrar con evidencia y dejar `estado-implementado.md` fiel al nuevo estado.
 
-- [ ] Checklist completo de `mejoras.md §8` (comandos + visual/UX + accesibilidad + contenido + rendimiento).
-- [ ] Verificaciones de comportamiento que no cubre `pnpm check`:
-  - [ ] Sin scroll horizontal a 320 / 375 / 768 / 1024 / 1440 px.
-  - [ ] Anclas `/#servicios` y `#ubicacion` no quedan tapadas por el header sticky.
-  - [ ] Menú móvil operable con teclado y `aria-expanded`.
-  - [ ] Producto móvil: barra fija visible y flotante **no** superpuesto.
-  - [ ] Footer pegado al piso en 404 y libro.
-  - [ ] Contraste ≥ 4.5:1 en `secondary` corregido y `accent-text`.
-- [ ] Actualizar `doc/estado-implementado.md`: §1 árbol, §2.2 tabla de componentes (los nuevos), §3 composición por página **y su distribución** (§3.0 + bloques), §5 UI transversal (header sticky, acordeón, barra fija).
-- [ ] Commit: `docs: actualizar estado-implementado tras las mejoras UI/UX` (junto con el detalle final, no separado del cambio que documenta).
+- [x] Checklist completo de `mejoras.md §8` (comandos + visual/UX + accesibilidad + contenido + rendimiento) — todo en verde, evidencia abajo.
+- [x] Verificaciones de comportamiento que no cubre `pnpm check` (matriz CDP con Edge headless, scripts temporales, sin dependencias nuevas):
+  - [x] Sin scroll horizontal a 320 / 375 / 768 / 1024 / 1440 px — 17 páginas × 5 viewports = **0 fails**.
+  - [x] Anclas `/#servicios` y `/#ubicacion` — `targetTop = 64 = headerBottom` en 3 viewports, `scroll-padding-top: 64px` confirmado, sin contenido tapado.
+  - [x] Menú móvil operable con teclado — `keyDown` real: Enter abre (panel `navTop = 64 = headerBottom`), lo cierra y lo reabre; AX `role=DisclosureTriangle` + `expanded=true` (estado nativo de `<details>`, sin `aria-expanded` estático). Links abiertos 343×44; sin Esc porque no hay script (§8 lo condiciona al script).
+  - [x] Producto móvil: barra fija visible (`display:block`) y flotante **no** superpuesto (`display:none`) @375; inverso @1024.
+  - [x] Footer pegado al piso en 404 y libro — `docH = footerBottom = viewportHeight` (vh 1400 y 3000); `body min-h 100vh` + `main flex-1`.
+  - [x] Contraste ≥ 4.5:1 — `secondary` 4.81:1 y `accent-text` 5.02:1; además la verificación detectó **WhatsApp `text-white` sobre `#25d366` = 1.98:1** → corregido a `text-ink` (8.94:1, hover 7.24:1).
+  - [x] Foco y skip link — 8 Tab en home con `outline: 3px solid primary`; skip link → `#main` → el siguiente Tab cae dentro de `main`; 6 controles del form con outline.
+  - [x] Labels y estados del form — 12 labels visibles (por contención, `labels.length`), 0 sin label, 4 `type=hidden` exentos, 12 `aria-describedby`, estado `aria-live=polite`.
+  - [x] Contenido y jerarquía — sin testimonios ni afirmaciones clínicas; precios solo vía `PriceTag`; IGV en ficha y footer; href internos con `/` final; `ui/Button` en uso (Hero + 404); sin `slot name="cta"`.
+  - [x] Rendimiento — `fetchpriority=high` en 7 páginas (hero + 6 galerías), eager 13 / lazy 10, mapa `h-80`, CLS 0 con dimensiones de imagen.
+- [x] Actualizar `doc/estado-implementado.md`: §1 árbol y tokens, §2.1 rutas, §2.2 tabla de componentes (los nuevos), §3 composición por página **y su distribución** (§3.0 + bloques), §5 UI transversal (header sticky, skip link, acordeón, barra fija), §6 comandos de verificación, §7 gotchas y §8 pendientes.
+- [x] 3 correcciones de código exigidas por la verificación: WhatsApp `text-ink` (`118262a`), áreas táctiles ≥44px en 11 archivos (`6f881b8`), `slot name="cta"` eliminado (`f6fc770`).
+- [x] Commit: `docs: actualizar estado-implementado tras las mejoras UI/UX` (junto con el detalle final, no separado del cambio que documenta).
 
-**Criterio de salida**: ✅ todas las casillas de §8 en verde, inventario sincronizado y gates globales en 0.
+**Criterio de salida**: ✅ todas las casillas de §8 en verde, inventario sincronizado y gates globales en 0 (build 17 HTML, `pnpm check` 0 errores, 1 `h1` por página, sin tokens planos prohibidos).
 
 ---
 
@@ -254,6 +259,9 @@ Objetivo: cerrar con evidencia y dejar `estado-implementado.md` fiel al nuevo es
 | M6 | `feat(catalog): chips de categoría y CtaBand en catálogo y categorías` | revert |
 | M7 | `feat(product): barra fija móvil de compra sin solapar el flotante` | revert |
 | M8 | `feat(pages): índice en legales, canales en contacto, form accesible y RegistroBadge` | revert |
+| M9 | `fix(a11y): texto ink en botones WhatsApp (AA 8.94:1)` | revert |
+| M9 | `fix(a11y): areas táctiles >=44px en enlaces y controles` | revert |
+| M9 | `refactor(layout): eliminar slot cta sin uso` | revert |
 | M9 | `docs: actualizar estado-implementado tras las mejoras UI/UX` | revert |
 
 ---
