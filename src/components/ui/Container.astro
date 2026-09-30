@@ -1,0 +1,17 @@
+---
+// Contenedor de página (mejoras §3.1): solo ancho, centrado y padding horizontal.
+// wide = max-w-6xl (home, catálogo, categoría, producto, contacto)
+// narrow = max-w-3xl (legales, libro de reclamaciones, 404, FAQ de la home)
+interface Props {
+  size?: 'wide' | 'narrow';
+}
+const { size = 'wide' } = Astro.props;
+---
+<div
+  class:list={[
+    'mx-auto w-full px-4 sm:px-6',
+    size === 'narrow' ? 'max-w-3xl' : 'max-w-6xl',
+  ]}
+>
+  <slot />
+</div>

@@ -12,7 +12,7 @@ interface Props {
 }
 const { products } = Astro.props;
 ---
-<ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+<ul class="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
   {products.map((p, i) => (
     <li><ProductCard product={p} priority={i < 4} /></li>
   ))}

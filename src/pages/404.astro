@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { api } from '../data/api';
+import Container from '../components/ui/Container.astro';
+import PageHeader from '../components/ui/PageHeader.astro';
 
 // Página de error: no se indexa y ofrece rutas reales para recuperarse.
 const title = 'Página no encontrada';
@@ -9,26 +11,27 @@ const categories = api.categories.list();
 ---
 
 <BaseLayout {title} {description} noindex>
-  <article class="mx-auto max-w-3xl px-4 py-16">
-    <h1 class="font-display text-3xl font-semibold text-ink">Página no encontrada</h1>
-    <p class="mt-4 text-neutral">
-      El enlace que siguió no corresponde a ninguna página del sitio. Puede volver al inicio o
-      explorar nuestras categorías:
-    </p>
-    <ul class="mt-6 flex flex-wrap gap-3">
-      {categories.map((c) => (
-        <li>
-          <a
-            href={`/catalogo/${c.slug}/`}
-            class="inline-flex items-center rounded-lg border border-primary px-4 py-2 text-sm font-semibold text-primary hover:bg-primary hover:text-white"
-          >
-            {c.name}
-          </a>
-        </li>
-      ))}
-    </ul>
-    <p class="mt-6">
-      <a href="/" class="text-primary underline underline-offset-4">Volver al inicio</a>
-    </p>
+  <article class="pb-16">
+    <Container size="narrow">
+      <PageHeader
+        title="Página no encontrada"
+        lead="El enlace que siguió no corresponde a ninguna página del sitio. Puede volver al inicio o explorar nuestras categorías:"
+      />
+      <ul class="mt-6 flex flex-wrap gap-3">
+        {categories.map((c) => (
+          <li>
+            <a
+              href={`/catalogo/${c.slug}/`}
+              class="inline-flex items-center rounded-lg border border-primary px-4 py-2 text-sm font-semibold text-primary hover:bg-primary hover:text-white"
+            >
+              {c.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="mt-6">
+        <a href="/" class="text-primary underline underline-offset-4">Volver al inicio</a>
+      </p>
+    </Container>
   </article>
 </BaseLayout>

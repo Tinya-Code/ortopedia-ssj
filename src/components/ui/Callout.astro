@@ -1,0 +1,20 @@
+---
+// Aviso destacado (mejoras §5.3): plazos, IGV, avisos legales y médicos.
+// role="note" para que los lectores de pantalla lo anuncien como nota.
+interface Props {
+  tone?: 'info' | 'warning' | 'legal';
+  title?: string;
+}
+const { tone = 'info', title } = Astro.props;
+const tones = {
+  info: 'border-primary bg-primary/5',
+  warning: 'border-warning bg-warning/5',
+  legal: 'border-neutral/40 bg-neutral/5',
+};
+---
+<aside role="note" class:list={['rounded-card border-l-4 p-4 text-sm text-neutral', tones[tone]]}>
+  {title && <p class="font-semibold text-ink">{title}</p>}
+  <div class:list={[title && 'mt-2']}>
+    <slot />
+  </div>
+</aside>

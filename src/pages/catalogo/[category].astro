@@ -7,6 +7,8 @@ import WhatsAppButton from '../../components/ui/WhatsAppButton.astro';
 import { breadcrumbSchema, itemListSchema } from '../../lib/schema';
 import { categoryWhatsappMessage } from '../../lib/whatsapp';
 import { SITE } from '../../lib/site';
+import Container from '../../components/ui/Container.astro';
+import PageHeader from '../../components/ui/PageHeader.astro';
 
 export async function getStaticPaths() {
   // api.products.byCategory ya excluye los productos sin registro sanitario,
@@ -36,26 +38,27 @@ const abs = (p: string) => new URL(p, SITE.url).href;
 >
   <Breadcrumbs items={crumbs} />
 
-  <section class="mx-auto max-w-6xl px-4 py-8">
-    <h1 class="font-display text-3xl font-semibold text-ink">{cat.name}</h1>
-    <p class="mt-4 max-w-prose text-neutral">{cat.intro}</p>
+  <section class="pb-8">
+    <Container>
+      <PageHeader title={cat.name} lead={cat.intro} />
 
-    <div class="mt-8">
-      {products.length > 0 ? (
-        <ProductGrid products={products} />
-      ) : (
-        <p class="rounded-xl border border-neutral/20 p-6 text-neutral">
-          Por el momento no hay productos publicados en esta categoría. Consultanos por WhatsApp
-          para conocer disponibilidad.
-        </p>
-      )}
-    </div>
+      <div class="mt-6">
+        {products.length > 0 ? (
+          <ProductGrid products={products} />
+        ) : (
+          <p class="rounded-xl border border-neutral/20 p-6 text-neutral">
+            Por el momento no hay productos publicados en esta categoría. Consultanos por WhatsApp
+            para conocer disponibilidad.
+          </p>
+        )}
+      </div>
 
-    <div class="mt-8">
-      <WhatsAppButton
-        message={categoryWhatsappMessage(cat.name)}
-        label="Asesoría por WhatsApp"
-      />
-    </div>
+      <div class="mt-8">
+        <WhatsAppButton
+          message={categoryWhatsappMessage(cat.name)}
+          label="Asesoría por WhatsApp"
+        />
+      </div>
+    </Container>
   </section>
 </BaseLayout>

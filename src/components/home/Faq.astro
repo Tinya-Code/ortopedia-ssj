@@ -1,12 +1,14 @@
 ---
 // El JSON-LD (faqSchema) lo arma pages/index.astro y lo pasa a BaseLayout; aquí solo HTML.
+import Container from '../ui/Container.astro';
+
 interface Props {
   items: { q: string; a: string }[];
 }
 const { items } = Astro.props;
 ---
 <section class="py-12">
-  <div class="mx-auto max-w-3xl px-4">
+  <Container size="narrow">
     <h2 class="font-display text-3xl font-semibold text-ink">Preguntas frecuentes</h2>
     <dl class="mt-6 divide-y divide-neutral/20">
       {items.map((it) => (
@@ -16,5 +18,5 @@ const { items } = Astro.props;
         </div>
       ))}
     </dl>
-  </div>
+  </Container>
 </section>

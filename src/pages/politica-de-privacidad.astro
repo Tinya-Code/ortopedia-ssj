@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE, LEGAL } from '../lib/site';
+import Container from '../components/ui/Container.astro';
+import PageHeader from '../components/ui/PageHeader.astro';
 
 const title = 'Política de privacidad';
 const description =
@@ -8,86 +10,88 @@ const description =
 ---
 
 <BaseLayout {title} {description}>
-  <article class="mx-auto max-w-3xl px-4 py-10">
-    <h1 class="font-display text-3xl font-semibold text-ink">Política de privacidad</h1>
-    <!-- TODO Fase 9: [VALIDAR] inscripción del banco de datos ante la Autoridad Nacional de
-         Protección de Datos Personales (legal.md 8.4) y plazos de respuesta con el abogado. -->
+  <article class="pb-10">
+    <Container size="narrow">
+      <PageHeader title="Política de privacidad" />
+      <!-- TODO Fase 9: [VALIDAR] inscripción del banco de datos ante la Autoridad Nacional de
+           Protección de Datos Personales (legal.md 8.4) y plazos de respuesta con el abogado. -->
 
-    <section class="mt-8">
-      <h2 class="font-display text-xl font-semibold text-ink">1. Quién es responsable de tus datos</h2>
-      <p class="mt-3 text-neutral">
-        El titular del banco de datos es <strong class="text-primary">{LEGAL.legalName}</strong>,
-        RUC {LEGAL.ruc}, con domicilio en {LEGAL.fiscalAddress}. Contacto: {SITE.email} y {SITE.phone}.
-      </p>
-    </section>
+      <section class="mt-8">
+        <h2 class="font-display text-xl font-semibold text-ink">1. Quién es responsable de tus datos</h2>
+        <p class="mt-3 text-neutral">
+          El titular del banco de datos es <strong class="text-primary">{LEGAL.legalName}</strong>,
+          RUC {LEGAL.ruc}, con domicilio en {LEGAL.fiscalAddress}. Contacto: {SITE.email} y {SITE.phone}.
+        </p>
+      </section>
 
-    <section class="mt-8">
-      <h2 class="font-display text-xl font-semibold text-ink">2. Qué datos recogemos</h2>
-      <p class="mt-3 text-neutral">
-        Este sitio no tiene formularios ni compras en línea: solo publica catálogo e información.
-        Cuando nos escribes por WhatsApp, correo o teléfono, recibimos los datos que decides
-        compartir para atenderte (por ejemplo, tu nombre, teléfono, medidas o la descripción de lo
-        que necesitas).
-      </p>
-      <p class="mt-3 text-neutral">
-        No pedimos por WhatsApp más información sobre tu salud de la estrictamente necesaria para
-        recomendarte un producto o preparar tu pedido.
-      </p>
-    </section>
+      <section class="mt-8">
+        <h2 class="font-display text-xl font-semibold text-ink">2. Qué datos recogemos</h2>
+        <p class="mt-3 text-neutral">
+          Este sitio no tiene formularios ni compras en línea: solo publica catálogo e información.
+          Cuando nos escribes por WhatsApp, correo o teléfono, recibimos los datos que decides
+          compartir para atenderte (por ejemplo, tu nombre, teléfono, medidas o la descripción de lo
+          que necesitas).
+        </p>
+        <p class="mt-3 text-neutral">
+          No pedimos por WhatsApp más información sobre tu salud de la estrictamente necesaria para
+          recomendarte un producto o preparar tu pedido.
+        </p>
+      </section>
 
-    <section class="mt-8">
-      <h2 class="font-display text-xl font-semibold text-ink">3. Para qué usamos tus datos</h2>
-      <ul class="mt-3 list-disc space-y-1 pl-6 text-neutral">
-        <li>Responder consultas y preparar cotizaciones.</li>
-        <li>Gestionar pedidos, entregas y comprobantes.</li>
-        <li>Atender reclamos y quejas a través del Libro de Reclamaciones.</li>
-        <li>Cumplir obligaciones legales y tributarias.</li>
-      </ul>
-    </section>
+      <section class="mt-8">
+        <h2 class="font-display text-xl font-semibold text-ink">3. Para qué usamos tus datos</h2>
+        <ul class="mt-3 list-disc space-y-1 pl-6 text-neutral">
+          <li>Responder consultas y preparar cotizaciones.</li>
+          <li>Gestionar pedidos, entregas y comprobantes.</li>
+          <li>Atender reclamos y quejas a través del Libro de Reclamaciones.</li>
+          <li>Cumplir obligaciones legales y tributarias.</li>
+        </ul>
+      </section>
 
-    <section class="mt-8">
-      <h2 class="font-display text-xl font-semibold text-ink">4. Durante cuánto tiempo los conservamos</h2>
-      <p class="mt-3 text-neutral">
-        Conservamos tus datos mientras atendemos tu consulta o pedido y, después, durante los plazos
-        que exige la ley. Las hojas de reclamación se guardan por al menos dos años desde su registro.
-      </p>
-    </section>
+      <section class="mt-8">
+        <h2 class="font-display text-xl font-semibold text-ink">4. Durante cuánto tiempo los conservamos</h2>
+        <p class="mt-3 text-neutral">
+          Conservamos tus datos mientras atendemos tu consulta o pedido y, después, durante los plazos
+          que exige la ley. Las hojas de reclamación se guardan por al menos dos años desde su registro.
+        </p>
+      </section>
 
-    <section class="mt-8">
-      <h2 class="font-display text-xl font-semibold text-ink">5. Con quién los compartimos</h2>
-      <p class="mt-3 text-neutral">
-        No vendemos tus datos personales. Solo los comunicamos a los proveedores necesarios para
-        prestarte el servicio (empresa de envíos, plataforma de mensajería o correo que uses para
-        escribirnos) y a las autoridades cuando la ley lo exige.
-      </p>
-    </section>
+      <section class="mt-8">
+        <h2 class="font-display text-xl font-semibold text-ink">5. Con quién los compartimos</h2>
+        <p class="mt-3 text-neutral">
+          No vendemos tus datos personales. Solo los comunicamos a los proveedores necesarios para
+          prestarte el servicio (empresa de envíos, plataforma de mensajería o correo que uses para
+          escribirnos) y a las autoridades cuando la ley lo exige.
+        </p>
+      </section>
 
-    <section class="mt-8">
-      <h2 class="font-display text-xl font-semibold text-ink">6. Cómo ejercer tus derechos ARCO</h2>
-      <p class="mt-3 text-neutral">
-        Puedes solicitar el acceso, rectificación, cancelación u oposición al tratamiento de tus
-        datos, así como revocar tu consentimiento, escribiendo a{' '}
-        <a href={`mailto:${SITE.email}`} class="text-primary underline underline-offset-4">{SITE.email}</a>{' '}
-        con el asunto <em>Derechos ARCO</em>, indicando tu nombre y el derecho que quieres ejercer.
-        Responderemos en el plazo que marca la normativa vigente.
-      </p>
-    </section>
+      <section class="mt-8">
+        <h2 class="font-display text-xl font-semibold text-ink">6. Cómo ejercer tus derechos ARCO</h2>
+        <p class="mt-3 text-neutral">
+          Puedes solicitar el acceso, rectificación, cancelación u oposición al tratamiento de tus
+          datos, así como revocar tu consentimiento, escribiendo a{' '}
+          <a href={`mailto:${SITE.email}`} class="text-primary underline underline-offset-4">{SITE.email}</a>{' '}
+          con el asunto <em>Derechos ARCO</em>, indicando tu nombre y el derecho que quieres ejercer.
+          Responderemos en el plazo que marca la normativa vigente.
+        </p>
+      </section>
 
-    <section class="mt-8">
-      <h2 class="font-display text-xl font-semibold text-ink">7. Cookies y analítica</h2>
-      <p class="mt-3 text-neutral">
-        Actualmente este sitio no instala cookies de seguimiento ni píxeles publicitarios. Si en el
-        futuro incorporamos herramientas de medición, avisaremos aquí y habilitaremos un aviso de
-        cookies con consentimiento previo.
-      </p>
-    </section>
+      <section class="mt-8">
+        <h2 class="font-display text-xl font-semibold text-ink">7. Cookies y analítica</h2>
+        <p class="mt-3 text-neutral">
+          Actualmente este sitio no instala cookies de seguimiento ni píxeles publicitarios. Si en el
+          futuro incorporamos herramientas de medición, avisaremos aquí y habilitaremos un aviso de
+          cookies con consentimiento previo.
+        </p>
+      </section>
 
-    <section class="mt-8">
-      <h2 class="font-display text-xl font-semibold text-ink">8. Cambios a esta política</h2>
-      <p class="mt-3 text-neutral">
-        Publicaremos cualquier actualización en esta página. Para dudas sobre el tratamiento de tus
-        datos, escríbenos a {SITE.email} o por WhatsApp.
-      </p>
-    </section>
+      <section class="mt-8">
+        <h2 class="font-display text-xl font-semibold text-ink">8. Cambios a esta política</h2>
+        <p class="mt-3 text-neutral">
+          Publicaremos cualquier actualización en esta página. Para dudas sobre el tratamiento de tus
+          datos, escríbenos a {SITE.email} o por WhatsApp.
+        </p>
+      </section>
+    </Container>
   </article>
 </BaseLayout>

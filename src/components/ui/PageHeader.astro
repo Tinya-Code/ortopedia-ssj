@@ -1,0 +1,13 @@
+---
+// Cabecera común de las páginas interiores (mejoras §5.2).
+// Aporta el único <h1> de la página + lead opcional en medida angosta.
+interface Props {
+  title: string;
+  lead?: string;
+}
+const { title, lead } = Astro.props;
+---
+<header class="pt-8 pb-6">
+  <h1 class="font-display text-3xl font-semibold text-ink">{title}</h1>
+  {lead && <p class="mt-4 max-w-prose text-neutral">{lead}</p>}
+</header>

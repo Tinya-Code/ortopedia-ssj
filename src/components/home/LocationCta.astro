@@ -4,42 +4,45 @@ import { SITE } from '../../lib/site';
 import { formatHours } from '../../lib/hours';
 import { generalWhatsappMessage } from '../../lib/whatsapp';
 import WhatsAppButton from '../ui/WhatsAppButton.astro';
+import Container from '../ui/Container.astro';
 
 const hoursLabel = formatHours();
 const mapSrc = `https://maps.google.com/maps?q=${SITE.geo.lat},${SITE.geo.lng}&hl=es&z=15&output=embed`;
 ---
 <section id="ubicacion" class="bg-neutral/5 py-12">
-  <div class="mx-auto grid max-w-6xl gap-8 px-4 md:grid-cols-2">
-    <div>
-      <h2 class="font-display text-3xl font-semibold text-ink">Ubicación y contacto</h2>
-      <address class="mt-4 not-italic text-neutral">
-        <p>
-          <strong class="text-primary">Dirección</strong><br />
-          {SITE.address.street}, {SITE.address.city}
-        </p>
-        <p class="mt-3">
-          <strong class="text-primary">Teléfono</strong><br />
-          <a href={`tel:${SITE.phone.replace(/\s/g, '')}`} class="hover:text-primary">{SITE.phone}</a>
-        </p>
-        <p class="mt-3">
-          <strong class="text-primary">Horario</strong><br />
-          {hoursLabel}
-        </p>
-        <p class="mt-3">
-          <strong class="text-primary">Correo</strong><br />
-          <a href={`mailto:${SITE.email}`} class="hover:text-primary">{SITE.email}</a>
-        </p>
-      </address>
-      <div class="mt-6">
-        <WhatsAppButton message={generalWhatsappMessage()} label="Escríbenos por WhatsApp" />
+  <Container>
+    <div class="grid gap-8 md:grid-cols-2">
+      <div>
+        <h2 class="font-display text-3xl font-semibold text-ink">Ubicación y contacto</h2>
+        <address class="mt-4 not-italic text-neutral">
+          <p>
+            <strong class="text-primary">Dirección</strong><br />
+            {SITE.address.street}, {SITE.address.city}
+          </p>
+          <p class="mt-3">
+            <strong class="text-primary">Teléfono</strong><br />
+            <a href={`tel:${SITE.phone.replace(/\s/g, '')}`} class="hover:text-primary">{SITE.phone}</a>
+          </p>
+          <p class="mt-3">
+            <strong class="text-primary">Horario</strong><br />
+            {hoursLabel}
+          </p>
+          <p class="mt-3">
+            <strong class="text-primary">Correo</strong><br />
+            <a href={`mailto:${SITE.email}`} class="hover:text-primary">{SITE.email}</a>
+          </p>
+        </address>
+        <div class="mt-6">
+          <WhatsAppButton message={generalWhatsappMessage()} label="Escríbenos por WhatsApp" />
+        </div>
       </div>
+      <iframe
+        src={mapSrc}
+        title={`Mapa de ${SITE.name} en ${SITE.address.city}`}
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        class="h-80 w-full rounded-xl border-0 md:h-full"
+      ></iframe>
     </div>
-    <iframe
-      src={mapSrc}
-      title={`Mapa de ${SITE.name} en ${SITE.address.city}`}
-      loading="lazy"
-      referrerpolicy="no-referrer-when-downgrade"
-      class="h-80 w-full rounded-xl border-0 md:h-full"
-    ></iframe>
-  </div>
+  </Container>
 </section>

@@ -2,6 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE, LEGAL } from '../lib/site';
 import { formatHours } from '../lib/hours';
+import Container from '../components/ui/Container.astro';
+import PageHeader from '../components/ui/PageHeader.astro';
 
 const title = 'Términos y condiciones';
 const description =
@@ -10,105 +12,107 @@ const hoursText = formatHours();
 ---
 
 <BaseLayout {title} {description}>
-  <article class="mx-auto max-w-3xl px-4 py-10">
-    <h1 class="font-display text-3xl font-semibold text-ink">Términos y condiciones</h1>
-    <p class="mt-2 text-sm text-neutral">Última actualización: vigente a partir de la publicación de este sitio.</p>
+  <article class="pb-10">
+    <Container size="narrow">
+      <PageHeader title="Términos y condiciones" />
+      <p class="mt-2 text-sm text-neutral">Última actualización: vigente a partir de la publicación de este sitio.</p>
 
-    <section class="mt-8">
-      <h2 class="font-display text-xl font-semibold text-ink">1. Identificación del comercio</h2>
-      <ul class="mt-3 list-disc space-y-1 pl-6 text-neutral">
-        <li><strong class="text-primary">Razón social:</strong> {LEGAL.legalName}</li>
-        <li><strong class="text-primary">RUC:</strong> {LEGAL.ruc}</li>
-        <li><strong class="text-primary">Domicilio fiscal:</strong> {LEGAL.fiscalAddress}</li>
-        <li><strong class="text-primary">Teléfono:</strong> {SITE.phone}</li>
-        <li><strong class="text-primary">Correo:</strong> {SITE.email}</li>
-        <li><strong class="text-primary">Horario de atención:</strong> {hoursText}</li>
-      </ul>
-    </section>
+      <section class="mt-8">
+        <h2 class="font-display text-xl font-semibold text-ink">1. Identificación del comercio</h2>
+        <ul class="mt-3 list-disc space-y-1 pl-6 text-neutral">
+          <li><strong class="text-primary">Razón social:</strong> {LEGAL.legalName}</li>
+          <li><strong class="text-primary">RUC:</strong> {LEGAL.ruc}</li>
+          <li><strong class="text-primary">Domicilio fiscal:</strong> {LEGAL.fiscalAddress}</li>
+          <li><strong class="text-primary">Teléfono:</strong> {SITE.phone}</li>
+          <li><strong class="text-primary">Correo:</strong> {SITE.email}</li>
+          <li><strong class="text-primary">Horario de atención:</strong> {hoursText}</li>
+        </ul>
+      </section>
 
-    <section class="mt-8">
-      <h2 class="font-display text-xl font-semibold text-ink">2. Precios</h2>
-      <p class="mt-3 text-neutral">
-        Todos los precios están expresados en soles ({LEGAL.currency}) e incluyen el IGV y los
-        demás cargos, por lo que el precio publicado en la ficha es el precio final. Este sitio no
-        muestra precios sin impuestos. Los precios pueden modificarse sin previo aviso; el precio
-        válido es el que confirmamos contigo al momento de concretar el pedido.
-      </p>
-    </section>
+      <section class="mt-8">
+        <h2 class="font-display text-xl font-semibold text-ink">2. Precios</h2>
+        <p class="mt-3 text-neutral">
+          Todos los precios están expresados en soles ({LEGAL.currency}) e incluyen el IGV y los
+          demás cargos, por lo que el precio publicado en la ficha es el precio final. Este sitio no
+          muestra precios sin impuestos. Los precios pueden modificarse sin previo aviso; el precio
+          válido es el que confirmamos contigo al momento de concretar el pedido.
+        </p>
+      </section>
 
-    <section class="mt-8">
-      <h2 class="font-display text-xl font-semibold text-ink">3. Cómo comprar</h2>
-      <ol class="mt-3 list-decimal space-y-2 pl-6 text-neutral">
-        <li>Elegís el producto en el catálogo y verificás talla, stock y precio en su ficha.</li>
-        <li>Nos escribís por WhatsApp para confirmar disponibilidad, datos de entrega y medio de pago.</li>
-        <li>Coordinamos el pago y la entrega o envío, y te enviamos el comprobante de la venta.</li>
-      </ol>
-      <!-- TODO Fase 9: listar los medios de pago reales que acepta el negocio (efectivo,
-           transferencia, billeteras digitales, tarjetas) cuando estén confirmados. -->
-      <p class="mt-3 text-neutral">
-        Este sitio no procesa pagos en línea: la compra se coordina directamente con el equipo y el
-        medio de pago se acuerda antes de completar el pedido.
-      </p>
-    </section>
+      <section class="mt-8">
+        <h2 class="font-display text-xl font-semibold text-ink">3. Cómo comprar</h2>
+        <ol class="mt-3 list-decimal space-y-2 pl-6 text-neutral">
+          <li>Elegís el producto en el catálogo y verificás talla, stock y precio en su ficha.</li>
+          <li>Nos escribís por WhatsApp para confirmar disponibilidad, datos de entrega y medio de pago.</li>
+          <li>Coordinamos el pago y la entrega o envío, y te enviamos el comprobante de la venta.</li>
+        </ol>
+        <!-- TODO Fase 9: listar los medios de pago reales que acepta el negocio (efectivo,
+             transferencia, billeteras digitales, tarjetas) cuando estén confirmados. -->
+        <p class="mt-3 text-neutral">
+          Este sitio no procesa pagos en línea: la compra se coordina directamente con el equipo y el
+          medio de pago se acuerda antes de completar el pedido.
+        </p>
+      </section>
 
-    <section class="mt-8">
-      <h2 class="font-display text-xl font-semibold text-ink">4. Envíos, cobertura y plazos</h2>
-      <p class="mt-3 text-neutral">
-        La cobertura, el costo y el plazo de envío dependen del destino y se te informan antes de
-        concretar el pedido. Una vez coordinado el envío, te avisamos por WhatsApp el estado de la
-        entrega. Si el producto está marcado como <em>por encargo</em>, el plazo también se confirma
-        antes de pagar.
-      </p>
-    </section>
+      <section class="mt-8">
+        <h2 class="font-display text-xl font-semibold text-ink">4. Envíos, cobertura y plazos</h2>
+        <p class="mt-3 text-neutral">
+          La cobertura, el costo y el plazo de envío dependen del destino y se te informan antes de
+          concretar el pedido. Una vez coordinado el envío, te avisamos por WhatsApp el estado de la
+          entrega. Si el producto está marcado como <em>por encargo</em>, el plazo también se confirma
+          antes de pagar.
+        </p>
+      </section>
 
-    <section class="mt-8">
-      <h2 class="font-display text-xl font-semibold text-ink">5. Comprobante electrónico</h2>
-      <p class="mt-3 text-neutral">
-        Emitimos <strong class="text-primary">comprobante de pago electrónico (boleta o factura)</strong>{' '}
-        en todas nuestras ventas. Si necesitas factura, indícanos los datos tributarios al confirmar
-        el pedido para emitirla correctamente.
-      </p>
-    </section>
+      <section class="mt-8">
+        <h2 class="font-display text-xl font-semibold text-ink">5. Comprobante electrónico</h2>
+        <p class="mt-3 text-neutral">
+          Emitimos <strong class="text-primary">comprobante de pago electrónico (boleta o factura)</strong>{' '}
+          en todas nuestras ventas. Si necesitas factura, indícanos los datos tributarios al confirmar
+          el pedido para emitirla correctamente.
+        </p>
+      </section>
 
-    <section class="mt-8">
-      <h2 class="font-display text-xl font-semibold text-ink">6. Disponibilidad y registro sanitario</h2>
-      <p class="mt-3 text-neutral">
-        Publicamos únicamente productos con registro sanitario verificado, y cada ficha muestra su
-        número de registro y titular. Si un producto se agota, mantenemos su página con la
-        disponibilidad actualizada y te ofrecemos alternativas por WhatsApp.
-      </p>
-    </section>
+      <section class="mt-8">
+        <h2 class="font-display text-xl font-semibold text-ink">6. Disponibilidad y registro sanitario</h2>
+        <p class="mt-3 text-neutral">
+          Publicamos únicamente productos con registro sanitario verificado, y cada ficha muestra su
+          número de registro y titular. Si un producto se agota, mantenemos su página con la
+          disponibilidad actualizada y te ofrecemos alternativas por WhatsApp.
+        </p>
+      </section>
 
-    <section class="mt-8">
-      <h2 class="font-display text-xl font-semibold text-ink">7. Reclamos</h2>
-      <p class="mt-3 text-neutral">
-        Puedes registrar tu reclamo o queja en nuestro{' '}
-        <a href="/libro-de-reclamaciones/" class="text-primary underline underline-offset-4">
-          Libro de Reclamaciones
-        </a>. Respondemos en un máximo de {LEGAL.reclamosResponseDays} días hábiles desde el
-        registro de tu hoja.
-      </p>
-    </section>
+      <section class="mt-8">
+        <h2 class="font-display text-xl font-semibold text-ink">7. Reclamos</h2>
+        <p class="mt-3 text-neutral">
+          Puedes registrar tu reclamo o queja en nuestro{' '}
+          <a href="/libro-de-reclamaciones/" class="text-primary underline underline-offset-4">
+            Libro de Reclamaciones
+          </a>. Respondemos en un máximo de {LEGAL.reclamosResponseDays} días hábiles desde el
+          registro de tu hoja.
+        </p>
+      </section>
 
-    <section class="mt-8">
-      <h2 class="font-display text-xl font-semibold text-ink">8. Cambios, devoluciones y datos personales</h2>
-      <p class="mt-3 text-neutral">
-        Las condiciones de cambio, devolución y garantía están detalladas en nuestra{' '}
-        <a href="/cambios-y-devoluciones/" class="text-primary underline underline-offset-4">
-          política de cambios y devoluciones
-        </a>. El tratamiento de tus datos personales se describe en la{' '}
-        <a href="/politica-de-privacidad/" class="text-primary underline underline-offset-4">
-          política de privacidad
-        </a>.
-      </p>
-    </section>
+      <section class="mt-8">
+        <h2 class="font-display text-xl font-semibold text-ink">8. Cambios, devoluciones y datos personales</h2>
+        <p class="mt-3 text-neutral">
+          Las condiciones de cambio, devolución y garantía están detalladas en nuestra{' '}
+          <a href="/cambios-y-devoluciones/" class="text-primary underline underline-offset-4">
+            política de cambios y devoluciones
+          </a>. El tratamiento de tus datos personales se describe en la{' '}
+          <a href="/politica-de-privacidad/" class="text-primary underline underline-offset-4">
+            política de privacidad
+          </a>.
+        </p>
+      </section>
 
-    <section class="mt-8">
-      <h2 class="font-display text-xl font-semibold text-ink">9. Modificaciones</h2>
-      <p class="mt-3 text-neutral">
-        Podemos actualizar estas condiciones; la versión vigente es la publicada en esta página. Si
-        tienes dudas, escríbenos por WhatsApp o al correo {SITE.email}.
-      </p>
-    </section>
+      <section class="mt-8">
+        <h2 class="font-display text-xl font-semibold text-ink">9. Modificaciones</h2>
+        <p class="mt-3 text-neutral">
+          Podemos actualizar estas condiciones; la versión vigente es la publicada en esta página. Si
+          tienes dudas, escríbenos por WhatsApp o al correo {SITE.email}.
+        </p>
+      </section>
+    </Container>
   </article>
 </BaseLayout>

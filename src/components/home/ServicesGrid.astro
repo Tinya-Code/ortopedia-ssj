@@ -1,6 +1,8 @@
 ---
 // Los datos viven en pages/index.astro (capa smart), no en data/.
 // id="servicios" es obligatorio: el header enlaza a /#servicios.
+import Container from '../ui/Container.astro';
+
 interface Service {
   title: string;
   text: string;
@@ -12,13 +14,13 @@ interface Props {
 const { services } = Astro.props;
 ---
 <section id="servicios" class="bg-neutral/5 py-12">
-  <div class="mx-auto max-w-6xl px-4">
+  <Container>
     <h2 class="font-display text-3xl font-semibold text-ink">Servicios</h2>
-    <p class="mt-2 max-w-prose text-neutral">
+    <p class="mt-4 max-w-prose text-neutral">
       Acompañamiento personalizado en cada etapa: desde la evaluación hasta la elección del
       producto ortopédico adecuado.
     </p>
-    <ul class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <ul class="mt-6 grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {services.map((s) => (
         <li>
           <a
@@ -35,5 +37,5 @@ const { services } = Astro.props;
       ))}
     </ul>
     {/* TODO Fase 9+: si existen páginas /servicios/[slug]/, apuntar href ahí en vez de WhatsApp. */}
-  </div>
+  </Container>
 </section>
