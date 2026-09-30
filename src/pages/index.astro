@@ -16,6 +16,7 @@ import { faqSchema } from '../lib/schema';
 import { whatsappLink, categoryWhatsappMessage, generalWhatsappMessage } from '../lib/whatsapp';
 import { SITE, LEGAL } from '../lib/site';
 import { formatHours } from '../lib/hours';
+import type { IconName } from '../components/icons/index';
 
 const title = `Centro ortopédico en ${SITE.address.city}`;
 const description =
@@ -24,36 +25,33 @@ const description =
 const categories = api.categories.list();
 
 // Datos de la sección: viven en la página (smart), no en data/
-const services = [
+const services: { title: string; text: string; href: string; icon: IconName }[] = [
   {
     title: 'Evaluación ortopédica',
     text: 'Valoración personalizada de tu caso y recomendación de producto según tus medidas.',
     href: whatsappLink(categoryWhatsappMessage('Evaluación ortopédica')),
-    // clipboard-check
-    icon: 'M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M14 2v4h4M9 14l2 2 4-4',
+    icon: 'clipboard-check',
   },
   {
     title: 'Ortesis a medida',
     text: 'Soportes y ortesis adaptados a tu cuerpo y a tu actividad diaria.',
     href: whatsappLink(categoryWhatsappMessage('Ortesis a medida')),
-    // ruler
-    icon: 'M21.3 8.7 8.7 21.3a1 1 0 0 1-1.4 0l-4.6-4.6a1 1 0 0 1 0-1.4L15.3 2.7a1 1 0 0 1 1.4 0l4.6 4.6a1 1 0 0 1 0 1.4Zm-13.84.3 2 2m1-5 2 2m1-5 2 2',
+    icon: 'ruler',
   },
   {
     title: 'Rehabilitación y asesoría',
     text: 'Acompañamiento y orientación sobre el uso correcto de cada producto.',
     href: whatsappLink(categoryWhatsappMessage('Rehabilitación y asesoría')),
-    // activity
-    icon: 'M22 12h-4l-3 9L9 3l-3 9H2',
+    icon: 'activity',
   },
 ];
 
 // Hechos verificables (§5.8): nada de cifras inventadas ni testimonios.
-const trustItems = [
-  { icon: 'M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1zM9 12l2 2 4-4', label: 'Registro sanitario visible en cada ficha' },
-  { icon: 'M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1zM16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8M12 17.5v-11', label: 'Boleta o factura electrónica' },
-  { icon: 'M7.9 20A9 9 0 1 0 4 16.1L2 22Z', label: 'Atención por WhatsApp' },
-  { icon: 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20ZM12 6v6l4 2', label: `Horario: ${formatHours()}` },
+const trustItems: { icon: IconName; label: string }[] = [
+  { icon: 'shield-check', label: 'Registro sanitario visible en cada ficha' },
+  { icon: 'receipt', label: 'Boleta o factura electrónica' },
+  { icon: 'message-circle', label: 'Atención por WhatsApp' },
+  { icon: 'clock', label: `Horario: ${formatHours()}` },
 ];
 
 // Pasos de compra (§5.7) — datos en la página, no en data/.

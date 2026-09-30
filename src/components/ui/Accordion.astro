@@ -2,6 +2,8 @@
 // mejoras.md §5.6 — acordeón nativo sin JS: <details>/<summary> + chevron CSS
 // que rota con group-open. Mismo contrato de datos que el JSON-LD FAQPage que
 // arma la página, así HTML visible y schema siguen coincidiendo.
+import ChevronDown from '../icons/ChevronDown.astro';
+
 interface Props {
   items: { q: string; a: string }[];
 }
@@ -14,18 +16,9 @@ const { items } = Astro.props;
         class="flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 py-3 text-sm font-semibold text-ink [&::-webkit-details-marker]:hidden"
       >
         {it.q}
-        <svg
-          aria-hidden="true"
+        <ChevronDown
           class="size-5 shrink-0 text-primary transition-transform group-open:rotate-180"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="m6 9 6 6 6-6" />
-        </svg>
+        />
       </summary>
       <div class="pb-4 pr-8 text-neutral">{it.a}</div>
     </details>
