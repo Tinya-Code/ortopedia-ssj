@@ -50,11 +50,13 @@ Extras por fase que lo requiera (se listan en su criterio).
 Objetivo: tener el sitio actual (Fases 0–9) en un commit antes de tocar UI, para poder
 revertir cada mejora sin arrastrar trabajo anterior.
 
-- [ ] `pnpm build && pnpm check` en verde sobre el estado actual.
-- [ ] Commit único de todo el trabajo existente (hoy: **33 archivos** sin commitear, solo `Initial commit`), sin `.env` ni artefactos de build.
-- [ ] Mensaje: `feat(site): sitio estático completo — 17 rutas, SEO, legales y libro de reclamaciones`.
+- [x] `pnpm build && pnpm check` en verde sobre el estado actual.
+- [x] Commit único de todo el trabajo existente (hoy: **33 archivos** sin commitear, solo `Initial commit`), sin `.env` ni artefactos de build.
+- [x] Mensaje: `feat(site): sitio estático completo — 17 rutas, SEO, legales y libro de reclamaciones`.
 
-**Criterio de salida**: ✅ `git status` limpio y `git log` muestra la línea base. Si algo de M1–M9 sale mal, el rollback es volver a este commit.
+**Criterio de salida**: ✅ Cumplido — `fa40505`, 73 archivos (+5675 / −265), `git status` limpio,
+`pnpm build` 17 páginas y `pnpm check` 0 errores (42 archivos) antes del commit; revisión previa:
+nada de `.env`/`dist`/`node_modules`/`.astro`/`.atl` en el stage.
 **Rollback**: revert del commit.
 
 ---
