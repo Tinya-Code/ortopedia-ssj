@@ -6,12 +6,15 @@ interface Props {
   label?: string;
   variant?: 'primary' | 'floating' | 'white';
   eventName?: string; // para analytics
+  /** Solo variante flotante: la oculta en móvil cuando la reemplaza StickyProductBar. */
+  mobileHidden?: boolean;
 }
 const {
   message,
   label = 'Consultar por WhatsApp',
   variant = 'primary',
   eventName = 'whatsapp_click',
+  mobileHidden = false,
 } = Astro.props;
 const href = whatsappLink(message);
 ---
@@ -22,7 +25,9 @@ const href = whatsappLink(message);
       ? 'inline-flex items-center gap-2 rounded-lg bg-[#25d366] px-5 py-3 text-sm font-semibold text-white hover:bg-[#1ebe5b]'
       : variant === 'white'
         ? 'inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-semibold text-primary hover:bg-neutral/10'
-        : 'fixed bottom-4 right-4 z-50 inline-flex items-center gap-2 rounded-full bg-[#25d366] px-5 py-3 text-sm font-semibold text-white shadow-lg hover:bg-[#1ebe5b]',
+        : `fixed bottom-4 right-4 z-50 ${
+            mobileHidden ? 'hidden md:flex' : 'inline-flex'
+          } items-center gap-2 rounded-full bg-[#25d366] px-5 py-3 text-sm font-semibold text-white shadow-lg hover:bg-[#1ebe5b]`,
   ]}
   target="_blank"
   rel="noopener noreferrer"

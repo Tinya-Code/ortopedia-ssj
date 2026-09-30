@@ -19,8 +19,19 @@ interface Props {
   type?: 'website' | 'product' | 'article';
   schemas?: Record<string, unknown>[]; // JSON-LD específico de cada página
   noindex?: boolean;
+  /** Oculta el WhatsApp flotante en móvil y reserva el espacio final
+   *  (`pb-24 md:pb-0`): lo usa la ficha de producto con StickyProductBar. */
+  hideFloatingCta?: boolean;
 }
-const { title, description, image, type, schemas = [], noindex } = Astro.props;
+const {
+  title,
+  description,
+  image,
+  type,
+  schemas = [],
+  noindex,
+  hideFloatingCta = false,
+} = Astro.props;
 ---
 <!doctype html>
 <html lang="es">
@@ -32,7 +43,14 @@ const { title, description, image, type, schemas = [], noindex } = Astro.props;
     <SEO {title} {description} {image} {type} {noindex} />
     <JsonLd data={[organizationSchema(), ...schemas]} />
   </head>
-  <body class="flex min-h-screen flex-col bg-white text-neutral">
+  {/* El pb vive en <body> y no en <main>: la barra fija es full-width y, si solo
+      se reservara espacio en main, taparía la última fila del footer. */}
+  <body
+    class:list={[
+      'flex min-h-screen flex-col bg-white text-neutral',
+      hideFloatingCta && 'pb-24 md:pb-0',
+    ]}
+  >
     <SkipLink />
     <Header />
     <main id="main" class="flex-1"><slot /></main>
@@ -40,7 +58,12 @@ const { title, description, image, type, schemas = [], noindex } = Astro.props;
     <!-- Región opcional para CTA específico de la página (p. ej. CTA de campaña) -->
     <slot name="cta" />
     <!-- CTA global de contacto -->
-    <WhatsAppButton variant="floating" label="Escríbenos" message={generalWhatsappMessage()} />
+    <WhatsAppButton
+      variant="floating"
+      label="Escríbenos"
+      message={generalWhatsappMessage()}
+      mobileHidden={hideFloatingCta}
+    />
   </body>
 </html>
 

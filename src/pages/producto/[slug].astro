@@ -8,6 +8,7 @@ import ProductInfo from '../../components/product/ProductInfo.astro';
 import ProductSpecs from '../../components/product/ProductSpecs.astro';
 import RelatedProducts from '../../components/product/RelatedProducts.astro';
 import ProductLegal from '../../components/legal/ProductLegal.astro';
+import StickyProductBar from '../../components/product/StickyProductBar.astro';
 import { breadcrumbSchema, productSchema, faqSchema } from '../../lib/schema';
 import { productWhatsappMessage } from '../../lib/whatsapp';
 import { SITE, LEGAL } from '../../lib/site';
@@ -53,6 +54,7 @@ const abs = (p: string) => new URL(p, SITE.url).href;
   description={seoDescription ?? description}
   image={ogImage.src}
   type="product"
+  hideFloatingCta
   schemas={[
     breadcrumbSchema(crumbs.map((c) => ({ name: c.name, url: abs(c.href ?? Astro.url.pathname) }))),
     productSchema({
@@ -101,4 +103,11 @@ const abs = (p: string) => new URL(p, SITE.url).href;
       />
     </Container>
   </section>
+
+  {/* §6.4: barra fija solo móvil; el flotante global queda oculto en esta página. */}
+  <StickyProductBar
+    {name}
+    {price}
+    whatsappMessage={productWhatsappMessage(name, pageUrl)}
+  />
 </BaseLayout>

@@ -1,0 +1,33 @@
+---
+// mejoras.md §5.9 — CTA de compra siempre a mano en móvil (ficha de producto).
+// Regla de la spec: en esta página el flotante global queda oculto en móvil
+// (BaseLayout `hideFloatingCta` → `hidden md:flex`) para no superponer dos CTA
+// fijos; el body lleva `pb-24 md:pb-0` para que la barra no tape el final.
+import WhatsAppButton from '../ui/WhatsAppButton.astro';
+import PriceTag from '../ui/PriceTag.astro';
+
+interface Props {
+  name: string;
+  price?: number;
+  whatsappMessage: string;
+}
+const { name, price, whatsappMessage } = Astro.props;
+---
+<aside
+  aria-label="Compra rápida"
+  class="fixed inset-x-0 bottom-0 z-40 border-t border-neutral/20 bg-white px-4 py-3 shadow-lg md:hidden"
+>
+  <div class="flex items-center gap-3">
+    <div class="min-w-0 flex-1">
+      <p class="truncate text-sm font-semibold text-ink">{name}</p>
+      <PriceTag {price} class="mt-0.5" />
+    </div>
+    <div class="shrink-0">
+      <WhatsAppButton
+        message={whatsappMessage}
+        label="Consultar"
+        eventName="whatsapp_product"
+      />
+    </div>
+  </div>
+</aside>
