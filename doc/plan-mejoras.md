@@ -207,15 +207,18 @@ Objetivo: CTA de compra siempre a mano en móvil sin pisar el flotante.
 
 Objetivo: terminar las páginas de lectura larga y los estados de contacto/error.
 
-- [ ] **Legales**: fecha "Última actualización" (`text-sm`) bajo el `PageHeader`; índice interno (`<ol>` de anclas) si > 6 secciones; `scroll-mt-20` en cada `h2` con `id`; prosa manual (`space-y-4`, `list-disc pl-6`); `Callout tone="legal"` para avisos clave.
-- [ ] **Libro**: `Callout tone="warning"` para plazo de respuesta + conservación 2 años (reemplaza el `div` de aviso).
-- [ ] **`ReclamacionForm`** (§4): inputs `min-h-11 rounded-lg border-neutral/30 focus:border-primary`, etiquetas siempre visibles (nunca placeholder-as-label) y errores en `text-danger` con `aria-describedby` + `aria-live="polite"` en `data-status`.
-- [ ] **Contacto**: tarjetas de canales `grid sm:grid-cols-3` (WhatsApp · Teléfono · Correo) reutilizando estilo de tarjeta; resolver el TODO del punto de referencia con un dato concreto.
-- [ ] **404**: `PageHeader`, `CategoryChips` (sin activa), `Button` primary "Volver al inicio" + outline "Escribir por WhatsApp"; `noindex` se mantiene.
-- [ ] **P3**: `product/RegistroBadge.astro` ("Registro sanitario N · Clase II") junto al precio en `ProductInfo`.
+- [x] **Legales**: fecha "Última actualización" (`text-sm`) bajo el `PageHeader` en las 3 (fuente única `LEGAL.lastUpdated` en `lib/site.ts`); índice interno `<nav aria-label="Índice">` + `<ol>` de anclas (9 · 8 · 7 secciones, todas > 6); `id` + `scroll-mt-20` en cada `h2`; prosa con `space-y-4` por sección (`mt-3` fuera de las hijas, `list-disc pl-6` intacto); `Callout tone="legal"` ×1 por página (pago en línea en términos, cookies en privacidad, excepción de higiene en cambios).
+- [x] **Libro**: `Callout tone="warning"` con plazo de respuesta + conservación 2 años — **ya cumplido** desde las fases iniciales, verificado (no había `div` de aviso que reemplazar).
+- [x] **`ReclamacionForm`** (§4): 11 controles con `min-h-11 … focus:border-primary` (+ botón `min-h-11` y `hover:bg-primary/90`); etiquetas siempre visibles (0 `placeholder` en el archivo); errores por campo en `text-danger` con `id` + `aria-describedby` (12) y `aria-invalid`/`border-danger` gestionados por JS en español; `noValidate` solo con JS (sin JS sigue la validación nativa que protege el POST); foco al primer inválido y limpieza al tipear; `aria-live="polite"` en `data-status` ya existía.
+- [x] **Contacto**: tarjetas de canales `grid sm:grid-cols-3` (WhatsApp · Teléfono · Correo) con datos desde `lib/site.ts` y estilo de tarjeta; el TODO del punto de referencia se resolvió con un dato concreto de la capa de datos ("Punto de referencia: {street}, {city} ({region})") — el TODO de datos reales queda centralizado en `lib/site.ts`.
+- [x] **404**: `PageHeader` + `CategoryChips` (sin activa, desde M6) + `Button` primary "Volver al inicio" + `Button` outline "Escribir por WhatsApp"; `noindex` intacto.
+- [x] **P3**: `product/RegistroBadge.astro` ("Registro sanitario DM-… · Clase II") junto al precio en `ProductInfo`, con guard por `registroSanitario`.
 
 **Criterio de salida**: gates globales + índice de anclas resuelto en las 3 legales (todos los `href="#…"` con destino) + `grep -c 'noindex' dist/404.html` = 1 + `RegistroBadge` visible en las 6 fichas.
 **Rollback**: revert del commit.
+
+**Evidencia** (commit `ba6a183`): índices con `sin_destino=[]` en las 3 legales (10/9/8 anclas incluido el skip `#main`); `scroll-mt-20` = 9/8/7; fecha = 1 por página; `Callout` (`role="note"`) = 1 por legal; `noindex` en `dist/404.html` = **1** (`<meta name="robots" content="noindex, nofollow">`); `Registro sanitario DM-…` en **6/6** fichas; form en dist: `focus:border-primary` = 11, `aria-describedby` = 12, `text-danger` = 12, `required` = 11, `type=email/tel/number` = 3, 0 `placeholder`, `aria-live` = 1, JS de validación empaquetado en el HTML de la página; contacto sin `TODO` y con los 3 canales (`wa.me`/`tel:`/`mailto:`); build 17 / check 0 / 1 `h1` ×17 / gates globales ok.
+**Bug propio detectado y corregido antes de cerrar**: el primer transform de inputs del form usó el `attrs` previo al `name` y descartó lo posterior — 7 inputs perdieron `required`, `class` y `type=email|tel|number`; se restauró desde `git checkout` y se rehízo el transform conservando atributos byte a byte, ahora con asserts de contenido (no solo de conteo) sobre `required`/`type`/`class`.
 
 ---
 
@@ -250,7 +253,7 @@ Objetivo: cerrar con evidencia y dejar `estado-implementado.md` fiel al nuevo es
 | M5 | `feat(home): CTAs en hero, TrustBar, acordeón FAQ y ritmo de bandas` | revert |
 | M6 | `feat(catalog): chips de categoría y CtaBand en catálogo y categorías` | revert |
 | M7 | `feat(product): barra fija móvil de compra sin solapar el flotante` | revert |
-| M8 | `feat(pages): índice en legales, canales de contacto, chips en 404 y RegistroBadge` | revert |
+| M8 | `feat(pages): índice en legales, canales en contacto, form accesible y RegistroBadge` | revert |
 | M9 | `docs: actualizar estado-implementado tras las mejoras UI/UX` | revert |
 
 ---
