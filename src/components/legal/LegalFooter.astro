@@ -4,7 +4,7 @@ import ReclamacionesLink from './ReclamacionesLink.astro';
 
 // legal.md 9.3 — sin el enlace de "comprobantes y envíos": esa página quedó fuera
 // del plan y su contenido vive en /terminos-y-condiciones/.
-const year = new Date().getFullYear();
+// El © vive en la fila inferior del Footer (mejoras.md §3.4); no se duplica acá.
 const igvNote = LEGAL.pricesIncludeIGV
   ? 'Todos los precios están expresados en soles e incluyen IGV.'
   : 'Todos los precios están expresados en soles y no incluyen IGV.';
@@ -17,13 +17,13 @@ const igvNote = LEGAL.pricesIncludeIGV
   </p>
 
   <nav aria-label="Información legal" class="mt-4 flex flex-wrap gap-x-4 gap-y-2">
-    <a href="/terminos-y-condiciones/" class="hover:text-primary">Términos y condiciones</a>
-    <a href="/politica-de-privacidad/" class="hover:text-primary">Política de privacidad</a>
-    <a href="/cambios-y-devoluciones/" class="hover:text-primary">Cambios y devoluciones</a>
+    <a href="/terminos-y-condiciones/" class="inline-flex min-h-11 items-center hover:text-primary">Términos y condiciones</a>
+    <a href="/politica-de-privacidad/" class="inline-flex min-h-11 items-center hover:text-primary">Política de privacidad</a>
+    <a href="/cambios-y-devoluciones/" class="inline-flex min-h-11 items-center hover:text-primary">Cambios y devoluciones</a>
     <ReclamacionesLink />
   </nav>
 
   <p class="mt-4">
-    {igvNote} Emitimos comprobante de pago electrónico en todas nuestras ventas. © {year} {LEGAL.tradeName}.
+    {igvNote} Emitimos comprobante de pago electrónico en todas nuestras ventas.
   </p>
 </div>
