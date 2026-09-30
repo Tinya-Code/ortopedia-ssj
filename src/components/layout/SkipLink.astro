@@ -1,9 +1,10 @@
 ---
-// §3.2 — primer elemento enfocable de la página. Visible solo con foco de teclado.
+// §3.2 — primer elemento enfocable de la página. Queda fuera de pantalla hasta
+// que recibe foco (solo cambia `top`, sin utilidades en conflicto con sr-only).
 ---
 <a
   href="#main"
-  class="sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
+  class="absolute -top-40 left-4 z-50 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white focus:top-4"
 >
   Saltar al contenido principal
 </a>
