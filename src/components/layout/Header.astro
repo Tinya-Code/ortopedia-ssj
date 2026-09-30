@@ -18,7 +18,7 @@ const path = Astro.url.pathname;
 ---
 <header class="sticky top-0 z-40 h-16 border-b border-neutral/20 bg-white/95 backdrop-blur">
   <div class="mx-auto flex h-full max-w-6xl items-center justify-between gap-x-6 px-4 sm:px-6">
-    <a href="/" class="font-display text-lg font-semibold text-primary">Centro Ortopédico SSJ</a>
+    <a href="/" class="inline-flex min-h-11 items-center font-display text-lg font-semibold text-primary">Centro Ortopédico SSJ</a>
 
     {/* ≥ md: nav horizontal + Libro de Reclamaciones + CTA compacto */}
     <nav aria-label="Navegación principal" class="hidden items-center gap-x-5 md:flex">
@@ -26,7 +26,8 @@ const path = Astro.url.pathname;
         <a
           href={l.href}
           class:list={[
-            'border-b-2 py-1 text-sm',
+            // after:* amplía el área táctil a ≥44px sin mover el subrayado (§5.1)
+            "relative border-b-2 py-1 text-sm after:absolute after:-inset-x-2 after:-inset-y-3 after:content-['']",
             path === l.href
               ? 'border-primary font-semibold text-primary'
               : 'border-transparent text-neutral hover:text-primary',

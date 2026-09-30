@@ -23,7 +23,7 @@ const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${SITE.geo.lat}
           </p>
           <p class="mt-3">
             <strong class="text-primary">Teléfono</strong><br />
-            <a href={`tel:${SITE.phone.replace(/\s/g, '')}`} class="hover:text-primary">{SITE.phone}</a>
+            <a href={`tel:${SITE.phone.replace(/\s/g, '')}`} class="inline-flex min-h-11 items-center hover:text-primary">{SITE.phone}</a>
           </p>
           <p class="mt-3">
             <strong class="text-primary">Horario</strong><br />
@@ -31,7 +31,7 @@ const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${SITE.geo.lat}
           </p>
           <p class="mt-3">
             <strong class="text-primary">Correo</strong><br />
-            <a href={`mailto:${SITE.email}`} class="hover:text-primary">{SITE.email}</a>
+            <a href={`mailto:${SITE.email}`} class="inline-flex min-h-11 items-center hover:text-primary">{SITE.email}</a>
           </p>
         </address>
       {/* Móvil: ambos botones viven antes del iframe en el DOM (§4). */}
