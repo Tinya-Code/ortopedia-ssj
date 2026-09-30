@@ -24,23 +24,28 @@ const { endpoint } = Astro.props;
       <div class="grid gap-4 sm:grid-cols-2">
         <label class="block text-sm">
           Nombres y apellidos
-          <input name="nombres" required class="mt-1 w-full rounded-lg border border-neutral/30 px-3 py-2" />
+          <input name="nombres" required class="mt-1 min-h-11 w-full rounded-lg border border-neutral/30 px-3 py-2 focus:border-primary" id="nombres" aria-describedby="nombres-error" />
+          <span id="nombres-error" class="mt-1 block text-xs text-danger"></span>
         </label>
         <label class="block text-sm">
           DNI / CE
-          <input name="documento" required class="mt-1 w-full rounded-lg border border-neutral/30 px-3 py-2" />
+          <input name="documento" required class="mt-1 min-h-11 w-full rounded-lg border border-neutral/30 px-3 py-2 focus:border-primary" id="documento" aria-describedby="documento-error" />
+          <span id="documento-error" class="mt-1 block text-xs text-danger"></span>
         </label>
         <label class="block text-sm">
           Domicilio
-          <input name="domicilio" required class="mt-1 w-full rounded-lg border border-neutral/30 px-3 py-2" />
+          <input name="domicilio" required class="mt-1 min-h-11 w-full rounded-lg border border-neutral/30 px-3 py-2 focus:border-primary" id="domicilio" aria-describedby="domicilio-error" />
+          <span id="domicilio-error" class="mt-1 block text-xs text-danger"></span>
         </label>
         <label class="block text-sm">
           Teléfono
-          <input name="telefono" type="tel" required class="mt-1 w-full rounded-lg border border-neutral/30 px-3 py-2" />
+          <input name="telefono" type="tel" required class="mt-1 min-h-11 w-full rounded-lg border border-neutral/30 px-3 py-2 focus:border-primary" id="telefono" aria-describedby="telefono-error" />
+          <span id="telefono-error" class="mt-1 block text-xs text-danger"></span>
         </label>
         <label class="block text-sm sm:col-span-2">
           Correo electrónico
-          <input name="email" type="email" required class="mt-1 w-full rounded-lg border border-neutral/30 px-3 py-2" />
+          <input name="email" type="email" required class="mt-1 min-h-11 w-full rounded-lg border border-neutral/30 px-3 py-2 focus:border-primary" id="email" aria-describedby="email-error" />
+          <span id="email-error" class="mt-1 block text-xs text-danger"></span>
         </label>
       </div>
     </fieldset>
@@ -50,18 +55,21 @@ const { endpoint } = Astro.props;
       <div class="grid gap-4 sm:grid-cols-2">
         <label class="block text-sm">
           Tipo
-          <select name="tipoBien" required class="mt-1 w-full rounded-lg border border-neutral/30 px-3 py-2">
+          <select id="tipoBien" name="tipoBien" aria-describedby="tipoBien-error" required class="mt-1 min-h-11 w-full rounded-lg border border-neutral/30 px-3 py-2 focus:border-primary">
             <option value="producto">Producto</option>
             <option value="servicio">Servicio</option>
           </select>
+          <span id="tipoBien-error" class="mt-1 block text-xs text-danger"></span>
         </label>
         <label class="block text-sm">
           Monto reclamado (S/)
-          <input name="monto" type="number" step="0.01" min="0" class="mt-1 w-full rounded-lg border border-neutral/30 px-3 py-2" />
+          <input name="monto" type="number" step="0.01" min="0" class="mt-1 min-h-11 w-full rounded-lg border border-neutral/30 px-3 py-2 focus:border-primary" id="monto" aria-describedby="monto-error" />
+          <span id="monto-error" class="mt-1 block text-xs text-danger"></span>
         </label>
         <label class="block text-sm sm:col-span-2">
           Descripción del bien o servicio
-          <input name="bien" required class="mt-1 w-full rounded-lg border border-neutral/30 px-3 py-2" />
+          <input name="bien" required class="mt-1 min-h-11 w-full rounded-lg border border-neutral/30 px-3 py-2 focus:border-primary" id="bien" aria-describedby="bien-error" />
+          <span id="bien-error" class="mt-1 block text-xs text-danger"></span>
         </label>
       </div>
     </fieldset>
@@ -70,32 +78,36 @@ const { endpoint } = Astro.props;
       <legend class="px-2 font-semibold text-primary">3. Detalle</legend>
       <label class="block text-sm">
         Tipo
-        <select name="tipo" required class="mt-1 w-full rounded-lg border border-neutral/30 px-3 py-2">
+        <select id="tipo" name="tipo" aria-describedby="tipo-error" required class="mt-1 min-h-11 w-full rounded-lg border border-neutral/30 px-3 py-2 focus:border-primary">
           <option value="reclamo">Reclamo (disconformidad con el producto o servicio)</option>
           <option value="queja">Queja (disconformidad con la atención)</option>
         </select>
+          <span id="tipo-error" class="mt-1 block text-xs text-danger"></span>
       </label>
       <label class="mt-4 block text-sm">
         Detalle del hecho
-        <textarea name="detalle" rows="5" required class="mt-1 w-full rounded-lg border border-neutral/30 px-3 py-2"></textarea>
+        <textarea id="detalle" name="detalle" aria-describedby="detalle-error" rows="5" required class="mt-1 min-h-11 w-full rounded-lg border border-neutral/30 px-3 py-2 focus:border-primary"></textarea>
+          <span id="detalle-error" class="mt-1 block text-xs text-danger"></span>
       </label>
       <label class="mt-4 block text-sm">
         Pedido del consumidor
-        <textarea name="pedido" rows="3" required class="mt-1 w-full rounded-lg border border-neutral/30 px-3 py-2"></textarea>
+        <textarea id="pedido" name="pedido" aria-describedby="pedido-error" rows="3" required class="mt-1 min-h-11 w-full rounded-lg border border-neutral/30 px-3 py-2 focus:border-primary"></textarea>
+          <span id="pedido-error" class="mt-1 block text-xs text-danger"></span>
       </label>
     </fieldset>
 
     <label class="flex items-start gap-3 text-sm text-neutral">
-      <input type="checkbox" name="consentimiento" required class="mt-1" />
+      <input type="checkbox" id="consentimiento" name="consentimiento" required class="mt-1" aria-describedby="consentimiento-error" />
       <span>
         Autorizo el tratamiento de mis datos personales según la
         <a href="/politica-de-privacidad/" class="text-primary underline underline-offset-4">política de privacidad</a>.
+        <span id="consentimiento-error" class="mt-1 block text-xs text-danger"></span>
       </span>
     </label>
 
     <button
       type="submit"
-      class="rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-white hover:opacity-90"
+      class="min-h-11 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-white hover:bg-primary/90"
     >
       Enviar hoja de reclamación
     </button>
@@ -120,6 +132,76 @@ const { endpoint } = Astro.props;
 </form>
 
 <script>
+  // Validación accesible (mejoras §4): con JS mostramos errores en español con
+  // text-danger + aria-describedby y llevamos el foco al primer campo inválido.
+  // Sin JS no cambiamos nada: la validación nativa del navegador protege el POST.
+  const form = document.querySelector('[data-reclamacion]');
+  if (form instanceof HTMLFormElement) {
+    form.noValidate = true;
+
+    const messageFor = (el: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement) => {
+      if (el instanceof HTMLInputElement && el.type === 'checkbox' && el.validity.valueMissing)
+        return 'Debes autorizar el tratamiento de tus datos para continuar.';
+      if (el.validity.valueMissing) return 'Este campo es obligatorio.';
+      if (el.validity.typeMismatch && el.type === 'email')
+        return 'Ingresa un correo electrónico válido.';
+      if (el.validity.typeMismatch) return 'El formato ingresado no es válido.';
+      if (el.validity.badInput || el.validity.rangeUnderflow || el.validity.rangeOverflow || el.validity.stepMismatch)
+        return 'Revisa el valor ingresado.';
+      return 'Revisa este campo.';
+    };
+
+    const errorSpan = (el: Element) => (el.id ? document.getElementById(`${el.id}-error`) : null);
+
+    const clearField = (el: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement) => {
+      const span = errorSpan(el);
+      if (span) span.textContent = '';
+      el.removeAttribute('aria-invalid');
+      el.classList.remove('border-danger');
+    };
+
+    const markField = (el: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement) => {
+      const span = errorSpan(el);
+      if (!span) return null;
+      if (el.validity.valid) {
+        clearField(el);
+        return null;
+      }
+      span.textContent = messageFor(el);
+      el.setAttribute('aria-invalid', 'true');
+      el.classList.add('border-danger');
+      return el;
+    };
+
+    form.addEventListener('input', (event) => {
+      const el = event.target;
+      if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement)
+        clearField(el);
+    });
+
+    // Corre antes que el handler de envío de document (los listeners del <form>
+    // se disparan primero): si hay errores, cortamos el evento y no se envía nada.
+    form.addEventListener('submit', (event) => {
+      let firstInvalid: HTMLElement | null = null;
+      // for...of en vez de forEach: TypeScript sí sigue el flujo de asignación.
+      for (const el of form.querySelectorAll('input, select, textarea')) {
+        if (
+          !(el instanceof HTMLInputElement) &&
+          !(el instanceof HTMLTextAreaElement) &&
+          !(el instanceof HTMLSelectElement)
+        )
+          continue;
+        const invalid = markField(el);
+        if (invalid && !firstInvalid) firstInvalid = invalid;
+      }
+      if (firstInvalid) {
+        event.preventDefault();
+        event.stopPropagation();
+        firstInvalid.focus();
+      }
+    });
+  }
+
   document.addEventListener('submit', async (event) => {
     const form = event.target;
     if (!(form instanceof HTMLFormElement) || !form.matches('[data-reclamacion]')) return;

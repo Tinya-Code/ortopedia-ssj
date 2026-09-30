@@ -4,6 +4,8 @@ import { api } from '../data/api';
 import Container from '../components/ui/Container.astro';
 import PageHeader from '../components/ui/PageHeader.astro';
 import CategoryChips from '../components/catalog/CategoryChips.astro';
+import Button from '../components/ui/Button.astro';
+import { whatsappLink, generalWhatsappMessage } from '../lib/whatsapp';
 
 // Página de error: no se indexa y ofrece rutas reales para recuperarse.
 const title = 'Página no encontrada';
@@ -21,9 +23,16 @@ const categories = api.categories.list();
       <div class="mt-6">
         <CategoryChips categories={categories} />
       </div>
-      <p class="mt-6">
-        <a href="/" class="text-primary underline underline-offset-4">Volver al inicio</a>
-      </p>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <Button href="/">Volver al inicio</Button>
+        <Button
+          href={whatsappLink(generalWhatsappMessage())}
+          variant="outline"
+          eventName="whatsapp_click"
+        >
+          Escribir por WhatsApp
+        </Button>
+      </div>
     </Container>
   </article>
 </BaseLayout>

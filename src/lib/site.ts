@@ -40,4 +40,6 @@ export const LEGAL = {
   reclamosResponseDays: 15, // días hábiles [VALIDAR reglamento vigente]
   pricesIncludeIGV: true,
   currency: 'PEN',
+  // Última actualización de las páginas legales (una sola fuente para las 3).
+  lastUpdated: '30 de septiembre de 2026',
 } as const;

@@ -83,6 +83,8 @@ const abs = (p: string) => new URL(p, SITE.url).href;
           {price}
           {availability}
           whatsappMessage={productWhatsappMessage(name, pageUrl)}
+          registroSanitario={product.registroSanitario}
+          claseRiesgo={product.claseRiesgo}
         />
       </div>
 
