@@ -4,7 +4,7 @@ import { whatsappLink } from '../../lib/whatsapp';
 interface Props {
   message: string;
   label?: string;
-  variant?: 'primary' | 'floating';
+  variant?: 'primary' | 'floating' | 'white';
   eventName?: string; // para analytics
 }
 const {
@@ -20,7 +20,9 @@ const href = whatsappLink(message);
   class:list={[
     variant === 'primary'
       ? 'inline-flex items-center gap-2 rounded-lg bg-[#25d366] px-5 py-3 text-sm font-semibold text-white hover:bg-[#1ebe5b]'
-      : 'fixed bottom-4 right-4 z-50 inline-flex items-center gap-2 rounded-full bg-[#25d366] px-5 py-3 text-sm font-semibold text-white shadow-lg hover:bg-[#1ebe5b]',
+      : variant === 'white'
+        ? 'inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-semibold text-primary hover:bg-neutral/10'
+        : 'fixed bottom-4 right-4 z-50 inline-flex items-center gap-2 rounded-full bg-[#25d366] px-5 py-3 text-sm font-semibold text-white shadow-lg hover:bg-[#1ebe5b]',
   ]}
   target="_blank"
   rel="noopener noreferrer"

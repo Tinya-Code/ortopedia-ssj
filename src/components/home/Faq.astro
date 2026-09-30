@@ -1,22 +1,19 @@
 ---
-// El JSON-LD (faqSchema) lo arma pages/index.astro y lo pasa a BaseLayout; aquí solo HTML.
+// El JSON-LD (faqSchema) lo arma pages/index.astro y lo pasa a BaseLayout; aquí
+// solo HTML — el acordeón consume el mismo array que el schema.
 import Container from '../ui/Container.astro';
+import Accordion from '../ui/Accordion.astro';
 
 interface Props {
   items: { q: string; a: string }[];
 }
 const { items } = Astro.props;
 ---
-<section class="py-12 md:py-16">
+<section class="bg-neutral/5 py-12 md:py-16">
   <Container size="narrow">
     <h2 class="font-display text-3xl font-semibold text-ink">Preguntas frecuentes</h2>
-    <dl class="mt-6 divide-y divide-neutral/20">
-      {items.map((it) => (
-        <div class="py-4">
-          <dt class="font-semibold text-primary">{it.q}</dt>
-          <dd class="mt-2 text-neutral">{it.a}</dd>
-        </div>
-      ))}
-    </dl>
+    <div class="mt-6">
+      <Accordion {items} />
+    </div>
   </Container>
 </section>

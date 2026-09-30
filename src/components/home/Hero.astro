@@ -19,7 +19,7 @@ const { title, text, image, imageAlt } = Astro.props;
           {title}
         </h1>
         {text && <p class="mt-4 max-w-prose text-lg text-neutral">{text}</p>}
-        <div class="mt-6">
+        <div class="mt-6 flex flex-wrap gap-3">
           <slot />
         </div>
       </div>
@@ -34,7 +34,7 @@ const { title, text, image, imageAlt } = Astro.props;
         loading="eager"
         fetchpriority="high"
         decoding="async"
-        class="h-auto w-full rounded-xl"
+        class="h-auto w-full rounded-card"
       />
     </div>
   </Container>
