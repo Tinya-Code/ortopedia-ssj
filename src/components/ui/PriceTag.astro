@@ -1,0 +1,23 @@
+---
+// mejoras.md §5.5 — único lugar que formatea precios (`S/ 120.00`).
+// Reemplaza el formato duplicado de ProductCard, ProductInfo y RelatedProducts.
+interface Props {
+  price?: number;
+  size?: 'md' | 'lg';
+  includesIGV?: boolean;
+  class?: string;
+}
+const { price, size = 'md', includesIGV = false, class: className } = Astro.props;
+---
+<p
+  class:list={[
+    'flex flex-wrap items-baseline gap-x-2 font-semibold text-ink',
+    size === 'lg' ? 'text-2xl' : 'text-sm',
+    className,
+  ]}
+>
+  {price ? `S/ ${price.toFixed(2)}` : <span class="font-medium text-neutral">Consultar precio</span>}
+  {price && includesIGV && (
+    <span class="text-xs font-normal text-neutral">Incluye IGV</span>
+  )}
+</p>

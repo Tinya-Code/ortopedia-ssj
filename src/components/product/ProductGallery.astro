@@ -19,7 +19,7 @@ const { images } = Astro.props;
     class="aspect-square w-full rounded-xl border border-neutral/20 object-cover"
   />
   {images.length > 1 && (
-    <ul class="mt-3 flex flex-wrap gap-3" role="list">
+    <ul class="mt-3 flex gap-3 overflow-x-auto" role="list">
       {images.slice(1).map((img) => (
         <li>
           <Image

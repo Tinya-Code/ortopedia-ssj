@@ -1,5 +1,10 @@
 ---
+// Orden de la ficha (mejoras.md §6.4): h1 → badge → precio lg → aviso IGV → CTA.
+// `self-start md:sticky md:top-24` mantiene la columna derecha visible en desktop
+// (top-24 deja pasar el header sticky de h-16).
 import WhatsAppButton from '../ui/WhatsAppButton.astro';
+import AvailabilityBadge from './AvailabilityBadge.astro';
+import PriceTag from '../ui/PriceTag.astro';
 import { LEGAL } from '../../lib/site';
 
 interface Props {
@@ -9,22 +14,25 @@ interface Props {
   whatsappMessage: string;
 }
 const { name, price, availability, whatsappMessage } = Astro.props;
-const stock = { InStock: 'Disponible', OutOfStock: 'Agotado', PreOrder: 'Por encargo' } as const;
 
-// legal.md 8.3: si no hay precio publicado ("Consulta el precio por WhatsApp"),
-// la ficha debe aclarar que el precio final incluye IGV y demás cargos.
+// legal.md 8.3: la ficha debe aclarar que el precio final incluye IGV y demás cargos.
 const igvNote = LEGAL.pricesIncludeIGV
   ? 'El precio final incluye IGV y demás cargos.'
   : 'El precio final no incluye IGV ni demás cargos.';
 ---
-<section>
+<section class="self-start md:sticky md:top-24">
   <h1 class="font-display text-3xl font-semibold text-ink">{name}</h1>
-  <p class="mt-4 text-2xl font-semibold text-ink">
-    {price ? `S/ ${price.toFixed(2)}` : 'Consulta el precio por WhatsApp'}
-  </p>
-  <p class="mt-1 text-sm text-neutral">{stock[availability as keyof typeof stock] ?? availability}</p>
+
+  <div class="mt-4">
+    <AvailabilityBadge availability={availability} />
+  </div>
+
+  <PriceTag price={price} size="lg" includesIGV={LEGAL.pricesIncludeIGV} class="mt-3" />
+
   <p class="mt-1 text-sm text-neutral">{igvNote}</p>
-  <div class="mt-5">
+
+  {/* CTA a ancho completo en móvil, inline en desktop ([&_a] toca al anchor). */}
+  <div class="mt-5 [&>a]:w-full [&>a]:justify-center md:[&>a]:w-auto">
     <WhatsAppButton message={whatsappMessage} label="Pedir por WhatsApp" eventName="whatsapp_product" />
   </div>
 </section>

@@ -1,6 +1,8 @@
 ---
 // Productos relacionados: enlaces simples bajo un <h2> propio (no repetir <h2>
 // por tarjeta dentro de esta sección, para no romper la jerarquía de encabezados).
+import PriceTag from '../ui/PriceTag.astro';
+
 interface Props {
   products: { slug: string; name: string; price?: number }[];
 }
@@ -11,11 +13,11 @@ const { products } = Astro.props;
     <h2 class="font-display text-2xl font-semibold text-ink">Productos relacionados</h2>
     <ul class="mt-4 grid gap-4 sm:grid-cols-2">
       {products.map((p) => (
-        <li class="rounded-xl border border-neutral/20 p-4">
+        <li class="flex items-baseline justify-between gap-3 rounded-xl border border-neutral/20 p-4">
           <a href={`/producto/${p.slug}/`} class="font-semibold text-primary hover:underline">
             {p.name}
           </a>
-          <p class="mt-1 text-sm text-neutral">{p.price ? `S/ ${p.price.toFixed(2)}` : 'Consultar precio'}</p>
+          <PriceTag price={p.price} />
         </li>
       ))}
     </ul>
