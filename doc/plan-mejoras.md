@@ -150,20 +150,24 @@ Objetivo: ficha y tarjetas con disponibilidad, precio centralizado y lectura có
 
 Objetivo: home con la distribución prescrita y componentes nuevos, sin JS.
 
-- [ ] `Hero`: usar el `<slot/>` con **2 botones** (primario WhatsApp + outline "Ver catálogo") → esto **da uso a `ui/Button`** (código muerto hoy); imagen debajo del texto en móvil, `rounded-card`.
-- [ ] `ui/Button`: variantes primario/outline de §2.4 (`bg-primary text-white rounded-lg px-5 py-3 font-semibold hover:bg-primary/90`) y `min-h-11` para área táctil ≥ 44px.
-- [ ] `ui/Accordion.astro` (`<details>`, chevron CSS `group-open:rotate-180`, `min-h-11`) → `Faq` deja el `<dl>`.
-- [ ] `home/TrustBar.astro` (nuevo): 3–4 hechos verificables, `grid grid-cols-2 md:grid-cols-4`, `text-sm`, bajo el hero; **sin `h2`** (es una franja: `section` con `aria-label`, no un título de sección).
-- [ ] `home/HowItWorks.astro` (nuevo): `<ol>` `md:grid-cols-4`, número en círculo `bg-primary`, entre `WhyUs` y `Faq`; datos en la página.
-- [ ] `WhyUs`: icono + h3 + texto, `sm:grid-cols-2 lg:grid-cols-4`.
-- [ ] `ServicesGrid`: icono SVG `size-10 text-primary` + enlace "Consultar →".
-- [ ] `CtaBand.astro` (nuevo): `bg-primary`, h2 + `WhatsAppButton` blanco → cierre de la home.
-- [ ] Bandas: `py-12 md:py-16` y alternancia blanco/gris/blanco/gris/blanco/gris/blanco/primary según §6.1.
-- [ ] `LocationCta`: en móvil, botones (WhatsApp + "Cómo llegar") **antes** del mapa.
+- [x] `Hero`: usar el `<slot/>` con **2 botones** (primario WhatsApp + outline "Ver catálogo") → esto **da uso a `ui/Button`** (código muerto hoy); imagen debajo del texto en móvil, `rounded-card`.
+- [x] `ui/Button`: variantes primario/outline de §2.4 (`bg-primary text-white rounded-lg px-5 py-3 font-semibold hover:bg-primary/90`) y `min-h-11` para área táctil ≥ 44px.
+- [x] `ui/Accordion.astro` (`<details>`, chevron CSS `group-open:rotate-180`, `min-h-11`) → `Faq` deja el `<dl>`.
+- [x] `home/TrustBar.astro` (nuevo): 3–4 hechos verificables, `grid grid-cols-2 md:grid-cols-4`, `text-sm`, bajo el hero; **sin `h2`** (es una franja: `section` con `aria-label`, no un título de sección).
+- [x] `home/HowItWorks.astro` (nuevo): `<ol>` `md:grid-cols-4`, número en círculo `bg-primary`, entre `WhyUs` y `Faq`; datos en la página.
+- [x] `WhyUs`: icono + h3 + texto, `sm:grid-cols-2 lg:grid-cols-4`.
+- [x] `ServicesGrid`: icono SVG `size-10 text-primary` + enlace "Consultar →".
+- [x] `CtaBand.astro` (nuevo): `bg-primary`, h2 + `WhatsAppButton` blanco → cierre de la home.
+- [x] Bandas: `py-12 md:py-16` y alternancia blanco/gris/blanco/gris/blanco/gris/blanco/primary según §6.1.
+- [x] `LocationCta`: en móvil, botones (WhatsApp + "Cómo llegar") **antes** del mapa.
+- [x] **Tarea agregada** (hueco del plan): tarjetas de §2.4 → `rounded-card border shadow-card transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md motion-reduce:transition-none` en `ServicesGrid`, `FeaturedCategories`-tarjetas, `WhyUs`, `ProductCard`, `CategoryCard` y `RelatedProducts`.
 
 **Criterio de salida**: gates globales + `grep -c '<h2' dist/index.html` = **7** (hoy 5: servicios, categorías, por qué, FAQ, ubicación → +cómo funciona, +CtaBand; TrustBar no suma) + alternancia de fondos verificada en `dist/index.html` + `grep -c '<details' dist/index.html` ≥ 4 (FAQ) + 1 `h1`.
 **Riesgo**: el JSON-LD `FAQPage` se arma en la página — debe seguir coincidiendo con el acordeón renderizado.
 **Rollback**: revert del commit (home + componentes nuevos).
+
+**Evidencia** (commit `52705a8`): build 17 HTML / check 0 / `<h2` = **7** en home (servicios, categorías, por qué, cómo funciona, FAQ, ubicación, CtaBand — TrustBar sin `h2`) / `<details` = **5** (4 FAQ + 1 menú móvil) / 1 `h1` / secuencia de bandas verificada: blanco → blanco(border-y) → gris → blanco → gris → blanco → gris → blanco → primary / `ui/Button` renderizado 3× (hero primario + outline, "Cómo llegar") / `WhatsAppButton` variante `white` en CtaBand / JSON-LD FAQPage ↔ acordeón: cada pregunta aparece 2× (summary + schema) / conector de HowItWorks ×3 / sin tokens ni hex fuera de `WhatsAppButton`.
+**Nota**: `grep -c` cuenta líneas y dist es de una sola línea — la verificación real se hizo con `grep -o | wc -l`.
 
 ---
 
