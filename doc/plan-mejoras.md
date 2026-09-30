@@ -175,12 +175,14 @@ Objetivo: home con la distribución prescrita y componentes nuevos, sin JS.
 
 Objetivo: navegación lateral entre categorías y cierre de conversión.
 
-- [ ] `catalog/CategoryChips.astro` (nuevo): `flex flex-wrap gap-2`, `aria-current` en la activa; consolidar el estilo de chips del 404 con este.
-- [ ] `/catalogo/[category]/`: chips bajo el `PageHeader`; categoría vacía → `Callout tone="info"` con mensaje + WhatsApp.
-- [ ] `CtaBand` al final de `/catalogo/` ("¿No encuentras lo que buscas?") y de cada categoría (`categoryWhatsappMessage`).
+- [x] `catalog/CategoryChips.astro` (nuevo): `flex flex-wrap gap-2`, `aria-current="page"` en la activa (`bg-primary text-white`), inactivas outline con `hover:bg-primary/5`, `min-h-11`; 404 reutiliza el componente (se eliminó la lista `ul` duplicada con `hover:bg-primary hover:text-white`).
+- [x] `/catalogo/[category]/`: chips bajo el `PageHeader` (orden §6.3: h1 → chips → intro → productos); categoría vacía → `Callout tone="info"` con mensaje + WhatsApp (ninguna de las 3 está vacía: el estado queda cubierto por el `getStaticPaths` y el guard).
+- [x] `CtaBand` al final de `/catalogo/` ("¿No encuentras lo que buscas?" + `generalWhatsappMessage`) y de cada categoría (`categoryWhatsappMessage`); se eliminó el botón WhatsApp suelto (`mt-8`) → un solo CTA final por página.
 
 **Criterio de salida**: gates globales + chips en las 3 categorías con `aria-current="page"` exactamente 1 + `grep -c '<h2' dist/catalogo/index.html` = **4** (3 `CategoryCard` + `CtaBand`) + en cada categoría el `h2` de `CtaBand` suma 1 (productos + 1) + un solo CTA final por página.
 **Rollback**: revert del commit.
+
+**Evidencia** (commit `74aefc4`): build 17 / check 0 / 1 `h1` por página / chips `<nav aria-label="Categorías">` con **1** `aria-current="page"` dentro del nav en las 3 categorías (los otros `aria-current` de la página son Breadcrumbs + nav del header/MobileNav, marcados dinámicamente desde M3) / `dist/catalogo/index.html` `<h2` = **4** (3 `CategoryCard` + `CtaBand`) / categorías: rodilleras 3, bastones 3, sillas-de-ruedas 3 = 2 productos + `CtaBand` / botón blanco del `CtaBand` = 1 por página (404 = 0, queda en M8) / label "Asesoría por WhatsApp" eliminado / orden chips → intro → grid verificado por posición en el HTML / estilo de chips viejo del 404 eliminado / gates globales ok.
 
 ---
 
