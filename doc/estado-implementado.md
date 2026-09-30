@@ -74,6 +74,8 @@ src/
 │  │              RegistroBadge · StickyProductBar
 │  ├─ legal/      LegalFooter · ReclamacionesLink · ProductLegal · ReclamacionForm
 │  ├─ layout/     Header · MobileNav · Footer · Breadcrumbs · SkipLink
+│  ├─ icons/      14 iconos en 1 archivo c/u (Activity … Whatsapp) + index.ts
+│  │              (registro `icons` + tipo `IconName` para los datos de página)
 │  ├─ seo/        SEO · JsonLd
 │  └─ ui/         Button · WhatsAppButton · Container · PageHeader · Callout ·
 │                 CtaBand · Accordion · PriceTag · AvailabilityBadge
@@ -130,10 +132,11 @@ src/
 | `ui/Accordion.astro` | `items: {q,a}[]` | Lista de `<details>/<summary>` (1er ítem abierto); sin JS | `home/Faq` |
 | `ui/PriceTag.astro` | `price?, size?='md'\|'lg', includesIGV?, class?` | `S/ X.XX` (2 decimales) o "Consultar precio"; `lg` agrega "precios con IGV" | ProductCard, ProductInfo, RelatedProducts, StickyProductBar |
 | `ui/AvailabilityBadge.astro` | `availability` | Pastilla SIEMPRE con texto: `En stock` / `Por encargo` / `Agotado` (+ punto `aria-hidden`), derivada del mismo campo del JSON-LD | ProductInfo |
-| `ui/WhatsAppButton.astro` | `message, label?='Consultar por WhatsApp', variant?='primary'\|'floating'\|'white', eventName?='whatsapp_click', mobileHidden?` | `<a wa.me>` con `target=_blank`, `data-event`, icono SVG. Verde de marca con **texto `text-ink`** (AA); `floating` = fijo abajo-derecha (`hidden md:flex` si `mobileHidden`); `white` = píldora blanca sobre banda de color | LocationCta (×2), ProductInfo, StickyProductBar, CtaBand, categoría, flotante global |
+| `ui/WhatsAppButton.astro` | `message, label?='Consultar por WhatsApp', variant?='primary'\|'floating'\|'white', eventName?='whatsapp_click', mobileHidden?` | `<a wa.me>` con `target=_blank`, `data-event`, icono `icons/Whatsapp`. Verde de marca con **texto `text-ink`** (AA); `floating` = fijo abajo-derecha (`hidden md:flex` si `mobileHidden`); `white` = píldora blanca sobre banda de color | LocationCta (×2), ProductInfo, StickyProductBar, CtaBand, categoría, flotante global |
 | `ui/Button.astro` | `href, label?, variant?='primary'\|'secondary'\|'outline', eventName?, rel?` | Enlace con forma de botón (`min-h-11`, también acepta `<slot/>`) | **Hero (2 CTA de la home) y 404 (2 botones)** |
 | `home/Hero.astro` | `title, text?, image: ImageMetadata, imageAlt` | Sección a 2 columnas: `<h1>` + párrafo + `<slot/>` (recibe los `ui/Button`) \| imagen LCP (`fetchpriority=high`, `loading=eager`, webp `srcset` 600/1000/1600w) | index |
-| `home/TrustBar.astro` | `items: {icon,label}[]` | Franja de 4 confianzas con íconos SVG; sin `<h2>` (barra, no sección semántica) | index |
+| `icons/*.astro` + `icons/index.ts` | iconos: `class?` | Los **14 SVG del sitio** viven acá (1 archivo por icono, `aria-hidden` fijo, `class` para tamaño/color). El registro exporta `icons` + `IconName` para los datos de página; los usos únicos (menú, chevron, WhatsApp, reclamaciones) importan el componente directo | TrustBar, ServicesGrid, WhyUs, contacto (vía datos), MobileNav, Accordion, ReclamacionesLink, WhatsAppButton |
+| `home/TrustBar.astro` | `items: {icon,label}[]` | Franja de 4 confianzas con íconos del registro (`shield-check`, `receipt`, `message-circle`, `clock`); sin `<h2>` (barra, no sección semántica) | index |
 | `home/ServicesGrid.astro` | `services: {title,text,href}[]` | `<section id="servicios">` con h2 + grid de tarjetas (`rounded-card shadow-card`) enlazadas a WhatsApp (`target=_blank`) | index |
 | `home/FeaturedCategories.astro` | `categories: {slug,name,seoDescription,image,imageAlt}[]` | `<ul>` grid 1/2/3 columnas; cada tarjeta enlaza a `/catalogo/{slug}/` con `<Image>` webp 600×600 lazy | index |
 | `home/WhyUs.astro` | — | h2 "Por qué elegirnos" + 4 tarjetas (`sm:grid-cols-2`) con texto verificable dentro del componente (YMYL: sin testimonios ni promesas clínicas) | index |
@@ -291,7 +294,8 @@ BaseLayout (schemas: ContactPage inline)
 2. section pb-8  PageHeader (h1 + lead) + p "Punto de referencia: {dirección}"
 3. LocationCta   mismo componente que en la home (NAP + mapa)
 4. section       "Canales de contacto" (bg-neutral/5): grid sm:grid-cols-3 de
-                 3 tarjetas enlazadas (WhatsApp / Teléfono / Correo) con icono SVG
+                 3 tarjetas enlazadas (WhatsApp / Teléfono / Correo) con icono del
+                 registro (`message-circle`, `phone-call`, `mail`)
 ```
 
 **Distribución**: texto corto arriba (columna única), después la misma grilla de 2 columnas
@@ -512,6 +516,7 @@ grep -rl 'href="/libro-de-reclamaciones/"' dist | wc -l          # 17 (enlace le
 grep -rn 'slot name="cta"' src | wc -l                           # 0 (slot eliminado en M9)
 grep -c 'text-ink' src/components/ui/WhatsAppButton.astro        # ≥2 (verde con texto AA)
 grep -o 'blue-\|primary-[0-9]' -r src | wc -l                    # 0 (tokens planos)
+grep -rn '<svg' src/ | grep -v 'src/components/icons/'           # vacío (SVG solo en icons/)
 ```
 
 Ojo: `grep -c` cuenta **líneas**, no ocurrencias (un `dist/*.html` puede ser 1 sola línea) —
@@ -553,6 +558,10 @@ temporales (M9) y no son reproducibles con un solo comando.
 14. **Labels del form por contención**: el `<label>` envuelve al `<input>` y solo tiene
     `id`, no `for=` — verificar con `input.labels.length`, no con `label[for]` (12 visibles,
     4 `type=hidden` exentos).
+15. **Los SVG viven en `components/icons/`** (nunca inline en páginas ni en otros
+    componentes): datos → clave `IconName` del registro `icons/index.ts`; uso único →
+    import directo del componente. `aria-hidden` está fijo en el icono; el tamaño/color
+    se pasan por `class`.
 
 ## 8. Pendientes conocidos (detalle en `doc/plan-implementacion.md`)
 
