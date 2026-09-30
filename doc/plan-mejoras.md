@@ -107,7 +107,7 @@ Objetivo: eliminar la repetición de clases de contenedor/cabecera/aviso y unifi
 
 Objetivo: navegación accesible y chrome consistente en las 17 páginas.
 
-- [x] `SkipLink` como primer hijo de `<body>` (`sr-only focus:not-sr-only`, → `#main`).
+- [x] `SkipLink` como primer hijo de `<body>` (oculto fuera de pantalla, → `#main`; visible con foco — ver nota en evidencia).
 - [x] Header **sticky**: `sticky top-0 z-40 bg-white/95 backdrop-blur border-b`, altura `h-16`.
 - [x] `layout/MobileNav.astro` (`<details>` sin JS): marca a la izquierda + hamburguesa 44×44, panel a ancho completo con los 4 enlaces + Libro de Reclamaciones; `≥ md` nav horizontal + `ReclamacionesLink` + botón CTA compacto "WhatsApp" (`data-event="whatsapp_click"`).
 - [x] `aria-current="page"` activo (`text-primary font-semibold` + `border-b-2 border-primary`).
@@ -119,7 +119,8 @@ Objetivo: navegación accesible y chrome consistente en las 17 páginas.
 **Riesgo**: el header sticky tape anclas → verificar `/#servicios` y `#ubicacion` (agregar `scroll-mt-20` si hace falta; M8 lo hace en legales).
 **Rollback**: revert del commit (chrome completo, sin lógica de negocio).
 
-**Evidencia** (commit `29a6f9a`): build 17 HTML / check 0 (47 archivos) / `sticky top-0` = 1 en home / `<details>` en 17 de 17 páginas / `<a href="#main">` es el primer hijo de `<body>` / 1 `h1` por página / sin tokens ni hex fuera de `WhatsAppButton` / `©` aparece 1 vez por página (fila inferior del footer; LegalFooter deja de duplicarlo) / `scroll-padding-top: 4rem` en `global.css` cubre `/#servicios` y `#ubicacion`.
+**Evidencia** (commits `29a6f9a` + `d25ee0d`): build 17 HTML / check 0 (47 archivos) / `sticky top-0` = 1 en home / `<details>` en 17 de 17 páginas / `<a href="#main">` es el primer hijo de `<body>` / 1 `h1` por página / sin tokens ni hex fuera de `WhatsAppButton` / `©` aparece 1 vez por página (fila inferior del footer; LegalFooter deja de duplicarlo) / `scroll-padding-top: 4rem` en `global.css` cubre `/#servicios` y `#ubicacion`.
+**Nota de implementación**: el `sr-only focus:not-sr-only` del plan dejaba el enlace en 1×1 recortado (conflicto de `position` entre utilidades) → se implementó con `-top-40` + `focus:top-4`, que solo cambia una propiedad; utilidades verificadas en el CSS de `dist`.
 
 ---
 
