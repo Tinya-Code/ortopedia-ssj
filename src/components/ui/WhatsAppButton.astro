@@ -21,13 +21,16 @@ const href = whatsappLink(message);
 <a
   href={href}
   class:list={[
+    // §8 / regla 10 (AA): texto blanco sobre #25d366 da 1.98:1. Se mantiene el
+    // verde de marca (única excepción hex de la regla 3) y el texto/ícono pasa a
+    // ink: 8.94:1 sobre #25d366 y 7.24:1 sobre el hover #1ebe5b.
     variant === 'primary'
-      ? 'inline-flex items-center gap-2 rounded-lg bg-[#25d366] px-5 py-3 text-sm font-semibold text-white hover:bg-[#1ebe5b]'
+      ? 'inline-flex items-center gap-2 rounded-lg bg-[#25d366] px-5 py-3 text-sm font-semibold text-ink hover:bg-[#1ebe5b]'
       : variant === 'white'
         ? 'inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-semibold text-primary hover:bg-neutral/10'
         : `fixed bottom-4 right-4 z-50 ${
             mobileHidden ? 'hidden md:flex' : 'inline-flex'
-          } items-center gap-2 rounded-full bg-[#25d366] px-5 py-3 text-sm font-semibold text-white shadow-lg hover:bg-[#1ebe5b]`,
+          } items-center gap-2 rounded-full bg-[#25d366] px-5 py-3 text-sm font-semibold text-ink shadow-lg hover:bg-[#1ebe5b]`,
   ]}
   target="_blank"
   rel="noopener noreferrer"
