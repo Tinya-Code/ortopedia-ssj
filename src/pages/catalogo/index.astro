@@ -5,10 +5,10 @@ import CategoryCard from '../../components/catalog/CategoryCard.astro';
 import CtaBand from '../../components/ui/CtaBand.astro';
 import { api } from '../../api';
 import { breadcrumbSchema, itemListSchema } from '../../lib/schema';
-import { SITE } from '../../data/site';
 import { generalWhatsappMessage } from '../../data/whatsapp';
 import Container from '../../components/ui/Container.astro';
 import PageHeader from '../../components/ui/PageHeader.astro';
+import { absUrl } from '../../lib/url';
 
 const categories = await api.categories.list();
 
@@ -20,14 +20,13 @@ const crumbs = [
   { name: 'Inicio', href: '/' },
   { name: 'Catálogo' },
 ];
-const abs = (p: string) => new URL(p, SITE.url).href;
 ---
 <BaseLayout
   {title}
   {description}
   schemas={[
-    breadcrumbSchema(crumbs.map((c) => ({ name: c.name, url: abs(c.href ?? Astro.url.pathname) }))),
-    itemListSchema(categories.map((c) => ({ name: c.name, url: abs(`/catalogo/${c.slug}/`) }))),
+    breadcrumbSchema(crumbs.map((c) => ({ name: c.name, url: absUrl(c.href ?? Astro.url.pathname) }))),
+    itemListSchema(categories.map((c) => ({ name: c.name, url: absUrl(`/catalogo/${c.slug}/`) }))),
   ]}
 >
   <Breadcrumbs items={crumbs} />

@@ -107,10 +107,11 @@ Principios: HTML estático (SSG), cero JS innecesario, datos estructurados (JSON
 ```js
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+import { SITE } from './src/data/site';
 
 export default defineConfig({
-  site: 'https://www.tudominio.com', // OBLIGATORIO para canonical y sitemap
-  trailingSlash: 'always',           // una sola versión de cada URL
+  site: SITE.url,                   // fuente única del dominio (src/data/site.ts)
+  trailingSlash: 'always',          // una sola versión de cada URL
   integrations: [sitemap()],
   build: { inlineStylesheets: 'auto' },
   compressHTML: true,
@@ -853,7 +854,7 @@ Herramientas: Google Search Console (enviar `sitemap-index.xml`), PageSpeed Insi
 
 ## 14. Checklist final antes de publicar
 
-- [ ] `site` configurado en `astro.config.mjs` con el dominio real.
+- [ ] Dominio real en `SITE.url` (`src/data/site.ts`) — `astro.config.mjs` lo importa de ahí (canonical, sitemap, JSON-LD y WhatsApp comparten la base).
 - [ ] Un solo `<h1>` por página y jerarquía `h2 > h3` coherente.
 - [ ] `title` (≤ 60 car.) y `description` (≤ 160 car.) únicos por página.
 - [ ] Canonical correcto y `trailingSlash` consistente.

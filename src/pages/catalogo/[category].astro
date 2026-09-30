@@ -9,9 +9,9 @@ import Callout from '../../components/ui/Callout.astro';
 import CtaBand from '../../components/ui/CtaBand.astro';
 import { breadcrumbSchema, itemListSchema } from '../../lib/schema';
 import { categoryWhatsappMessage } from '../../data/whatsapp';
-import { SITE } from '../../data/site';
 import Container from '../../components/ui/Container.astro';
 import PageHeader from '../../components/ui/PageHeader.astro';
+import { absUrl } from '../../lib/url';
 
 export async function getStaticPaths() {
   // api.products.byCategory ya excluye los productos sin registro sanitario,
@@ -33,14 +33,13 @@ const crumbs = [
   { name: 'Catálogo', href: '/catalogo/' },
   { name: cat.name },
 ];
-const abs = (p: string) => new URL(p, SITE.url).href;
 ---
 <BaseLayout
   title={cat.seoTitle ?? cat.name}
   description={cat.seoDescription}
   schemas={[
-    breadcrumbSchema(crumbs.map((c) => ({ name: c.name, url: abs(c.href ?? Astro.url.pathname) }))),
-    itemListSchema(products.map((p) => ({ name: p.name, url: abs(`/producto/${p.slug}/`) }))),
+    breadcrumbSchema(crumbs.map((c) => ({ name: c.name, url: absUrl(c.href ?? Astro.url.pathname) }))),
+    itemListSchema(products.map((p) => ({ name: p.name, url: absUrl(`/producto/${p.slug}/`) }))),
   ]}
 >
   <Breadcrumbs items={crumbs} />

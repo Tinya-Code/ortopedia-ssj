@@ -24,7 +24,7 @@ página y con qué datos reales trabaja**, sin tener que reconstruirlo leyendo e
 | Estilos | Tailwind v4 vía `@tailwindcss/vite`; tokens en `src/styles/global.css` `@theme` |
 | Contenido | **No** usa `astro:content` ni content collections: los datos viven en `src/data/db.ts` (contracto `src/data/types.ts`) y el acceso pasa por `src/api/` |
 | JS en cliente | Solo dos `<script>` inline: handler de submit del libro de reclamaciones y hook `dataLayer`. Cero frameworks (React/Vue) |
-| `site` | `https://www.example.com` (placeholder — pendiente dominio real) |
+| `site` | `SITE.url` (importado desde `src/data/site.ts` — fuente única del dominio; placeholder pendiente) |
 | `trailingSlash` | `'always'`: **toda** URL interna termina en `/` |
 | Sitemap | `@astrojs/sitemap` → `sitemap-index.xml` + `sitemap-0.xml` (16 URLs); referenciado en `public/robots.txt` |
 | Build | `build: { inlineStylesheets: 'auto' }`, `compressHTML: true` |
@@ -81,7 +81,7 @@ src/
 │                 CtaBand · Accordion · PriceTag · AvailabilityBadge
 ├─ api/          config.ts (bandera USE_API + API_BASE_URL) · client.ts (solo GET, memo)
 │                index.ts → facade `api` (único acceso a datos; async, siempre `await`)
-├─ lib/          hours.ts · schema.ts · image.ts   (lógica pura, sin datos)
+├─ lib/          hours.ts · schema.ts · image.ts · url.ts   (lógica pura, sin datos)
 ├─ data/         db.ts (3 categorías, 7 productos, `: Database`) · types.ts (contracto
 │                db ↔ API) · site.ts (SITE+LEGAL) · whatsapp.ts
 ├─ assets/       home/hero.jpg · products/*.jpg  (imágenes de prueba)
@@ -482,6 +482,7 @@ ya pasan `width`/`height` explícitos, requeridos para el caso remoto).
 | | `breadcrumbSchema(items)` · `itemListSchema(items)` · `productSchema(p)` · `faqSchema(items)` | builders de JSON-LD; `productSchema.image` recibe URLs absolutas en **jpg** |
 | `lib/hours.ts` | `formatHours()` | "Lun, Mar, Mié, Jue, Vie: 09:00–19:00 · Sáb: 09:00–14:00" — fuente única del horario (footer, home, contacto, términos) |
 | `lib/image.ts` | `imageSrc()` | estrechamiento estático para `<Image>`: astro:assets declara ramas Props separadas (local `ImageMetadata` / remota `string`) y un union no asigna a ninguna; el runtime resuelve ambos |
+| `lib/url.ts` | `absUrl(path)` | ruta → URL absoluta con `SITE.url`; reemplaza los `new URL(p, SITE.url)` duplicados en 4 páginas (JSON-LD/WhatsApp) |
 
 ### 4.4 JSON-LD emitido por página
 
@@ -612,4 +613,5 @@ están en la rama local (`doc/plan-mejoras.md` lleva el registro).
 ## 9. Mantenimiento de este documento
 
 Actualizarlo al: añadir/quitar una ruta, cambiar el orden de componentes de una página,
-modificar `SITE`/`LEGAL`, agregar un producto/categoría, o tocar `astro.config.mjs`.
+modificar `SITE`/`LEGAL` (el dominio real se cambia solo en `SITE.url`: `astro.config.mjs` lo importa de ahí),
+agregar un producto/categoría, o tocar `astro.config.mjs` (p. ej. `image.domains`).

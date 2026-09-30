@@ -7,6 +7,7 @@ import { whatsappLink, generalWhatsappMessage } from '../data/whatsapp';
 import Container from '../components/ui/Container.astro';
 import PageHeader from '../components/ui/PageHeader.astro';
 import { icons, type IconName } from '../components/icons/index';
+import { absUrl } from '../lib/url';
 
 const title = 'Contacto';
 const description =
@@ -33,7 +34,6 @@ const crumbs = [
   { name: 'Inicio', href: '/' },
   { name: 'Contacto' },
 ];
-const abs = (p: string) => new URL(p, SITE.url).href;
 ---
 <BaseLayout
   {title}
@@ -43,7 +43,7 @@ const abs = (p: string) => new URL(p, SITE.url).href;
       '@context': 'https://schema.org',
       '@type': 'ContactPage',
       name: 'Contacto',
-      url: abs('/contacto/'),
+      url: absUrl('/contacto/'),
     },
   ]}
 >

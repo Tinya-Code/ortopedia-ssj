@@ -11,8 +11,9 @@ import ProductLegal from '../../components/legal/ProductLegal.astro';
 import StickyProductBar from '../../components/product/StickyProductBar.astro';
 import { breadcrumbSchema, productSchema, faqSchema } from '../../lib/schema';
 import { productWhatsappMessage } from '../../data/whatsapp';
-import { SITE, LEGAL } from '../../data/site';
+import { LEGAL } from '../../data/site';
 import Container from '../../components/ui/Container.astro';
+import { absUrl } from '../../lib/url';
 
 export async function getStaticPaths() {
   // api.products.list() solo devuelve productos publicables (con registro sanitario).
@@ -36,13 +37,13 @@ export async function getStaticPaths() {
 const { product, category, related } = Astro.props;
 const { name, seoTitle, seoDescription, description, images, price, availability, sku, brand, faq, specs } = product;
 
-const pageUrl = new URL(Astro.url.pathname, SITE.url).href;
+const pageUrl = absUrl(Astro.url.pathname);
 
 // OG 1200×630 a partir de la primera imagen del producto
 const ogImage = await getImage({ src: images[0].src, width: 1200, height: 630, format: 'jpg' });
 const imageUrls = await Promise.all(
   images.map(
-    async (i) => new URL((await getImage({ src: i.src, width: 1200, format: 'jpg' })).src, SITE.url).href,
+    async (i) => absUrl((await getImage({ src: i.src, width: 1200, format: 'jpg' })).src),
   ),
 );
 
@@ -51,7 +52,6 @@ const crumbs = [
   { name: category.name, href: `/catalogo/${category.slug}/` },
   { name },
 ];
-const abs = (p: string) => new URL(p, SITE.url).href;
 ---
 <BaseLayout
   title={seoTitle ?? name}
@@ -60,7 +60,7 @@ const abs = (p: string) => new URL(p, SITE.url).href;
   type="product"
   hideFloatingCta
   schemas={[
-    breadcrumbSchema(crumbs.map((c) => ({ name: c.name, url: abs(c.href ?? Astro.url.pathname) }))),
+    breadcrumbSchema(crumbs.map((c) => ({ name: c.name, url: absUrl(c.href ?? Astro.url.pathname) }))),
     productSchema({
       name,
       description: seoDescription ?? description,
