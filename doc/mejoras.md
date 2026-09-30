@@ -5,7 +5,7 @@ Complementa `estado-implementado.md` (que describe lo que **existe**). Aquí se 
 verse y distribuirse**, qué componentes **nuevos** agregar y en qué orden implementarlos.
 
 > Stack fijo: Astro 7 SSG + Tailwind v4 (`@theme` en `src/styles/global.css`). Sin frameworks JS,
-> sin `astro:content`. Datos en `src/data/api.js` y `src/lib/site.ts`. Todo href interno termina en `/`.
+> sin `astro:content`. Datos en `src/data/` (`db.ts`, `site.ts`), acceso vía `src/api/`. Todo href interno termina en `/`.
 
 ## Ruta rápida
 

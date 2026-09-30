@@ -49,7 +49,7 @@ src/
 │  ├─ cambios-y-devoluciones.astro
 │  ├─ libro-de-reclamaciones.astro
 │  └─ comprobantes-y-envios.astro    # cómo se emite el comprobante, tiempos y costos
-9.2 Datos legales en src/lib/site.ts
+9.2 Datos legales en src/data/site.ts
 ts
 export const LEGAL = {
   legalName: 'RAZÓN SOCIAL DEL NEGOCIO S.A.C.',
@@ -66,7 +66,7 @@ export const LEGAL = {
 9.3 LegalFooter.astro
 astro
 ---
-import { LEGAL } from '../../lib/site';
+import { LEGAL } from '../../data/site';
 import ReclamacionesLink from './ReclamacionesLink.astro';
 const year = new Date().getFullYear();
 ---
@@ -181,7 +181,7 @@ Aceptación de tratamiento de datos personales
 astro
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { LEGAL } from '../lib/site';
+import { LEGAL } from '../data/site';
 ---
 <BaseLayout
   title="Libro de Reclamaciones"
@@ -251,7 +251,7 @@ En todos los casos, define un responsable interno y un procedimiento para respon
 
 9.9 Mensaje de WhatsApp con foco en cumplimiento
 
-En src/lib/whatsapp.ts, el mensaje inicial puede pedir directamente lo que necesitas para el comprobante:
+En src/data/whatsapp.ts, el mensaje inicial puede pedir directamente lo que necesitas para el comprobante:
 
 ts
 export function productWhatsappMessage(name: string, url: string) {

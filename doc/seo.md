@@ -48,14 +48,21 @@ Principios: HTML estático (SSG), cero JS innecesario, datos estructurados (JSON
 │  │     ├─ ProductInfo.astro
 │  │     ├─ ProductSpecs.astro
 │  │     └─ RelatedProducts.astro
+│  ├─ api/
+│  │  ├─ config.ts               # bandera USE_API + API_BASE_URL (modo repo/api)
+│  │  ├─ client.ts               # GET JSON (solo lectura, memo por build)
+│  │  └─ index.ts                # facade `api`: único punto de acceso a los datos
 │  ├─ data/
-│  │  └─ api.js                  # "API" simulada: un solo archivo con todos los datos
+│  │  ├─ db.ts                   # base de datos local (3 categorías, 7 productos)
+│  │  ├─ types.ts                # contracto Category/Product/Database
+│  │  ├─ site.ts                 # datos del negocio (NAP, redes, WhatsApp)
+│  │  └─ whatsapp.ts             # generador de enlaces
 │  ├─ layouts/
 │  │  └─ BaseLayout.astro
 │  ├─ lib/
-│  │  ├─ site.ts                 # datos del negocio (NAP, redes, WhatsApp)
-│  │  ├─ whatsapp.ts             # generador de enlaces
-│  │  └─ schema.ts               # generadores de JSON-LD
+│  │  ├─ schema.ts               # generadores de JSON-LD
+│  │  ├─ hours.ts                # formato de horario legible
+│  │  └─ image.ts                # imageSrc(): puente de tipos para <Image>
 │  ├─ styles/
 │  │  └─ global.css              # design tokens (@theme) + Tailwind
 │  └─ pages/
@@ -127,7 +134,7 @@ Sitemap: https://www.tudominio.com/sitemap-index.xml
 
 Design tokens de Tailwind en `@theme` (sin `tailwind.config`): colores planos `--color-primary`, `--color-secondary`, `--color-accent`, `--color-neutral` y **dos** tipografías `--font-body` / `--font-display`, más `--default-font-family: var(--font-body)` para que `<html>` use la tipografía de cuerpo. Utilities: `bg-primary`, `text-secondary`, `border-accent`, `font-body`, `font-display`.
 
-### `src/lib/site.ts`
+### `src/data/site.ts`
 
 ```ts
 export const SITE = {
@@ -159,9 +166,13 @@ export const SITE = {
 
 ## 3. Capa de datos (sin Content Collections)
 
-Un solo módulo que **imita la respuesta de una API**: los datos viven en `src/data/api.js`, se importan en build time y exponen una interfaz estable. Cero archivos `.md`, cero `astro:content`, cero `getCollection`.
+Los datos crudos viven en `src/data/db.ts` y el único punto de acceso es el facade
+`api` de `src/api/` (async, siempre `await`), que además soporta un modo remoto con
+bandera (`USE_API` + `API_BASE_URL`): sin definir usa el repo local; con `USE_API=true`
+hace `GET /categories` y `GET /products` contra la API. Cero archivos `.md`, cero
+`astro:content`, cero `getCollection`.
 
-### `src/data/api.js`
+### `src/data/db.ts`
 
 ```js
 import rodillera1 from '../assets/products/rodillera-1.jpg';
@@ -199,38 +210,22 @@ const db = {
     },
   ],
 };
-
-export const api = {
-  categories: {
-    list: () => [...db.categories].sort((a, b) => a.order - b.order),
-    bySlug: (slug) => db.categories.find((c) => c.slug === slug),
-  },
-  products: {
-    list: () => db.products,
-    bySlug: (slug) => db.products.find((p) => p.slug === slug),
-    byCategory: (slug) => db.products.filter((p) => p.category === slug),
-    featured: (limit = 6) => db.products.filter((p) => p.featured).slice(0, limit),
-    related: (slug, limit = 4) => {
-      const current = api.products.bySlug(slug);
-      return db.products
-        .filter((p) => p.category === current?.category && p.slug !== slug)
-        .slice(0, limit);
-    },
-  },
-};
 ```
 
+El facade vive en `src/api/index.ts` (ver estado-implementado §4.2): métodos
+`async` con la misma superficie para ambos orígenes.
+
 **Reglas de la capa de datos:**
-- `api.*` es el único punto de acceso a los datos. Páginas y componentes no tocan `db`.
-- Las firmas son estables: cuando exista un backend real, cada método se reemplaza por `await fetch(...)` sin tocar nada agu abajo (DIP).
+- `api.*` (de `src/api/`) es el único punto de acceso a los datos. Páginas y componentes no tocan `db`.
+- Las firmas son estables y asíncronas: las páginas siempre `await api.*`. El modo remoto (`USE_API=true`) reemplaza el origen por `GET /categories` + `GET /products` **sin tocar nada agu abajo** (DIP); la bandera y la base viven en `src/api/config.ts`.
 - Los textos largos (`description`, `intro`) son campos string del dato, no Markdown.
-- Las imágenes se importan en el módulo (Astro las optimiza); nunca rutas `/src/...` en crudo.
+- Las imágenes se importan en el módulo (Astro las optimiza); nunca rutas `/src/...` en crudo (en modo remoto llegan como URL con `width`/`height` explícitos).
 
 ---
 
 ## 4. Helpers de lógica
 
-### `src/lib/whatsapp.ts`
+### `src/data/whatsapp.ts`
 
 ```ts
 import { SITE } from './site';
@@ -339,7 +334,7 @@ export const itemListSchema = (items: { name: string; url: string }[]) => ({
 
 ```astro
 ---
-import { SITE } from '../../lib/site';
+import { SITE } from '../../data/site';
 
 interface Props {
   title: string;
@@ -453,7 +448,7 @@ const { items } = Astro.props;
 
 ```astro
 ---
-import { whatsappLink } from '../../lib/whatsapp';
+import { whatsappLink } from '../../data/whatsapp';
 
 interface Props {
   message: string;
@@ -512,10 +507,10 @@ import FeaturedCategories from '../components/home/FeaturedCategories.astro';
 import WhyUs from '../components/home/WhyUs.astro';
 import Faq from '../components/home/Faq.astro';
 import LocationCta from '../components/home/LocationCta.astro';
-import { api } from '../data/api';
+import { api } from '../api';
 import { faqSchema } from '../lib/schema';
 
-const categories = api.categories.list();   // ya viene ordenado por `order`
+const categories = await api.categories.list();   // ya viene ordenado por `order`
 
 const services = [
   { title: 'Evaluación ortopédica', text: 'Valoración personalizada de tu caso.', href: '/servicios/evaluacion-ortopedica/' },
@@ -560,19 +555,22 @@ const faqs = [
 
 ```astro
 ---
-import { api } from '../../data/api';
+import { api } from '../../api';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/layout/Breadcrumbs.astro';
 import ProductGrid from '../../components/catalog/ProductGrid.astro';
 import WhatsAppButton from '../../components/ui/WhatsAppButton.astro';
 import { breadcrumbSchema, itemListSchema } from '../../lib/schema';
-import { SITE } from '../../lib/site';
+import { SITE } from '../../data/site';
 
 export async function getStaticPaths() {
-  return api.categories.list().map((cat) => ({
-    params: { category: cat.slug },
-    props: { cat, products: api.products.byCategory(cat.slug) },
-  }));
+  const categories = await api.categories.list();
+  return Promise.all(
+    categories.map(async (cat) => ({
+      params: { category: cat.slug },
+      props: { cat, products: await api.products.byCategory(cat.slug) },
+    })),
+  );
 }
 
 const { cat, products } = Astro.props;
@@ -671,7 +669,7 @@ const { slug, name, price, images } = product;
 
 ```astro
 ---
-import { api } from '../../data/api';
+import { api } from '../../api';
 import { getImage } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/layout/Breadcrumbs.astro';
@@ -680,18 +678,22 @@ import ProductInfo from '../../components/product/ProductInfo.astro';
 import ProductSpecs from '../../components/product/ProductSpecs.astro';
 import RelatedProducts from '../../components/product/RelatedProducts.astro';
 import { breadcrumbSchema, productSchema, faqSchema } from '../../lib/schema';
-import { productWhatsappMessage } from '../../lib/whatsapp';
-import { SITE } from '../../lib/site';
+import { productWhatsappMessage } from '../../data/whatsapp';
+import { SITE } from '../../data/site';
 
 export async function getStaticPaths() {
-  return api.products.list().map((product) => ({
-    params: { slug: product.slug },
-    props: {
-      product,
-      category: api.categories.bySlug(product.category),
-      related: api.products.related(product.slug),
-    },
-  }));
+  const products = await api.products.list();
+  const paths = await Promise.all(
+    products.map(async (product) => ({
+      params: { slug: product.slug },
+      props: {
+        product,
+        category: await api.categories.bySlug(product.category),
+        related: await api.products.related(product.slug),
+      },
+    })),
+  );
+  return paths;
 }
 
 const { product, category, related } = Astro.props;

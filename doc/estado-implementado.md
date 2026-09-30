@@ -11,7 +11,7 @@ página y con qué datos reales trabaja**, sin tener que reconstruirlo leyendo e
 
 1. §2 tablas de rutas y componentes → dónde está cada cosa.
 2. §3 composición página por página → en qué orden se renderiza y con qué props.
-3. §4 datos reales → `SITE`, `LEGAL` y la forma de `api.js`.
+3. §4 datos reales → `SITE`, `LEGAL`, la forma de `db.ts` y la capa `src/api` (bandera repo/api).
 4. §6 comandos → verificar que el documento sigue siendo cierto.
 
 ---
@@ -22,7 +22,7 @@ página y con qué datos reales trabaja**, sin tener que reconstruirlo leyendo e
 |---|---|
 | Framework | Astro 7, output estático (SSG). Sin adaptador, sin SSR. |
 | Estilos | Tailwind v4 vía `@tailwindcss/vite`; tokens en `src/styles/global.css` `@theme` |
-| Contenido | **No** usa `astro:content` ni content collections: los datos viven en `src/data/api.js` |
+| Contenido | **No** usa `astro:content` ni content collections: los datos viven en `src/data/db.ts` (contracto `src/data/types.ts`) y el acceso pasa por `src/api/` |
 | JS en cliente | Solo dos `<script>` inline: handler de submit del libro de reclamaciones y hook `dataLayer`. Cero frameworks (React/Vue) |
 | `site` | `https://www.example.com` (placeholder — pendiente dominio real) |
 | `trailingSlash` | `'always'`: **toda** URL interna termina en `/` |
@@ -79,8 +79,11 @@ src/
 │  ├─ seo/        SEO · JsonLd
 │  └─ ui/         Button · WhatsAppButton · Container · PageHeader · Callout ·
 │                 CtaBand · Accordion · PriceTag · AvailabilityBadge
-├─ lib/          site.ts (SITE+LEGAL) · whatsapp.ts · schema.ts · hours.ts
-├─ data/api.js   única fuente de datos (3 categorías, 7 productos)
+├─ api/          config.ts (bandera USE_API + API_BASE_URL) · client.ts (solo GET, memo)
+│                index.ts → facade `api` (único acceso a datos; async, siempre `await`)
+├─ lib/          hours.ts · schema.ts · image.ts   (lógica pura, sin datos)
+├─ data/         db.ts (3 categorías, 7 productos, `: Database`) · types.ts (contracto
+│                db ↔ API) · site.ts (SITE+LEGAL) · whatsapp.ts
 ├─ assets/       home/hero.jpg · products/*.jpg  (imágenes de prueba)
 └─ styles/global.css
 ```
@@ -201,7 +204,7 @@ BaseLayout (title: "Centro ortopédico en {city}", schemas: faqSchema ×4)
 9. CtaBand       title/text/message  ← banda bg-primary de cierre
 ```
 Los datos de servicios, trustbar, pasos y FAQ se definen **en la página** (capa smart),
-no en `api.js`.
+no en `db.ts`.
 
 **Distribución**: única página con 9 bandas a ancho completo. El hero es el único lugar
 con 2 columnas de texto+imagen (izquierda texto, derecha imagen en `md`); el resto son
@@ -355,7 +358,7 @@ los 2 botones van en fila y apilan sueltas en móvil (`flex flex-wrap gap-3`).
 
 ## 4. Datos reales (el objeto)
 
-### 4.1 `src/lib/site.ts`
+### 4.1 `src/data/site.ts`
 
 ```ts
 export const SITE = {
@@ -384,16 +387,20 @@ export const LEGAL = {
   reclamosResponseDays: 15,                 // [VALIDAR reglamento vigente]
   pricesIncludeIGV: true,
   currency: 'PEN',
+  lastUpdated: '30 de septiembre de 2026',   // fte única de las 3 legales
 } as const;
 ```
 
 **Son datos de prueba.** Todo lo que se ve en footer, contacto, términos y JSON-LD sale de
 estos dos objetos: cambiarlos aquí cambia el sitio completo (coherencia NAP garantizada).
 
-### 4.2 `src/data/api.js` — forma y contenido
+### 4.2 Datos (`src/data/db.ts`) y capa de acceso (`src/api/`)
 
-Estructura: `db = { categories: [...], products: [...] }` exportado **solo** a través de `api`
-(las páginas nunca importan `db`). Importa las imágenes como `ImageMetadata` (import de jpg).
+Estructura: `db: Database = { categories: [...], products: [...] }` — el tipo
+`Database` vive en `src/data/types.ts` y valida la forma en ambos sentidos (db ↔
+JSON de API). Las páginas **nunca** importan `db`: el único acceso es el facade
+`api` de `src/api/` (async, siempre `await`). Importa las imágenes como
+`ImageMetadata` (import de jpg).
 
 **Categorías** (`api.categories.list()` ordena por `order`):
 
@@ -422,14 +429,14 @@ Campos por producto: `slug, name, category, seoTitle?, seoDescription, descripti
 ({src: ImageMetadata, alt}), price?, availability, brand?, sku, registroSanitario?,
 claseRiesgo?, titularRegistro?, condition, specs? (obj), faq? ({q,a}[]), featured`.
 
-**Regla editorial** (corre en cada build):
-```js
-const isPublishable = (p) => Boolean(p.registroSanitario);
+**Regla editorial** (corre en cada build, en `src/api/index.ts`):
+```ts
+const isPublishable = (p: Product) => Boolean(p.registroSanitario);
 // si hay filtrados: console.warn("[data] N producto(s) sin registro sanitario NO se publicarán: …")
 ```
 `rodillera-en-validacion` **no tiene ruta, no aparece en el sitemap ni en listados**.
 
-**Métodos de `api`:**
+**Métodos de `api`** (todos `async` — las páginas siempre hacen `await`):
 
 | Método | Devuelve |
 |---|---|
@@ -442,17 +449,39 @@ const isPublishable = (p) => Boolean(p.registroSanitario);
 | `products.related(slug, limit = 4)` | mismos `category`, excluyendo el actual |
 | `products.hidden()` | los filtrados (auditoría) |
 
-### 4.3 `src/lib/*`
+**Capa `src/api/`** (dual repo/api):
+
+| Archivo | Rol |
+|---|---|
+| `config.ts` | bandera `USE_API` (`'true'`/`'false'`) + `API_BASE_URL` desde `import.meta.env` (server-side, sin `PUBLIC_`). Guardas: valor con typo o `USE_API=true` sin base → el build **falla** con un error `[api]` |
+| `client.ts` | `getJSON<T>(path)`: solo GET (timeout 10 s), errores `[api] GET url → status`, memo por URL y por build |
+| `index.ts` | facade `api.*` (tabla de arriba) + regla editorial; en modo api carga los listados y calcula el resto con la **misma** lógica del modo repo (un solo camino de código) |
+
+Contrato de endpoints (solo GET, para cuando exista el backend):
+
+| Endpoint | Devuelve |
+|---|---|
+| `GET /categories` | `Category[]` (array completo) |
+| `GET /products` | `Product[]` (catálogo completo, **incluye** no publicables: la capa filtra) |
+
+Uso: `USE_API=true API_BASE_URL=https://api.ejemplo.com pnpm build`. Sin definir →
+modo repo (datos locales de `db.ts`). Imágenes remotas: pendiente declarar
+`image.domains` en `astro.config.mjs` cuando exista el backend real (los componentes
+ya pasan `width`/`height` explícitos, requeridos para el caso remoto).
+
+### 4.3 `src/data/*` y `src/lib/*`
 
 | Archivo | Exporta | Comportamiento |
 |---|---|---|
-| `whatsapp.ts` | `whatsappLink(msg)` | `https://wa.me/{SITE.whatsapp}?text=…` (URL-encoded) |
+| `data/site.ts` | `SITE`, `LEGAL` | §4.1 (antes en `lib/`) |
+| `data/whatsapp.ts` | `whatsappLink(msg)` | `https://wa.me/{SITE.whatsapp}?text=…` (URL-encoded) |
 | | `productWhatsappMessage(name, url)` | incluye nombre, URL y "precio final con IGV… boleta o factura" |
 | | `categoryWhatsappMessage(name)` / `generalWhatsappMessage()` | mensajes de asesoría / genérico |
-| `schema.ts` | `organizationSchema()` | `['MedicalBusiness','Store']` con NAP, geo, horarios, `taxID` (RUC) |
+| `data/types.ts` | `Category`, `Product`, `Database` | contracto compartido db ↔ API (valida los dos lados) |
+| `lib/schema.ts` | `organizationSchema()` | `['MedicalBusiness','Store']` con NAP, geo, horarios, `taxID` (RUC) |
 | | `breadcrumbSchema(items)` · `itemListSchema(items)` · `productSchema(p)` · `faqSchema(items)` | builders de JSON-LD; `productSchema.image` recibe URLs absolutas en **jpg** |
-| `hours.ts` | `formatHours()` | "Lun, Mar, Mié, Jue, Vie: 09:00–19:00 · Sáb: 09:00–14:00" — fuente única del horario (footer, home, contacto, términos) |
-| `site.ts` | `SITE`, `LEGAL` | §4.1 |
+| `lib/hours.ts` | `formatHours()` | "Lun, Mar, Mié, Jue, Vie: 09:00–19:00 · Sáb: 09:00–14:00" — fuente única del horario (footer, home, contacto, términos) |
+| `lib/image.ts` | `imageSrc()` | estrechamiento estático para `<Image>`: astro:assets declara ramas Props separadas (local `ImageMetadata` / remota `string`) y un union no asigna a ninguna; el runtime resuelve ambos |
 
 ### 4.4 JSON-LD emitido por página
 
@@ -526,18 +555,23 @@ temporales (M9) y no son reproducibles con un solo comando.
 
 - [ ] El árbol de §1 coincide con `find src -type f`
 - [ ] La tabla de rutas de §2.1 coincide con `dist/`
-- [ ] Los valores de §4.1 coinciden con `src/lib/site.ts`
-- [ ] La tabla de productos de §4.2 coincide con `src/data/api.js`
+- [ ] Los valores de §4.1 coinciden con `src/data/site.ts`
+- [ ] La tabla de productos de §4.2 coincide con `src/data/db.ts`
+- [ ] La capa de §4.2 coincide con `src/api/{config,client,index}.ts`
 
 ## 7. Gotchas para un agente nuevo
 
 1. **`pages/` smart, `components/` dumb**: los componentes reciben *slices* de props, no la
-   entidad completa; los datos viven en `api.js` y `site.ts`, nunca dentro de componentes.
-2. **`<Image>` necesita el `ImageMetadata`, no el string**. Pasar `image.src` (string) hace
-   que Astro **no** transforme y entregue el jpg ignorando `format="webp"` (bug ya corregido
-   en `CategoryCard`/`FeaturedCategories`; no reintroducirlo).
+   entidad completa; los datos viven en `src/data/` (`db.ts`, `site.ts`) y el acceso es
+   `src/api`, nunca dentro de componentes.
+2. **`<Image>` y strings**: en modo repo la imagen SIEMPRE es `ImageMetadata` (pasar
+   `image.src` hace que Astro **no** transforme y entregue el jpg ignorando `format` —
+   bug ya corregido en `CategoryCard`/`FeaturedCategories`; no reintroducirlo). El
+   contracto es dual (`ImageMetadata | string` para el modo api): el estrechamiento
+   estático vive en `lib/image.ts` (`imageSrc()`) y los componentes pasan
+   `width`/`height` explícitos, necesarios para el caso remoto.
 3. **Todo href interno termina en `/`** (`trailingSlash: 'always'`); anclas van como `/#servicios`.
-4. **Sin `astro:content`**: agregar contenido = tocar `api.js` o la página.
+4. **Sin `astro:content`**: agregar contenido = tocar `data/db.ts` o la página.
 5. **Sin frameworks JS**: solo los 2 `<script>` descritos en §5 (validación del libro de
    reclamaciones y handler global de eventos).
 6. **Tokens planos**: no existen escalas `primary-500` ni `blue-600`; usar `text-primary`,
@@ -545,7 +579,8 @@ temporales (M9) y no son reproducibles con un solo comando.
    hover `#1ebe5b`, únicamente en `WhatsAppButton`.
 7. **Copy en español neutro peruano** (sin voseo, sin anglicismos), lenguaje YMYL: nada de
    "cura", "garantizado" ni testimonios médicos (`legal.md 8.3`).
-8. **Sin registro sanitario no hay publicación**: `api.js` filtra en build y avisa por consola.
+8. **Sin registro sanitario no hay publicación**: `src/api` filtra en build y avisa por
+   consola.
 9. **`ui/Button` está en uso en 2 lugares** (Hero de la home y 404); si se elimina, eliminar
    también sus usos, no dejarlo a medio camino.
 10. **`hideFloatingCta`** es la prop de `BaseLayout` que apaga el WhatsApp flotante en las
@@ -562,10 +597,14 @@ temporales (M9) y no son reproducibles con un solo comando.
     componentes): datos → clave `IconName` del registro `icons/index.ts`; uso único →
     import directo del componente. `aria-hidden` está fijo en el icono; el tamaño/color
     se pasan por `class`.
+16. **Bandera de datos**: sin `USE_API` el sitio usa `data/db.ts` (repo). Con
+    `USE_API=true` hace `GET /categories` y `GET /products` contra `API_BASE_URL`; si
+    falta la base o el valor tiene typo, el build falla a propósito con un error
+    `[api]` (§4.2).
 
 ## 8. Pendientes conocidos (detalle en `doc/plan-implementacion.md`)
 
-Dominio/HTTPS · datos reales en `site.ts` · endpoint real + aviso INDECOPI · Google Business
+Dominio/HTTPS · datos reales en `data/site.ts` · endpoint real + aviso INDECOPI · Google Business
 Profile · Search Console y PageSpeed · decisión de analítica (+cookies) · 4 `[VALIDAR]` con el
 abogado · fotos con derechos · deploy (aún no ejecutado). Los commits de las mejoras M0–M9
 están en la rama local (`doc/plan-mejoras.md` lleva el registro).
