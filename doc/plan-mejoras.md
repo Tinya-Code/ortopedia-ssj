@@ -190,13 +190,16 @@ Objetivo: navegación lateral entre categorías y cierre de conversión.
 
 Objetivo: CTA de compra siempre a mano en móvil sin pisar el flotante.
 
-- [ ] `product/StickyProductBar.astro` (nuevo): `fixed inset-x-0 bottom-0 z-40 md:hidden`, nombre corto + `PriceTag` + botón WhatsApp (`whatsapp_product`).
-- [ ] Flotante global: `BaseLayout` recibe un prop nuevo (p. ej. `hideFloatingCta?: boolean`) que **solo** la página de producto activa → el flotante sale con `hidden md:flex` ahí y queda igual en las otras 16 páginas.
-- [ ] `pb-24 md:pb-0` en el `<main>` de la ficha de producto.
+- [x] `product/StickyProductBar.astro` (nuevo): `fixed inset-x-0 bottom-0 z-40 md:hidden`, nombre corto (`truncate` + `min-w-0`) + `PriceTag` + botón WhatsApp (`whatsapp_product`), `aria-label="Compra rápida"`.
+- [x] Flotante global: `BaseLayout` recibe `hideFloatingCta?: boolean` (solo la página de producto lo activa) → `WhatsAppButton` acepta `mobileHidden` y la variante flotante sale con `hidden md:flex`; igual en las otras 16 páginas (`inline-flex`).
+- [x] `pb-24 md:pb-0` reservado. **Desviación justificada**: se aplicó en `<body>` (vía `hideFloatingCta`) y no en `<main>`; la barra es full-width y con el padding solo en `main` taparía la fila `©` y los enlaces del footer, que quedarían además fuera de alcance de clic.
 
 **Criterio de salida**: gates globales + en el HTML de producto: barra presente **y** flotante con `hidden md:flex`; en el resto de las páginas el flotante **sin** `hidden`.
-**Riesgo**: superposición de dos CTA fijos → es el punto del checklist de aceptación.
+**Riesgo**: superposición de dos CTA fijos → es el punto del checklist de aceptación. Nunca coinciden: barra `md:hidden` × flotante `hidden md:flex`.
 **Rollback**: revert del commit.
+
+**Evidencia** (commit `0d55154`): matriz de las 17 páginas — 6 de producto: barra = 1, flotante `hidden md:flex`, `pb-24 md:pb-0` = 1; 11 archivos restantes: flotante `inline-flex` (clase completa `fixed bottom-4 right-4 z-50 …` verificada), sin barra y sin pb. `data-event="whatsapp_product"` ×2 en la ficha (ProductInfo + barra). build 17 / check 0 / 1 `h1` por página / gates globales ok.
+**Bug propio detectado y corregido antes de commitear**: en el primer edit de `WhatsAppButton` se cayó el prefijo `fixed bottom-4 right-4 z-50` de la variante flotante (quedó como botón estático en las 17 páginas); la matriz de verificación lo marcó como `NINGUNO` y se restauró en el mismo ciclo.
 
 ---
 
