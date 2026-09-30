@@ -2,9 +2,11 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/layout/Breadcrumbs.astro';
 import CategoryCard from '../../components/catalog/CategoryCard.astro';
+import CtaBand from '../../components/ui/CtaBand.astro';
 import { api } from '../../data/api';
 import { breadcrumbSchema, itemListSchema } from '../../lib/schema';
 import { SITE } from '../../lib/site';
+import { generalWhatsappMessage } from '../../lib/whatsapp';
 import Container from '../../components/ui/Container.astro';
 import PageHeader from '../../components/ui/PageHeader.astro';
 
@@ -42,4 +44,10 @@ const abs = (p: string) => new URL(p, SITE.url).href;
       </div>
     </Container>
   </section>
+
+  <CtaBand
+    title="¿No encuentras lo que buscas?"
+    text="Escríbenos por WhatsApp y te ayudamos a encontrar el producto que necesitas."
+    message={generalWhatsappMessage()}
+  />
 </BaseLayout>

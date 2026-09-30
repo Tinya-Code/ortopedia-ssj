@@ -1,0 +1,26 @@
+---
+// mejoras.md §5.11 — navegación entre categorías dentro del catálogo.
+// Consolida el estilo de chips que antes vivía duplicado en la 404:
+// contorno primary, activa rellena con aria-current="page" y min-h-11 (44px).
+interface Props {
+  categories: { slug: string; name: string }[];
+  activeSlug?: string;
+}
+const { categories, activeSlug } = Astro.props;
+---
+<nav aria-label="Categorías" class="flex flex-wrap gap-2">
+  {categories.map((c) => (
+    <a
+      href={`/catalogo/${c.slug}/`}
+      aria-current={c.slug === activeSlug ? 'page' : undefined}
+      class:list={[
+        'inline-flex min-h-11 items-center rounded-lg border px-4 py-2 text-sm font-semibold transition-colors motion-reduce:transition-none',
+        c.slug === activeSlug
+          ? 'border-primary bg-primary text-white'
+          : 'border-primary text-primary hover:bg-primary/5',
+      ]}
+    >
+      {c.name}
+    </a>
+  ))}
+</nav>

@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { api } from '../data/api';
 import Container from '../components/ui/Container.astro';
 import PageHeader from '../components/ui/PageHeader.astro';
+import CategoryChips from '../components/catalog/CategoryChips.astro';
 
 // Página de error: no se indexa y ofrece rutas reales para recuperarse.
 const title = 'Página no encontrada';
@@ -17,18 +18,9 @@ const categories = api.categories.list();
         title="Página no encontrada"
         lead="El enlace que siguió no corresponde a ninguna página del sitio. Puede volver al inicio o explorar nuestras categorías:"
       />
-      <ul class="mt-6 flex flex-wrap gap-3">
-        {categories.map((c) => (
-          <li>
-            <a
-              href={`/catalogo/${c.slug}/`}
-              class="inline-flex items-center rounded-lg border border-primary px-4 py-2 text-sm font-semibold text-primary hover:bg-primary hover:text-white"
-            >
-              {c.name}
-            </a>
-          </li>
-        ))}
-      </ul>
+      <div class="mt-6">
+        <CategoryChips categories={categories} />
+      </div>
       <p class="mt-6">
         <a href="/" class="text-primary underline underline-offset-4">Volver al inicio</a>
       </p>

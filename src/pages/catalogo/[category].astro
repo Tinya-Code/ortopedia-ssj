@@ -3,7 +3,10 @@ import { api } from '../../data/api';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/layout/Breadcrumbs.astro';
 import ProductGrid from '../../components/catalog/ProductGrid.astro';
+import CategoryChips from '../../components/catalog/CategoryChips.astro';
 import WhatsAppButton from '../../components/ui/WhatsAppButton.astro';
+import Callout from '../../components/ui/Callout.astro';
+import CtaBand from '../../components/ui/CtaBand.astro';
 import { breadcrumbSchema, itemListSchema } from '../../lib/schema';
 import { categoryWhatsappMessage } from '../../lib/whatsapp';
 import { SITE } from '../../lib/site';
@@ -20,6 +23,7 @@ export async function getStaticPaths() {
 }
 
 const { cat, products } = Astro.props;
+const categories = api.categories.list();
 
 const crumbs = [
   { name: 'Inicio', href: '/' },
@@ -40,25 +44,34 @@ const abs = (p: string) => new URL(p, SITE.url).href;
 
   <section class="pb-8">
     <Container>
-      <PageHeader title={cat.name} lead={cat.intro} />
+      {/* Orden §6.3: h1 → chips → intro (~150 palabras) → productos. */}
+      <PageHeader title={cat.name} />
+      <CategoryChips {categories} activeSlug={cat.slug} />
+      <p class="mt-6 max-w-prose text-neutral">{cat.intro}</p>
 
       <div class="mt-6">
         {products.length > 0 ? (
           <ProductGrid products={products} />
         ) : (
-          <p class="rounded-xl border border-neutral/20 p-6 text-neutral">
-            Por el momento no hay productos publicados en esta categoría. Consultanos por WhatsApp
-            para conocer disponibilidad.
-          </p>
+          <Callout tone="info" title="Sin productos publicados">
+            Por el momento no hay productos publicados en esta categoría. Consultanos por
+            WhatsApp para conocer disponibilidad.
+            <div class="mt-4">
+              <WhatsAppButton
+                message={categoryWhatsappMessage(cat.name)}
+                label="Consultar disponibilidad"
+              />
+            </div>
+          </Callout>
         )}
-      </div>
-
-      <div class="mt-8">
-        <WhatsAppButton
-          message={categoryWhatsappMessage(cat.name)}
-          label="Asesoría por WhatsApp"
-        />
       </div>
     </Container>
   </section>
+
+  {/* Único CTA final de la página (§6.3): reemplaza al botón suelto anterior. */}
+  <CtaBand
+    title="¿Necesitas asesoría para elegir?"
+    text={`Te orientamos sobre tallas, medidas y disponibilidad de ${cat.name.toLowerCase()}.`}
+    message={categoryWhatsappMessage(cat.name)}
+  />
 </BaseLayout>
