@@ -128,18 +128,21 @@ Objetivo: navegación accesible y chrome consistente en las 17 páginas.
 
 Objetivo: ficha y tarjetas con disponibilidad, precio centralizado y lectura cómoda.
 
-- [ ] `product/AvailabilityBadge.astro` (`InStock|PreOrder|OutOfStock` → En stock / Por encargo / Agotado, con texto, no solo color).
-- [ ] `ui/PriceTag.astro` (`S/ 120.00` + "Incluye IGV"; "Consultar precio" si no hay) — reemplaza el formato duplicado en `ProductCard` e `ProductInfo`.
-- [ ] `ProductInfo`: orden h1 → `AvailabilityBadge` → `PriceTag` (lg) → aviso IGV → CTA WhatsApp a ancho completo en móvil.
-- [ ] `ProductCard`: badge en esquina de la imagen + `PriceTag`.
-- [ ] `ProductSpecs`: filas cebra `odd:bg-neutral/5`, clave `font-semibold text-ink`.
-- [ ] `RelatedProducts`: precio alineado a la derecha.
-- [ ] `ProductGallery`: miniaturas en fila con `overflow-x-auto` en móvil.
-- [ ] Columna derecha de la ficha: `md:sticky md:top-24`.
+- [x] `product/AvailabilityBadge.astro` (`InStock|PreOrder|OutOfStock` → En stock / Por encargo / Agotado, con texto, no solo color).
+- [x] `ui/PriceTag.astro` (`S/ 120.00` + "Incluye IGV"; "Consultar precio" si no hay) — reemplaza el formato duplicado en `ProductCard` e `ProductInfo`.
+- [x] `ProductInfo`: orden h1 → `AvailabilityBadge` → `PriceTag` (lg) → aviso IGV → CTA WhatsApp a ancho completo en móvil.
+- [x] `ProductCard`: badge en esquina de la imagen + `PriceTag`.
+- [x] `ProductSpecs`: filas cebra `odd:bg-neutral/5`, clave `font-semibold text-ink`.
+- [x] `RelatedProducts`: precio alineado a la derecha.
+- [x] `ProductGallery`: miniaturas en fila con `overflow-x-auto` en móvil.
+- [x] Columna derecha de la ficha: `md:sticky md:top-24`.
 
 **Criterio de salida**: gates globales + las 6 fichas muestran `S/ X.XX` (formato unificado: mismo patrón en `dist/producto/*/index.html`) + disponibilidad visible **con texto** en las 6 fichas + JSON-LD sigue coherente (`PreOrder` ↔ "Por encargo").
 **Riesgo**: el badge no debe contradecir el schema de oferta (mismo valor de `availability`).
 **Rollback**: revert del commit (componentes de producto + tarjetas).
+
+**Evidencia** (commit `8466129`): build 17 HTML / check 0 / las 6 fichas con `S/ X.XX` unificado (75/85/120/145/890/1250.00) + "En stock" ×5 y "Por encargo" ×1 con texto / `schema.org/PreOrder` + "Por encargo" en `silla-ruedas-aluminio` (coherente) / badge también en tarjetas de categoría (2 en `/catalogo/rodilleras/`) / `self-start md:sticky md:top-24` presente / cebra `odd:bg-neutral/5` y `dt` en `text-ink` / miniaturas con `overflow-x-auto` / sin "Consultar precio" (todos los productos publicados tienen precio) / 1 `h1` por página / sin tokens ni hex fuera de `WhatsAppButton`.
+**Nota**: el producto sin registro sanitario (`rodillera-en-validacion`, `OutOfStock`) sigue filtrado por `isPublishable` — la rama `Agotado` existe por si se publica.
 
 ---
 
