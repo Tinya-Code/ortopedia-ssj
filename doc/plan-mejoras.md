@@ -99,7 +99,7 @@ Objetivo: eliminar la repetición de clases de contenedor/cabecera/aviso y unifi
 **Riesgo**: `PageHeader` duplica el `h1` si una página lo deja en su markup → revisar 1 `h1` por página (gate).
 **Rollback**: borrar los 3 componentes y revert de páginas (commit aislado).
 
-**Evidencia** (commits `f0044e8` + `0b43b1d`): build 17 HTML / check 0 (45 archivos) / 1 `h1` por página / grep de `max-w-*` vacío / `<Container` en 15 archivos / `<PageHeader` en 8 páginas / sin tokens prohibidos / sin `astro:content`.
+**Evidencia** (commits `f0044e8` + `241407f`): build 17 HTML / check 0 (45 archivos) / 1 `h1` por página / grep de `max-w-*` vacío / `<Container` en 15 archivos / `<PageHeader` en 8 páginas / sin tokens prohibidos / sin `astro:content`.
 
 ---
 
