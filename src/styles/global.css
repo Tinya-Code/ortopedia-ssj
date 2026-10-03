@@ -7,17 +7,19 @@
  */
 @theme {
   /* Colores */
-  --color-primary: #1d69f0;
+  --color-primary: #0d80a5;
   /* Teal más oscuro que el original (#21a7a5): el valor propuesto en el spec
      (#178582) daba 4.455:1 y no alcanzaba AA; #167f7d da 4.81:1 contra blanco. */
-  --color-secondary: #167f7d;
-  --color-accent: #f59e0b;
-  --color-neutral: #6b7280;
-  --color-ink: #111827;
-  --color-accent-text: #b45309;
-  --color-success: #15803d;
-  --color-warning: #b45309;
-  --color-danger: #b91c1c;
+  --color-secondary: #054894; /* azul oscuro */
+  --color-tertiary: #71c0e2; /* celeste claro */
+  --color-accent: #ed2c37;
+  --color-neutral: #6b7280; /* gris medio */
+  --color-ink: #111827; /* casi negro */
+  --color-accent-text: #ed2c37; /* rojo*/
+  --color-success: #15803d; /* verde oscuro */
+  --color-warning: #b45309; /* naranja oscuro */
+  --color-danger: #b91c1c; /* rojo oscuro */
+  --color-light: #fcfdfd; /* texto claro */
 
   /* Forma y sombra de tarjeta */
   --radius-card: 0.75rem;

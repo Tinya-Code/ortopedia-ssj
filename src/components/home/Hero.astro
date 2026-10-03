@@ -1,5 +1,7 @@
 ---
 // Único <h1> de la home. La imagen es el LCP: fetchpriority="high", sin lazy.
+// La imagen cubre toda la sección como fondo; texto y acciones van encima.
+// El scrim garantiza contraste AA del texto claro sobre la imagen.
 import { Image } from 'astro:assets';
 import Container from '../ui/Container.astro';
 
@@ -7,35 +9,36 @@ interface Props {
   title: string;
   text?: string;
   image: ImageMetadata;
-  imageAlt: string;
 }
-const { title, text, image, imageAlt } = Astro.props;
+const { title, text, image } = Astro.props;
 ---
-<section class="bg-white">
+<section class="relative  h-[calc(100vh-63px)] isolate bg-primary flex items-center">
+  <Image
+    src={image}
+    alt=""
+    width={2752}
+    height={1536}
+    widths={[960, 1440, 1920, 2752]}
+    sizes="100vw"
+    format="webp"
+    loading="eager"
+    fetchpriority="high"
+    decoding="async"
+    class="absolute inset-0 -z-10 h-full w-full object-cover"
+  />
+  <div
+    aria-hidden="true"
+    class="absolute inset-0 -z-10 bg-linear-to-b from-primary via-primary via-35% to-transparent md:bg-linear-to-r md:via-10%"
+  />
   <Container>
-    <div class="grid items-center gap-8 py-12 md:grid-cols-2 md:py-16">
-      <div>
-        <h1 class="font-display text-4xl font-semibold leading-tight text-ink md:text-5xl">
-          {title}
-        </h1>
-        {text && <p class="mt-4 max-w-prose text-lg text-neutral">{text}</p>}
-        <div class="mt-6 flex flex-wrap gap-3">
-          <slot />
-        </div>
+    <div class="max-w-md pt-16 pb-24 md:py-24 lg:max-w-xl">
+      <h1 class="font-display text-4xl font-semibold leading-tight text-white md:text-5xl">
+        {title}
+      </h1>
+      {text && <p class="mt-4 max-w-prose text-lg text-white">{text}</p>}
+      <div class="mt-6 flex flex-wrap gap-3">
+        <slot />
       </div>
-      <Image
-        src={image}
-        alt={imageAlt}
-        width={1600}
-        height={900}
-        widths={[600, 1000, 1600]}
-        sizes="(min-width: 768px) 50vw, 100vw"
-        format="webp"
-        loading="eager"
-        fetchpriority="high"
-        decoding="async"
-        class="h-auto w-full rounded-card"
-      />
     </div>
   </Container>
 </section>
