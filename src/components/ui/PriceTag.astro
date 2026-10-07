@@ -3,7 +3,7 @@
 // Reemplaza el formato duplicado de ProductCard, ProductInfo y RelatedProducts.
 interface Props {
   price?: number;
-  size?: 'md' | 'lg';
+  size?: 'md' | 'lg' | 'card';
   includesIGV?: boolean;
   class?: string;
 }
@@ -11,8 +11,10 @@ const { price, size = 'md', includesIGV = false, class: className } = Astro.prop
 ---
 <p
   class:list={[
-    'flex flex-wrap items-baseline gap-x-2 font-semibold text-ink',
-    size === 'lg' ? 'text-2xl' : 'text-sm',
+    'flex flex-wrap items-baseline gap-x-2 text-ink',
+    size === 'lg' && 'text-2xl font-semibold',
+    size === 'card' && 'text-lg font-bold',
+    size === 'md' && 'text-sm font-semibold',
     className,
   ]}
 >

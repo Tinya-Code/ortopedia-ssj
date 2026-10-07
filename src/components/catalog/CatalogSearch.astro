@@ -1,0 +1,22 @@
+---
+// Buscador global de productos (reutilizable).
+// Solo presenta el markup: el comportamiento vive en src/scripts/catalog.ts
+// y cada página lo inicializa con initCatalog().
+---
+<div class="flex items-center gap-2">
+  <label for="catalog-search" class="sr-only">Buscar productos</label>
+  <input
+    id="catalog-search"
+    type="search"
+    autocomplete="off"
+    placeholder="Buscar productos, marcas o categorías..."
+    class="h-11 min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-4 text-sm text-ink transition-colors placeholder:text-neutral hover:border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary/20 focus-visible:outline-none"
+  />
+  <button
+    type="button"
+    id="catalog-search-btn"
+    class="h-11 shrink-0 rounded-lg bg-primary px-5 text-sm font-medium text-white transition-colors hover:bg-primary/90 motion-reduce:transition-none"
+  >
+    Buscar
+  </button>
+</div>
