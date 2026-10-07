@@ -1,0 +1,124 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/layout/Breadcrumbs.astro';
+import Container from '../components/ui/Container.astro';
+import PageHeader from '../components/ui/PageHeader.astro';
+import Button from '../components/ui/Button.astro';
+import CtaBand from '../components/ui/CtaBand.astro';
+import { categoryWhatsappMessage, whatsappLink } from '../data/whatsapp';
+import evaluacionImage from '../assets/services/evaluacion-ortopedica.jpeg';
+import ortesisImage from '../assets/services/ortesis-a-medida.jpeg';
+import rehabilitacionImage from '../assets/services/rehabilitacion-asesoria.jpeg';
+
+const title = 'Servicios';
+const description =
+  'Evaluación ortopédica, ortesis a medida y rehabilitación y asesoría para mejorar tu movilidad y aliviar dolor.';
+
+const services: {
+  slug: string;
+  title: string;
+  text: string;
+  href: string;
+  image: ImageMetadata;
+  imageAlt: string;
+  accent: string;
+  reverse: boolean;
+}[] = [
+  {
+    slug: 'evaluacion-ortopedica',
+    title: 'Evaluación ortopédica',
+    text: 'Valoración personalizada de tu caso y recomendación de producto según tus medidas.',
+    href: whatsappLink(categoryWhatsappMessage('Evaluación ortopédica')),
+    image: evaluacionImage,
+    imageAlt: 'Ortopedista evaluando el pie de un paciente durante una valoración',
+    accent: '#ffffff',
+    reverse: false,
+  },
+  {
+    slug: 'ortesis-a-medida',
+    title: 'Ortesis a medida',
+    text: 'Soportes y ortesis adaptados a tu cuerpo y a tu actividad diaria.',
+    href: whatsappLink(categoryWhatsappMessage('Ortesis a medida')),
+    image: ortesisImage,
+    imageAlt: 'Ajuste de una ortesis a medida en la pierna de un paciente infantil',
+    accent: 'rgba(113, 192, 226, 0.10)',
+    reverse: true,
+  },
+  {
+    slug: 'rehabilitacion-asesoria',
+    title: 'Rehabilitación y asesoría',
+    text: 'Acompañamiento y orientación sobre el uso correcto de cada producto.',
+    href: whatsappLink(categoryWhatsappMessage('Rehabilitación y asesoría')),
+    image: rehabilitacionImage,
+    imageAlt: 'Profesional ajustando una férula de rodilla a una paciente en rehabilitación',
+    accent: '#ffffff',
+    reverse: false,
+  },
+];
+
+const crumbs = [
+  { name: 'Inicio', href: '/' },
+  { name: 'Servicios' },
+];
+---
+
+<BaseLayout {title} {description}>
+  <Breadcrumbs items={crumbs} />
+
+  <section class="pb-4">
+    <Container>
+      <PageHeader
+        title="Servicios"
+        lead="Cada tratamiento está pensado para acompañarte desde la evaluación hasta la recomendación final, con productos de apoyo y orientación personalizada."
+      />
+    </Container>
+  </section>
+
+  {services.map((service) => (
+    <section id={service.slug} class="py-6 sm:py-8" style={`background-color: ${service.accent};`}>
+      <Container>
+        <div class="grid items-center gap-6 md:grid-cols-2 md:gap-10">
+          <div
+            class:list={[
+              'order-2 space-y-5',
+              service.reverse ? 'md:order-2' : 'md:order-1',
+            ]}
+          >
+            <span
+              class="inline-flex rounded-full border border-primary/20 bg-white/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-primary"
+            >
+              Solución personalizada
+            </span>
+            <div>
+              <h2 class="font-display text-3xl font-semibold text-ink sm:text-4xl">{service.title}</h2>
+              <p class="mt-4 max-w-xl text-base leading-7 text-neutral">{service.text}</p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <Button href={service.href} label="Solicitar información" variant="primary" />
+              <Button href="/contacto/" label="Ver contacto" variant="outline" />
+            </div>
+          </div>
+
+          <div
+            class:list={[
+              'order-1 overflow-hidden rounded-card border border-neutral/15 bg-white shadow-card',
+              service.reverse ? 'md:order-1' : 'md:order-2',
+            ]}
+          >
+            <img
+              src={service.image.src}
+              alt={service.imageAlt}
+              class="h-[260px] w-full object-cover sm:h-[340px] md:h-[420px]"
+            />
+          </div>
+        </div>
+      </Container>
+    </section>
+  ))}
+
+  <CtaBand
+    title="¿Necesitas orientación para elegir el mejor servicio?"
+    text="Escríbenos por WhatsApp y te recomendamos la mejor solución según tu caso."
+    message={categoryWhatsappMessage('Atención personalizada')} 
+  />
+</BaseLayout>

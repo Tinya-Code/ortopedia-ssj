@@ -44,12 +44,7 @@ const textBoxBase = 'order-2 flex flex-1 flex-col justify-between p-6 md:p-8';
           : `${textBoxBase} lg:order-1 lg:p-8`;
         return (
           <li class={liClass}>
-            <a
-              href={s.href}
-              class={cardClass}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href={s.href} class={cardClass}>
               <div class={imageBoxClass}>
                 <Image
                   src={s.image}
@@ -68,7 +63,7 @@ const textBoxBase = 'order-2 flex flex-1 flex-col justify-between p-6 md:p-8';
                   <p class="mb-6 mt-2 text-sm leading-relaxed text-neutral md:text-base">{s.text}</p>
                 </div>
                 <span class="inline-flex items-center gap-2 font-medium text-primary transition-colors duration-200 group-hover:text-secondary">
-                  Consultar
+                  Ver más
                   <svg
                     aria-hidden="true"
                     class="h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1.5"

@@ -16,7 +16,7 @@ import type { IconName } from '../components/icons/index';
 import Button from '../components/ui/Button.astro';
 import CtaBand from '../components/ui/CtaBand.astro';
 import { LEGAL, SITE } from '../data/site';
-import { categoryWhatsappMessage, generalWhatsappMessage, whatsappLink } from '../data/whatsapp';
+import { generalWhatsappMessage } from '../data/whatsapp';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { formatHours } from '../lib/hours';
 import { faqSchema } from '../lib/schema';
@@ -32,21 +32,21 @@ const services: { title: string; text: string; href: string; image: ImageMetadat
   {
     title: 'Evaluación ortopédica',
     text: 'Valoración personalizada de tu caso y recomendación de producto según tus medidas.',
-    href: whatsappLink(categoryWhatsappMessage('Evaluación ortopédica')),
+    href: '/servicios/#evaluacion-ortopedica',
     image: evaluacionImage,
     imageAlt: 'Ortopedista evaluando el pie de un paciente durante una valoración',
   },
   {
     title: 'Ortesis a medida',
     text: 'Soportes y ortesis adaptados a tu cuerpo y a tu actividad diaria.',
-    href: whatsappLink(categoryWhatsappMessage('Ortesis a medida')),
+    href: '/servicios/#ortesis-a-medida',
     image: ortesisImage,
     imageAlt: 'Ajuste de una ortesis a medida en la pierna de un paciente infantil',
   },
   {
     title: 'Rehabilitación y asesoría',
     text: 'Acompañamiento y orientación sobre el uso correcto de cada producto.',
-    href: whatsappLink(categoryWhatsappMessage('Rehabilitación y asesoría')),
+    href: '/servicios/#rehabilitacion-asesoria',
     image: rehabilitacionImage,
     imageAlt: 'Profesional ajustando una férula de rodilla a una paciente en rehabilitación',
   },
