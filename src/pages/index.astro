@@ -1,6 +1,7 @@
 ---
 import { api } from '../api';
 import heroImage from '../assets/home/hero.jpeg';
+import rodilleraImage from '../assets/products/rodillera.png';
 import evaluacionImage from '../assets/services/evaluacion-ortopedica.jpeg';
 import ortesisImage from '../assets/services/ortesis-a-medida.jpeg';
 import rehabilitacionImage from '../assets/services/rehabilitacion-asesoria.jpeg';
@@ -68,6 +69,12 @@ const topProductsItems: { label: string; image: string }[] = [
   { image: 'https://media.falabella.com/falabellaPE/135916476_01/w=1500,h=1500,fit=cover', label: 'Silla de ruedas' },
 ];
 
+// Cards glass del hero: 4 productos más vendidos (placeholder: misma imagen de prueba).
+const heroFavorites: { image: ImageMetadata; alt: string }[] = Array.from({ length: 4 }, () => ({
+  image: rodilleraImage,
+  alt: 'Rodillera ortopédica con soporte',
+}));
+
 // Pasos de compra (§5.7) — datos en la página, no en data/.
 const steps = [
   { title: 'Consulta', text: 'Escríbenos por WhatsApp contándonos qué necesitas o qué molestia tenés.' },
@@ -102,9 +109,10 @@ const faqs = [
 
 <BaseLayout {title} {description} schemas={[faqSchema(faqs)]}>
   <Hero
-    title={title}
-    text="Productos ortopédicos, ortesis y asesoramiento para acompañar tu movilidad. Te atendemos en el centro ortopédico y por WhatsApp."
+    title="Vuelve a moverte con total libertad y confianza."
+    text="Diseñamos y seleccionamos soluciones ortopédicas de grado biomecánico para aliviar la sobrecarga, corregir tu postura y devolverte la seguridad en cada paso."
     image={heroImage}
+    favorites={heroFavorites}
   >
     <Button href="/catalogo/" variant="primaryDark">Ver catálogo</Button>
   </Hero>

@@ -3,14 +3,15 @@
 // La imagen cubre toda la sección como fondo; texto y acciones van encima.
 // El scrim garantiza contraste AA del texto claro sobre la imagen.
 import { Image } from 'astro:assets';
-import Container from '../ui/Container.astro';
+import HeroFavorites from './HeroFavorites.astro';
 
 interface Props {
   title: string;
   text?: string;
   image: ImageMetadata;
+  favorites?: { image: ImageMetadata; alt: string }[];
 }
-const { title, text, image } = Astro.props;
+const { title, text, image, favorites = [] } = Astro.props;
 ---
 <section class="relative  h-[calc(100vh-63px)] isolate bg-primary flex items-center">
   <Image
@@ -24,21 +25,31 @@ const { title, text, image } = Astro.props;
     loading="eager"
     fetchpriority="high"
     decoding="async"
-    class="absolute inset-0 -z-10 h-full w-full object-cover"
+    class="absolute bottom-0 md:inset-0 -z-10 h-[calc(100vh-300px)] md:h-full w-full object-cover object-right"
   />
   <div
     aria-hidden="true"
-    class="absolute inset-0 -z-10 bg-linear-to-b from-primary via-primary via-35% to-transparent md:bg-linear-to-r md:via-10%"
+    class="absolute inset-0 -z-10 bg-linear-to-b from-primary via-primary via-25% md:via-5% to-transparent lg:bg-linear-to-r lg:via-10%"
   />
-  <Container>
-    <div class="max-w-md pt-16 pb-24 md:py-24 lg:max-w-xl">
-      <h1 class="font-display text-4xl font-semibold leading-tight text-white md:text-5xl">
-        {title}
-      </h1>
-      {text && <p class="mt-4 max-w-prose text-lg text-white">{text}</p>}
-      <div class="mt-6 flex flex-wrap gap-3">
-        <slot />
+  <div class="w-full h-full px-4 sm:px-6">
+    <div
+      class="flex h-full flex-col gap-10 lg:flex-row lg:items-center lg:justify-between lg:gap-8"
+    >
+      {/* sm/md: bloque y texto centrados; lg: vuelve a la maqueta original a la izquierda */}
+      <div class="mt-20 self-center text-center lg:mt-0 lg:ml-20 lg:max-w-xl lg:text-left">
+        <h1 class="font-display text-4xl font-semibold leading-tight text-white md:text-5xl">
+          {title}
+        </h1>
+        {text && (
+          <p class="mt-6 max-w-prose text-xl leading-relaxed text-white mx-auto lg:mx-0 ">
+            {text}
+          </p>
+        )}
+        <div class="mt-6 flex justify-center lg:justify-start flex-wrap gap-3">
+          <slot />
+        </div>
       </div>
+      {favorites.length > 0 && <HeroFavorites items={favorites} />}
     </div>
-  </Container>
+  </div>
 </section>
