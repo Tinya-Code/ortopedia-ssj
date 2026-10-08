@@ -5,6 +5,8 @@ import Container from '../components/ui/Container.astro';
 import PageHeader from '../components/ui/PageHeader.astro';
 import Button from '../components/ui/Button.astro';
 import CtaBand from '../components/ui/CtaBand.astro';
+import Check from '../components/icons/Check.astro';
+import { icons, type IconName } from '../components/icons/index';
 import { categoryWhatsappMessage, whatsappLink } from '../data/whatsapp';
 import evaluacionImage from '../assets/services/evaluacion-ortopedica.jpeg';
 import ortesisImage from '../assets/services/ortesis-a-medida.jpeg';
@@ -12,12 +14,18 @@ import rehabilitacionImage from '../assets/services/rehabilitacion-asesoria.jpeg
 
 const title = 'Servicios';
 const description =
-  'Evaluación ortopédica, ortesis a medida y rehabilitación y asesoría para mejorar tu movilidad y aliviar dolor.';
+  'Evaluación biomecánica de la pisada, calibración de ayudas técnicas y mantenimiento de sillas de ruedas para tu movilidad.';
+
+type Point = { icon: IconName; label: string };
+type Benefit = { label: string; text: string };
 
 const services: {
   slug: string;
   title: string;
-  text: string;
+  description: string;
+  cases: string[];
+  solution: { lead?: string; items: Benefit[] };
+  points: Point[];
   href: string;
   image: ImageMetadata;
   imageAlt: string;
@@ -26,9 +34,27 @@ const services: {
 }[] = [
   {
     slug: 'evaluacion-ortopedica',
-    title: 'Evaluación ortopédica',
-    text: 'Valoración personalizada de tu caso y recomendación de producto según tus medidas.',
-    href: whatsappLink(categoryWhatsappMessage('Evaluación ortopédica')),
+    title: 'Evaluación Ortopédica',
+    description:
+      'Analizamos la distribución de presiones de tu pisada, la alineación corporal y tu dinámica de marcha mediante tecnología baropodométrica y evaluación clínica directa. Este estudio identifica el origen biomecánico de tus dolores o sobrecargas, permitiéndonos formular soluciones ortopédicas a tu medida antes de que se conviertan en patologías crónicas.',
+    cases: [
+      'Dolor constante en talones, planta, rodillas o zona lumbar al caminar o estar de pie.',
+      'Diagnóstico de pie plano, cavo, espolón o fascitis plantar recurrente.',
+      'Desgaste irregular y acelerado en las suelas del calzado.',
+      'Prevención de lesiones y mejora de rendimiento en deportistas y personas activas.',
+    ],
+    solution: {
+      items: [
+        { label: 'Alineación', text: 'Corrige tu postura equilibrando el centro de gravedad desde la pisada.' },
+        { label: 'Alivio articular', text: 'Disipa el impacto en tobillos, rodillas y columna.' },
+        { label: 'Cero fatiga', text: 'Menor desgaste muscular durante todo el día.' },
+      ],
+    },
+    points: [
+      { icon: 'user-check', label: 'Corrección de Apoyo' },
+      { icon: 'clock', label: 'Resultados en Sesión Única' },
+    ],
+    href: whatsappLink(categoryWhatsappMessage('Evaluación Biomecánica y Estudio de la Pisada')),
     image: evaluacionImage,
     imageAlt: 'Ortopedista evaluando el pie de un paciente durante una valoración',
     accent: '#ffffff',
@@ -36,9 +62,27 @@ const services: {
   },
   {
     slug: 'ortesis-a-medida',
-    title: 'Ortesis a medida',
-    text: 'Soportes y ortesis adaptados a tu cuerpo y a tu actividad diaria.',
-    href: whatsappLink(categoryWhatsappMessage('Ortesis a medida')),
+    title: 'Órtesis a medida',
+    description:
+      'Una ayuda técnica mal ajustada puede generar lesiones secundarias, dolores de espalda o caídas. Nuestro equipo especializado se encarga de regular con precisión la altura de bastones y andadores, calibrar componentes en sillas de ruedas y verificar el acople de órtesis a la fisonomía exacta de cada usuario.',
+    cases: [
+      'Nuevo bastón, andador o silla de ruedas que requiere calibración a tu estatura y peso.',
+      'Molestias en muñecas, hombros o cuello por uso de apoyos desajustados.',
+      'Rehabilitación posquirúrgica que demanda reajustes continuos según tu evolución.',
+      'Inestabilidad, tropiezos o inseguridad al usar tu equipo actual.',
+    ],
+    solution: {
+      items: [
+        { label: 'Seguridad', text: 'Previene tropiezos, pérdidas de balance y caídas accidentales.' },
+        { label: 'Ergonomía', text: 'Elimina tensiones parásitas en brazos y espalda por apoyos desnivelados.' },
+        { label: 'Independencia', text: 'Menos energía por traslado y más libertad de movimiento.' },
+      ],
+    },
+    points: [
+      { icon: 'ruler', label: 'Ajuste Antropométrico' },
+      { icon: 'shield-check', label: 'Prevención de Caídas' },
+    ],
+    href: whatsappLink(categoryWhatsappMessage('Calibración, Ajuste y Adaptación de Ayudas Técnicas')),
     image: ortesisImage,
     imageAlt: 'Ajuste de una ortesis a medida en la pierna de un paciente infantil',
     accent: 'rgba(113, 192, 226, 0.10)',
@@ -46,9 +90,27 @@ const services: {
   },
   {
     slug: 'rehabilitacion-asesoria',
-    title: 'Rehabilitación y asesoría',
-    text: 'Acompañamiento y orientación sobre el uso correcto de cada producto.',
-    href: whatsappLink(categoryWhatsappMessage('Rehabilitación y asesoría')),
+    title: 'Rehabilitación y Asesoría',
+    description:
+      'Servicio técnico especializado orientado al cuidado, reparación y puesta a punto de sillas de ruedas estándar, semideportivas y de traslado. Inspeccionamos sistemas de rodamientos, alineación de ejes, tensión de frenos, estado de neumáticos y lubricación de crucetas de plegado, garantizando que el equipo funcione siempre con la máxima suavidad y total fiabilidad mecánica.',
+    cases: [
+      'La silla de ruedas presenta rigidez o resistencia anormal al empujar o rodar.',
+      'Frenos descalibrados, flojos o con respuesta deficiente en pendientes y transferencias.',
+      'Ruidos estructurales, holgura en las ruedas directrices o dificultad para plegar el chasis.',
+      'Equipos con más de 6 meses de uso intensivo sin revisión técnica preventiva.',
+    ],
+    solution: {
+      items: [
+        { label: 'Menor esfuerzo', text: 'Un rodaje lubricado y alineado reduce la fuerza que debes aplicar.' },
+        { label: 'Mayor vida útil', text: 'Previene roturas prematuras de piezas costosas.' },
+        { label: 'Continuidad', text: 'Traslados seguros sin paradas imprevistas ni accidentes.' },
+      ],
+    },
+    points: [
+      { icon: 'clipboard-check', label: 'Servicio Técnico Certificado' },
+      { icon: 'ruler', label: 'Alineación y Frenos' },
+    ],
+    href: whatsappLink(categoryWhatsappMessage('Mantenimiento Preventivo y Optimización de Sillas de Ruedas')),
     image: rehabilitacionImage,
     imageAlt: 'Profesional ajustando una férula de rodilla a una paciente en rehabilitación',
     accent: '#ffffff',
@@ -67,49 +129,92 @@ const crumbs = [
 
   <section class="pb-4">
     <Container>
-      <PageHeader
-        title="Servicios"
-        lead="Cada tratamiento está pensado para acompañarte desde la evaluación hasta la recomendación final, con productos de apoyo y orientación personalizada."
-      />
+      <PageHeader title="Servicios" lead={description} />
     </Container>
   </section>
 
   {services.map((service) => (
     <section id={service.slug} class="py-6 sm:py-8" style={`background-color: ${service.accent};`}>
       <Container>
-        <div class="grid items-center gap-6 md:grid-cols-2 md:gap-10">
+        {/* Cabecera: título y descripción a ancho completo, alineados a la izquierda. */}
+        <div>
+          <h2 class="font-display text-3xl font-semibold text-ink sm:text-4xl">{service.title}</h2>
+          <p class="mt-4 text-sm leading-6 text-neutral sm:text-base">{service.description}</p>
+        </div>
+
+        {/* Fila dividida: problema + solución a un lado, imagen al otro (reverse invierte los lados). */}
+        <div class="mt-6 grid gap-6 md:grid-cols-2 md:gap-10">
           <div
             class:list={[
               'order-2 space-y-5',
               service.reverse ? 'md:order-2' : 'md:order-1',
             ]}
           >
-            <span
-              class="inline-flex rounded-full border border-primary/20 bg-white/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-primary"
-            >
-              Solución personalizada
-            </span>
             <div>
-              <h2 class="font-display text-3xl font-semibold text-ink sm:text-4xl">{service.title}</h2>
-              <p class="mt-4 max-w-xl text-base leading-7 text-neutral">{service.text}</p>
+              <h3 class="text-xs font-semibold uppercase tracking-[0.1em] text-primary">
+                ¿En qué casos se necesita?
+              </h3>
+              <ul class="mt-3 space-y-2">
+                {service.cases.map((item) => (
+                  <li class="flex gap-2.5 text-sm leading-6 text-neutral">
+                    <Check class="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <div class="flex flex-wrap gap-3">
+
+            <div>
+              <h3 class="text-xs font-semibold uppercase tracking-[0.1em] text-primary">
+                Solución personalizada
+              </h3>
+              {service.solution.lead && (
+                <p class="mt-3 text-sm leading-6 text-neutral">{service.solution.lead}</p>
+              )}
+              <ul class="mt-3 space-y-2">
+                {service.solution.items.map((item) => (
+                  <li class="flex gap-2.5 text-sm leading-6 text-neutral">
+                    <Check class="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <span>
+                      <span class="font-medium text-ink">{item.label}:</span> {item.text}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div class="flex flex-wrap gap-3 mt-3">
               <Button href={service.href} label="Solicitar información" variant="primary" />
-              <Button href="/contacto/" label="Ver contacto" variant="outline" />
             </div>
           </div>
 
           <div
             class:list={[
-              'order-1 overflow-hidden rounded-card border border-neutral/15 bg-white shadow-card',
+              'order-1 flex flex-col gap-4',
               service.reverse ? 'md:order-1' : 'md:order-2',
             ]}
           >
-            <img
-              src={service.image.src}
-              alt={service.imageAlt}
-              class="h-[260px] w-full object-cover sm:h-[340px] md:h-[420px]"
-            />
+            <div class="min-h-0 flex-1 overflow-hidden rounded-card border border-neutral/15 bg-white shadow-card">
+              <img
+                src={service.image.src}
+                alt={service.imageAlt}
+                class="h-full min-h-[260px] w-full object-cover sm:min-h-[340px]"
+              />
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+              {service.points.map((point) => {
+                const Icon = icons[point.icon];
+                return (
+                  <span
+                    class="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-white/70 px-3 py-1 text-xs font-medium text-primary"
+                  >
+                    <Icon class="h-3.5 w-3.5" />
+                    {point.label}
+                  </span>
+                );
+              })}
+            </div>
           </div>
         </div>
       </Container>
