@@ -1,22 +1,26 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Hero from '../components/home/Hero.astro';
-import TrustBar from '../components/home/TrustBar.astro';
-import ServicesGrid from '../components/home/ServicesGrid.astro';
-import FeaturedCategories from '../components/home/FeaturedCategories.astro';
-import WhyUs from '../components/home/WhyUs.astro';
-import HowItWorks from '../components/home/HowItWorks.astro';
-import Faq from '../components/home/Faq.astro';
-import LocationCta from '../components/home/LocationCta.astro';
-import CtaBand from '../components/ui/CtaBand.astro';
-import Button from '../components/ui/Button.astro';
-import heroImage from '../assets/home/hero.jpg';
 import { api } from '../api';
-import { faqSchema } from '../lib/schema';
-import { whatsappLink, categoryWhatsappMessage, generalWhatsappMessage } from '../data/whatsapp';
-import { SITE, LEGAL } from '../data/site';
-import { formatHours } from '../lib/hours';
+import heroImage from '../assets/home/hero.jpeg';
+import rodilleraImage from '../assets/products/rodillera.png';
+import evaluacionImage from '../assets/services/evaluacion-ortopedica.jpeg';
+import ortesisImage from '../assets/services/ortesis-a-medida.jpeg';
+import rehabilitacionImage from '../assets/services/rehabilitacion-asesoria.jpeg';
+import Faq from '../components/home/Faq.astro';
+import FeaturedCategories from '../components/home/FeaturedCategories.astro';
+import Hero from '../components/home/Hero.astro';
+import HowItWorks from '../components/home/HowItWorks.astro';
+import LocationCta from '../components/home/LocationCta.astro';
+import ServicesGrid from '../components/home/ServicesGrid.astro';
+import TopProductsBanner from '../components/home/TopProductsBanner.astro';
+import WhyUs from '../components/home/WhyUs.astro';
 import type { IconName } from '../components/icons/index';
+import Button from '../components/ui/Button.astro';
+import CtaBand from '../components/ui/CtaBand.astro';
+import { LEGAL, SITE } from '../data/site';
+import { generalWhatsappMessage } from '../data/whatsapp';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { formatHours } from '../lib/hours';
+import { faqSchema } from '../lib/schema';
 
 const title = `Centro ortopédico en ${SITE.address.city}`;
 const description =
@@ -25,24 +29,27 @@ const description =
 const categories = await api.categories.list();
 
 // Datos de la sección: viven en la página (smart), no en data/
-const services: { title: string; text: string; href: string; icon: IconName }[] = [
+const services: { title: string; text: string; href: string; image: ImageMetadata; imageAlt: string }[] = [
   {
     title: 'Evaluación ortopédica',
     text: 'Valoración personalizada de tu caso y recomendación de producto según tus medidas.',
-    href: whatsappLink(categoryWhatsappMessage('Evaluación ortopédica')),
-    icon: 'clipboard-check',
+    href: '/servicios/#evaluacion-ortopedica',
+    image: evaluacionImage,
+    imageAlt: 'Ortopedista evaluando el pie de un paciente durante una valoración',
   },
   {
     title: 'Ortesis a medida',
     text: 'Soportes y ortesis adaptados a tu cuerpo y a tu actividad diaria.',
-    href: whatsappLink(categoryWhatsappMessage('Ortesis a medida')),
-    icon: 'ruler',
+    href: '/servicios/#ortesis-a-medida',
+    image: ortesisImage,
+    imageAlt: 'Ajuste de una ortesis a medida en la pierna de un paciente infantil',
   },
   {
     title: 'Rehabilitación y asesoría',
     text: 'Acompañamiento y orientación sobre el uso correcto de cada producto.',
-    href: whatsappLink(categoryWhatsappMessage('Rehabilitación y asesoría')),
-    icon: 'activity',
+    href: '/servicios/#rehabilitacion-asesoria',
+    image: rehabilitacionImage,
+    imageAlt: 'Profesional ajustando una férula de rodilla a una paciente en rehabilitación',
   },
 ];
 
@@ -53,6 +60,20 @@ const trustItems: { icon: IconName; label: string }[] = [
   { icon: 'message-circle', label: 'Atención por WhatsApp' },
   { icon: 'clock', label: `Horario: ${formatHours()}` },
 ];
+
+// Hechos verificables (§5.8): nada de cifras inventadas ni testimonios.
+const topProductsItems: { label: string; image: string }[] = [
+  { image: 'https://media.falabella.com/falabellaPE/135916476_01/w=1500,h=1500,fit=cover', label: 'Fajas de rodilla' },
+  { image: 'https://media.falabella.com/falabellaPE/135916476_01/w=1500,h=1500,fit=cover', label: 'Fajas de espalda' },
+  { image: 'https://media.falabella.com/falabellaPE/135916476_01/w=1500,h=1500,fit=cover', label: 'Muletas' },
+  { image: 'https://media.falabella.com/falabellaPE/135916476_01/w=1500,h=1500,fit=cover', label: 'Silla de ruedas' },
+];
+
+// Cards glass del hero: 4 productos más vendidos (placeholder: misma imagen de prueba).
+const heroFavorites: { image: ImageMetadata; alt: string }[] = Array.from({ length: 4 }, () => ({
+  image: rodilleraImage,
+  alt: 'Rodillera ortopédica con soporte',
+}));
 
 // Pasos de compra (§5.7) — datos en la página, no en data/.
 const steps = [
@@ -88,19 +109,16 @@ const faqs = [
 
 <BaseLayout {title} {description} schemas={[faqSchema(faqs)]}>
   <Hero
-    title={title}
-    text="Productos ortopédicos, ortesis y asesoramiento para acompañar tu movilidad. Te atendemos en el centro ortopédico y por WhatsApp."
+    title="Vuelve a moverte con total libertad y confianza."
+    text="Diseñamos y seleccionamos soluciones ortopédicas de grado biomecánico para aliviar la sobrecarga, corregir tu postura y devolverte la seguridad en cada paso."
     image={heroImage}
-    imageAlt="Interior del centro ortopédico con productos ortopédicos a la vista"
+    favorites={heroFavorites}
   >
-    <Button href={whatsappLink(generalWhatsappMessage())} eventName="whatsapp_click">
-      Consultar por WhatsApp
-    </Button>
-    <Button href="/catalogo/" variant="outline">Ver catálogo</Button>
+    <Button href="/catalogo/" variant="primaryDark">Ver catálogo</Button>
   </Hero>
-  <TrustBar items={trustItems} />
-  <ServicesGrid {services} />
+  <TopProductsBanner items={topProductsItems} />
   <FeaturedCategories categories={categories} />
+  <ServicesGrid {services} />
   <WhyUs />
   <HowItWorks {steps} />
   <Faq items={faqs} />

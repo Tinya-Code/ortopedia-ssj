@@ -5,7 +5,7 @@ import Whatsapp from '../icons/Whatsapp.astro';
 interface Props {
   message: string;
   label?: string;
-  variant?: 'primary' | 'floating' | 'white';
+  variant?: 'primary' | 'floating' | 'white' | 'outline';
   eventName?: string; // para analytics
   /** Solo variante flotante: la oculta en móvil cuando la reemplaza StickyProductBar. */
   mobileHidden?: boolean;
@@ -29,9 +29,11 @@ const href = whatsappLink(message);
       ? 'inline-flex items-center gap-2 rounded-lg bg-[#25d366] px-5 py-3 text-sm font-semibold text-ink hover:bg-[#1ebe5b]'
       : variant === 'white'
         ? 'inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-semibold text-primary hover:bg-neutral/10'
-        : `fixed bottom-4 right-4 z-50 ${
-            mobileHidden ? 'hidden md:flex' : 'inline-flex'
-          } items-center gap-2 rounded-full bg-[#25d366] px-5 py-3 text-sm font-semibold text-ink shadow-lg hover:bg-[#1ebe5b]`,
+        : variant === 'outline'
+          ? 'inline-flex items-center gap-2 rounded-full border border-primary px-5 py-2.5 text-sm font-medium text-primary transition-colors hover:bg-tertiary/20 motion-reduce:transition-none'
+          : `fixed bottom-4 right-4 z-50 ${
+              mobileHidden ? 'hidden md:flex' : 'inline-flex'
+            } items-center gap-2 rounded-full bg-[#25d366] px-5 py-3 text-sm font-semibold text-ink shadow-lg hover:bg-[#1ebe5b]`,
   ]}
   target="_blank"
   rel="noopener noreferrer"

@@ -5,16 +5,32 @@ type CardProduct = {
   slug: string;
   name: string;
   price?: number;
-  availability: string;
+  brand?: string;
+  seoDescription?: string;
   images: { src: ImageMetadata | string; alt: string }[];
 };
 interface Props {
   products: CardProduct[]; // slice que consume, no la entidad entera
+  id?: string;
+  class?: string;
 }
-const { products } = Astro.props;
+const { products, id, class: className } = Astro.props;
 ---
-<ul class="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+<ul
+  id={id}
+  class:list={[
+    'grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+    className,
+  ]}
+>
   {products.map((p, i) => (
-    <li><ProductCard product={p} priority={i < 4} /></li>
+    <li
+      data-product-item
+      data-name={p.name}
+      data-price={p.price ?? ''}
+      data-search={[p.name, p.brand, p.seoDescription].filter(Boolean).join(' ').toLowerCase()}
+    >
+      <ProductCard product={p} priority={i < 4} />
+    </li>
   ))}
 </ul>

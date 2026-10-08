@@ -1,0 +1,53 @@
+---
+// Cards glass flotantes del hero: productos más vendidos (solo imagen).
+// Se disponen en arco: las tarjetas externas caen y las internas suben.
+import { Image } from 'astro:assets';
+
+interface Item {
+  image: ImageMetadata;
+  alt: string;
+}
+interface Props {
+  items: Item[];
+}
+const { items } = Astro.props;
+
+const CARD_W = 24; // ancho de cada tarjeta (% del bloque)
+const SPAN_DEG = 140; // apertura del arco
+const DROP = 80; // caída máxima (% de la altura del bloque)
+
+const count = Math.max(items.length, 1);
+const arc = items.map((_, i) => {
+  const t = count > 1 ? i / (count - 1) - 0.5 : 0;
+  const left = ((i * (110 - CARD_W)) / Math.max(count - 1, 1)) -10;
+  const drop = (DROP * (1 - Math.cos((t * SPAN_DEG * Math.PI) / 180)));
+  return `left:${left.toFixed(2)}%;top:${drop.toFixed(2)}%;`;
+});
+
+---
+<ul
+  class="relative hidden aspect-8/5 self-start list-none md:mt-20 lg:block lg:w-[28rem] lg:shrink-0 xl:w-[31rem]"
+  role="list"
+>
+  {
+    items.map((item, i) => (
+      <li
+        class="absolute w-[24%] animate-float motion-reduce:animate-none"
+        style={arc[i]}
+      >
+        <div class="rounded-2xl border border-white/25 bg-white/15 p-3 shadow-lg backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:border-white/50 hover:bg-white/25 hover:shadow-xl motion-reduce:transition-none">
+          <Image
+            src={item.image}
+            alt={item.alt}
+            width={320}
+            height={320}
+            format="webp"
+            loading="eager"
+            decoding="async"
+            class="aspect-square w-full rounded-xl object-cover"
+          />
+        </div>
+      </li>
+    ))
+  }
+</ul>

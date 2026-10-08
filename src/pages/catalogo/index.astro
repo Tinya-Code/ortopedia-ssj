@@ -2,6 +2,8 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/layout/Breadcrumbs.astro';
 import CategoryCard from '../../components/catalog/CategoryCard.astro';
+import CatalogSearch from '../../components/catalog/CatalogSearch.astro';
+import ProductGrid from '../../components/catalog/ProductGrid.astro';
 import CtaBand from '../../components/ui/CtaBand.astro';
 import { api } from '../../api';
 import { breadcrumbSchema, itemListSchema } from '../../lib/schema';
@@ -11,6 +13,7 @@ import PageHeader from '../../components/ui/PageHeader.astro';
 import { absUrl } from '../../lib/url';
 
 const categories = await api.categories.list();
+const products = await api.products.list();
 
 const title = 'Catálogo de productos ortopédicos';
 const description =
@@ -35,11 +38,24 @@ const crumbs = [
     <Container>
       <PageHeader
         title="Catálogo"
-        lead="Encontrá productos ortopédicos por categoría. Todos los publicados cuentan con registro sanitario verificado; si tenés dudas sobre tallas o uso, consultanos por WhatsApp."
+        lead="Encuentra productos ortopédicos por categoría. Si tienes dudas sobre tallas o uso, envianos un mensaje por WhatsApp."
       />
 
-      <div class="mt-6 grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <CatalogSearch />
+
+      <div
+        id="catalog-categories"
+        class="mt-6 grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3"
+      >
         {categories.map((c) => <CategoryCard category={c} />)}
+      </div>
+
+      {/* Resultados de la búsqueda global: ocultos hasta que el usuario escribe. */}
+      <div id="catalog-results" class="hidden">
+        <ProductGrid id="catalog-grid" products={products} class="mt-6" />
+        <p id="catalog-empty" class="mt-10 hidden text-center text-sm text-neutral">
+          No encontramos productos que coincidan con tu búsqueda.
+        </p>
       </div>
     </Container>
   </section>
@@ -50,3 +66,14 @@ const crumbs = [
     message={generalWhatsappMessage()}
   />
 </BaseLayout>
+
+<script>
+  import { initCatalog } from '../../scripts/catalog';
+
+  initCatalog({
+    gridId: 'catalog-grid',
+    emptyId: 'catalog-empty',
+    hideId: 'catalog-categories',
+    revealId: 'catalog-results',
+  });
+</script>

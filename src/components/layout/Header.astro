@@ -6,12 +6,10 @@ import MobileNav from './MobileNav.astro';
 import WhatsAppButton from '../ui/WhatsAppButton.astro';
 import { generalWhatsappMessage } from '../../data/whatsapp';
 
-// Nota: las páginas de servicio propias (/servicios/[slug]) no existen todavía;
-// "Servicios" apunta a la sección de la home (id="servicios").
 const links = [
   { href: '/', label: 'Inicio' },
   { href: '/catalogo/', label: 'Catálogo' },
-  { href: '/#servicios', label: 'Servicios' },
+  { href: '/servicios/', label: 'Servicios' },
   { href: '/contacto/', label: 'Contacto' },
 ];
 const path = Astro.url.pathname;

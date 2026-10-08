@@ -4,13 +4,13 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/layout/Breadcrumbs.astro';
 import ProductGrid from '../../components/catalog/ProductGrid.astro';
 import CategoryChips from '../../components/catalog/CategoryChips.astro';
+import CatalogSearch from '../../components/catalog/CatalogSearch.astro';
 import WhatsAppButton from '../../components/ui/WhatsAppButton.astro';
 import Callout from '../../components/ui/Callout.astro';
 import CtaBand from '../../components/ui/CtaBand.astro';
 import { breadcrumbSchema, itemListSchema } from '../../lib/schema';
 import { categoryWhatsappMessage } from '../../data/whatsapp';
 import Container from '../../components/ui/Container.astro';
-import PageHeader from '../../components/ui/PageHeader.astro';
 import { absUrl } from '../../lib/url';
 
 export async function getStaticPaths() {
@@ -44,36 +44,103 @@ const crumbs = [
 >
   <Breadcrumbs items={crumbs} />
 
-  <section class="pb-8">
+  <section class="pb-10">
     <Container>
-      {/* Orden §6.3: h1 → chips → intro (~150 palabras) → productos. */}
-      <PageHeader title={cat.name} />
-      <CategoryChips {categories} activeSlug={cat.slug} />
-      <p class="mt-6 max-w-prose text-neutral">{cat.intro}</p>
+      {/* Cabecera: h1 + descripción completa de la categoría + CTA de asesoría. */}
+      <header class="flex flex-col gap-4 pt-6 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">{cat.name}</h1>
+          <p class="mt-3 max-w-3xl text-sm leading-relaxed text-neutral sm:text-base">
+            {cat.intro}
+          </p>
+        </div>
+        <div class="shrink-0 sm:self-start">
+          <WhatsAppButton
+            variant="outline"
+            message={categoryWhatsappMessage(cat.name)}
+            label="Asesoría por WhatsApp"
+          />
+        </div>
+      </header>
 
       <div class="mt-6">
-        {products.length > 0 ? (
-          <ProductGrid products={products} />
-        ) : (
-          <Callout tone="info" title="Sin productos publicados">
-            Por el momento no hay productos publicados en esta categoría. Consultanos por
-            WhatsApp para conocer disponibilidad.
-            <div class="mt-4">
-              <WhatsAppButton
-                message={categoryWhatsappMessage(cat.name)}
-                label="Consultar disponibilidad"
-              />
-            </div>
-          </Callout>
-        )}
+        <CategoryChips {categories} activeSlug={cat.slug} />
       </div>
+
+      {products.length > 0 ? (
+        <>
+          {/* Buscador global: ancho completo, simple y accesible. */}
+          <div class="mt-8">
+            <CatalogSearch />
+          </div>
+
+          {/* Barra de orden, alineada a la derecha justo sobre la grilla. */}
+          <div class="mt-6 flex justify-end">
+            <label for="catalog-sort" class="sr-only">Ordenar productos</label>
+            <select
+              id="catalog-sort"
+              class="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm text-ink transition-colors hover:border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary/20 focus-visible:outline-none"
+            >
+              <option value="az">De la A a la Z</option>
+              <option value="za">De la Z a la A</option>
+              <option value="price-asc">Precio: Menor a mayor</option>
+              <option value="price-desc">Precio: Mayor a menor</option>
+            </select>
+          </div>
+
+          <ProductGrid id="catalog-grid" products={products} class="mt-6" />
+
+          <p id="catalog-empty" class="mt-10 hidden text-center text-sm text-neutral">
+            No encontramos productos que coincidan con tu búsqueda.
+          </p>
+
+          <nav
+            id="catalog-pagination"
+            aria-label="Paginación"
+            class="mt-12 mb-8 hidden items-center justify-center gap-2"
+          >
+            <button
+              type="button"
+              id="catalog-prev"
+              class="inline-flex h-9 items-center rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-neutral transition-colors hover:border-tertiary disabled:pointer-events-none disabled:opacity-40"
+            >
+              ← Atrás
+            </button>
+            <div id="catalog-pages" class="flex items-center gap-2"></div>
+            <button
+              type="button"
+              id="catalog-next"
+              class="inline-flex h-9 items-center rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-neutral transition-colors hover:border-tertiary disabled:pointer-events-none disabled:opacity-40"
+            >
+              Siguiente →
+            </button>
+          </nav>
+        </>
+      ) : (
+        <Callout tone="info" title="Sin productos publicados">
+          Por el momento no hay productos publicados en esta categoría. Consultanos por
+          WhatsApp para conocer disponibilidad.
+          <div class="mt-4">
+            <WhatsAppButton
+              message={categoryWhatsappMessage(cat.name)}
+              label="Consultar disponibilidad"
+            />
+          </div>
+        </Callout>
+      )}
     </Container>
   </section>
 
-  {/* Único CTA final de la página (§6.3): reemplaza al botón suelto anterior. */}
+  {/* Único CTA final de la página (§6.3). */}
   <CtaBand
     title="¿Necesitas asesoría para elegir?"
     text={`Te orientamos sobre tallas, medidas y disponibilidad de ${cat.name.toLowerCase()}.`}
     message={categoryWhatsappMessage(cat.name)}
   />
 </BaseLayout>
+
+<script>
+  import { initCatalog } from '../../scripts/catalog';
+
+  initCatalog({ gridId: 'catalog-grid', emptyId: 'catalog-empty' });
+</script>

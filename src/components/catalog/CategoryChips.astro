@@ -1,23 +1,27 @@
 ---
 // mejoras.md §5.11 — navegación entre categorías dentro del catálogo.
-// Consolida el estilo de chips que antes vivía duplicado en la 404:
-// contorno primary, activa rellena con aria-current="page" y min-h-11 (44px).
+// Pills en cápsula con scroll horizontal en móvil (sin barra visible).
+// Activa: fondo primary, texto blanco y aria-current="page".
+// Inactiva: fondo blanco, borde slate-200 y hover en tertiary/primary.
 interface Props {
   categories: { slug: string; name: string }[];
   activeSlug?: string;
 }
 const { categories, activeSlug } = Astro.props;
 ---
-<nav aria-label="Categorías" class="flex flex-wrap gap-2">
+<nav
+  aria-label="Categorías"
+  class="no-scrollbar -mx-4 flex items-center gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0"
+>
   {categories.map((c) => (
     <a
       href={`/catalogo/${c.slug}/`}
       aria-current={c.slug === activeSlug ? 'page' : undefined}
       class:list={[
-        'inline-flex min-h-11 items-center rounded-lg border px-4 py-2 text-sm font-semibold transition-colors motion-reduce:transition-none',
+        'inline-flex min-h-11 shrink-0 items-center rounded-full px-4 py-2 text-sm font-medium transition-colors motion-reduce:transition-none',
         c.slug === activeSlug
-          ? 'border-primary bg-primary text-white'
-          : 'border-primary text-primary hover:bg-primary/5',
+          ? 'bg-primary text-white shadow-sm'
+          : 'border border-slate-200 bg-white text-neutral hover:border-tertiary',
       ]}
     >
       {c.name}
