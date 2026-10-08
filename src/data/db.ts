@@ -19,9 +19,10 @@ export const db: Database = {
       slug: 'rodilleras',
       name: 'Rodilleras',
       seoTitle: 'Rodilleras ortopédicas',
-      seoDescription: 'Rodilleras y soportes de rodilla para deporte, lesiones y recuperación.',
+      seoDescription:
+        'Diseñadas para brindar estabilidad articular, compresión graduada y alivio inmediato en cada movimiento.',
       intro:
-        'Las rodilleras acompañan la rodilla durante la actividad diaria y el ejercicio: ofrecen compresión y un punto de apoyo que brinda soporte a la articulación sin limitar el movimiento. En esta categoría encuentras rodilleras elásticas para deporte, modelos con soporte de ligamentos y férulas con refuerzos laterales para mayor estabilidad. Cada ficha indica talla, material, registro sanitario y titular del registro para que compres con información completa. Antes de elegir, mide el contorno de la rodilla según la tabla de tallas de cada producto; si dudas entre dos tallas o necesitas orientación según tu actividad, escríbenos por WhatsApp y un asesor te responde. Los precios están expresados en soles e incluyen IGV y emitimos comprobante electrónico en cada venta. Recuerda que una rodillera es un producto de uso ortopédico: lee las instrucciones y consulta con un profesional de la salud si sientes dolor o inflamación persistente. Si buscas una opción para el periodo de recuperación, comenta tu caso con tu profesional de la salud antes de elegir talla.',
+        'Diseñadas para brindar estabilidad articular, compresión graduada y alivio inmediato en cada movimiento. Nuestra línea de rodilleras ortopédicas protege ligamentos y meniscos frente al impacto diario, facilitando una recuperación segura tras lesiones o cirugías y devolviendo la confianza al caminar o realizar actividad física sin rigidez ni sobrecarga.',
       image: rodilleraImage,
       imageAlt: 'Rodillera ortopédica con soporte de ligamentos',
       order: 1,
@@ -30,9 +31,10 @@ export const db: Database = {
       slug: 'bastones',
       name: 'Bastones',
       seoTitle: 'Bastones ortopédicos',
-      seoDescription: 'Bastones de apoyo y marcha, regulables y plegables.',
+      seoDescription:
+        'Desarrollados para otorgar un balance firme, autonomía y distribución equilibrada del peso corporal al desplazarse.',
       intro:
-        'Un buen bastón distribuye el peso y acompaña el paso con seguridad. En esta categoría encuentras bastones plegables de aluminio, modelos con agarre acolchado y bastones de cuatro puntos de apoyo para quienes necesitan mayor estabilidad al desplazarse. Las fichas indican altura regulable, material, peso soportado, registro sanitario y titular del registro. Antes de comprar, verifica la altura correcta: con el brazo caído a un costado, el agarre debe quedar a la altura de la muñeca. Si necesitas orientación sobre el modelo más adecuado a tu caso, escríbenos por WhatsApp y te asesoramos sin costo. Los precios están expresados en soles e incluyen IGV y emitimos comprobante electrónico en cada venta. Los bastones de este catálogo son productos de uso ortopédico: lee las instrucciones de uso y consulta a un profesional de la salud antes de utilizarlos. Todos los modelos del catálogo traen puntera antideslizante y se ajustan sin herramientas; revisa medidas, peso soportado y disponibilidad en la ficha de cada producto antes de pedir.',
+        'Desarrollados para otorgar un balance firme, autonomía y distribución equilibrada del peso corporal al desplazarse. Con opciones ergonómicas, plegables y de base múltiple con punteras antideslizantes, cada modelo amortigua la pisada y reduce la tensión en muñecas, caderas y columna para que retomes tus trayectos con total seguridad.',
       image: rodilleraImage,
       imageAlt: 'Bastón ortopédico regulable',
       order: 2,
@@ -41,9 +43,10 @@ export const db: Database = {
       slug: 'sillas-de-ruedas',
       name: 'Sillas de ruedas',
       seoTitle: 'Sillas de ruedas manuales',
-      seoDescription: 'Sillas de ruedas plegables en aluminio, para uso urbano y domiciliario.',
+      seoDescription:
+        'Pensadas para maximizar la independencia, el confort postural y la movilidad diaria tanto en interiores como en exteriores.',
       intro:
-        'Encuentra sillas de ruedas manuales plegables en aluminio para uso urbano y domiciliario, con ruedas de 24 pulgadas, apoyabrazos desmontables y reposapies extraíbles para facilitar el ingreso y el guardado. Cada ficha indica peso del producto, peso soportado, ancho total, registro sanitario y titular del registro; una de ellas está disponible por encargo. Antes de comprar, revisa el ancho de la silla y de las puertas por donde circula a diario, y confirma el peso que necesita soportar. Si tienes dudas sobre el modelo, la entrega o la coordinación del envío, escríbenos por WhatsApp y un asesor te responde. Los precios están expresados en soles e incluyen IGV, con comprobante electrónico en cada venta. Una silla de ruedas es un producto de uso ortopédico: lee las instrucciones y consulta a un profesional de la salud sobre el uso adecuado a tu movilidad. Verifica medidas, peso soportado y disponibilidad en la ficha de cada modelo antes de hacer tu pedido.',
+        'Pensadas para maximizar la independencia, el confort postural y la movilidad diaria tanto en interiores como en exteriores. Fabricadas con estructuras ligeras de alta resistencia, tapizados ergonómicos y sistemas de plegado compacto, ofrecen una experiencia de traslado suave, segura y fácil de maniobrar para usuarios y cuidadores.',
       image: rodilleraImage,
       imageAlt: 'Silla de ruedas plegable en aluminio',
       order: 3,
