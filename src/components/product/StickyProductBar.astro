@@ -5,13 +5,16 @@
 // fijos; el body lleva `pb-24 md:pb-0` para que la barra no tape el final.
 import WhatsAppButton from '../ui/WhatsAppButton.astro';
 import PriceTag from '../ui/PriceTag.astro';
+import type { Product as CartProduct } from '@dennismiranda/astro-cart/core';
 
 interface Props {
   name: string;
   price?: number;
   whatsappMessage: string;
+  /** Payload del carrito; null = no agregable (sin precio o sin stock). */
+  cartProduct?: CartProduct | null;
 }
-const { name, price, whatsappMessage } = Astro.props;
+const { name, price, whatsappMessage, cartProduct = null } = Astro.props;
 ---
 <aside
   aria-label="Compra rápida"
@@ -22,7 +25,18 @@ const { name, price, whatsappMessage } = Astro.props;
       <p class="truncate text-sm font-semibold text-ink">{name}</p>
       <PriceTag {price} class="mt-0.5" />
     </div>
-    <div class="shrink-0">
+    <div class="flex shrink-0 items-center gap-2">
+      {cartProduct && (
+        <div data-cart-product data-id={cartProduct.id} data-product={JSON.stringify(cartProduct)}>
+          <button
+            type="button"
+            data-cart-action="add"
+            class="inline-flex items-center rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary/90 motion-reduce:transition-none"
+          >
+            Añadir
+          </button>
+        </div>
+      )}
       <WhatsAppButton
         message={whatsappMessage}
         label="Consultar"

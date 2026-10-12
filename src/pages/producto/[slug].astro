@@ -11,6 +11,7 @@ import ProductLegal from '../../components/legal/ProductLegal.astro';
 import StickyProductBar from '../../components/product/StickyProductBar.astro';
 import { breadcrumbSchema, productSchema, faqSchema } from '../../lib/schema';
 import { productWhatsappMessage } from '../../data/whatsapp';
+import { isAddable, toCartProduct } from '../../lib/cart';
 import { LEGAL } from '../../data/site';
 import Container from '../../components/ui/Container.astro';
 import { absUrl } from '../../lib/url';
@@ -52,6 +53,11 @@ const crumbs = [
   { name: category.name, href: `/catalogo/${category.slug}/` },
   { name },
 ];
+
+// Payload del carrito (@dennismiranda/astro-cart); null si no es agregable.
+const cartProduct = isAddable(product)
+  ? toCartProduct({ ...product, image: images[0] })
+  : null;
 ---
 <BaseLayout
   title={seoTitle ?? name}
@@ -89,6 +95,7 @@ const crumbs = [
           whatsappMessage={productWhatsappMessage(name, pageUrl)}
           registroSanitario={product.registroSanitario}
           claseRiesgo={product.claseRiesgo}
+          {cartProduct}
         />
       </div>
 
@@ -115,5 +122,6 @@ const crumbs = [
     {name}
     {price}
     whatsappMessage={productWhatsappMessage(name, pageUrl)}
+    {cartProduct}
   />
 </BaseLayout>

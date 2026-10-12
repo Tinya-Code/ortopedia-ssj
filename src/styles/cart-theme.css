@@ -1,0 +1,29 @@
+/*
+ * Tema del carrito (@dennismiranda/astro-cart).
+ * DEBE importarse DESPUÉS de styles.css del paquete (BaseLayout): sus reglas
+ * :root ganan por orden de cascada sobre los defaults del paquete.
+ */
+:root {
+  --cart-primary: var(--color-primary);
+  --cart-secondary: var(--color-secondary);
+  --cart-tertiary: var(--color-tertiary);
+  --cart-accent: var(--color-accent);
+  --cart-text: var(--color-ink);
+  --cart-muted: var(--color-neutral);
+  --cart-danger: var(--color-danger);
+  --cart-surface: #ffffff;
+  --cart-surface-muted: var(--color-light);
+  --cart-border: rgb(17 24 39 / 0.12);
+  --cart-radius-sm: 0.5rem;
+  --cart-radius: 0.75rem;
+  --cart-radius-xl: 1rem;
+  --cart-font-display: var(--font-display);
+  --cart-font-body: var(--font-body);
+}
+
+/* Mientras el drawer está abierto, el CTA flotante de WhatsApp no debe
+   quedar por encima del backdrop (ac-cart-lock la alterna el controlador). */
+body.ac-cart-lock [data-wa-float] {
+  opacity: 0;
+  pointer-events: none;
+}

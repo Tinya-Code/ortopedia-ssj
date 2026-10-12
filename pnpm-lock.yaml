@@ -11,6 +11,9 @@ importers:
       '@astrojs/sitemap':
         specifier: ^3.7.4
         version: 3.7.4
+      '@dennismiranda/astro-cart':
+        specifier: ^0.1.0
+        version: 0.1.0(astro@7.3.5(@types/node@24.19.0)(jiti@2.7.0)(yaml@2.9.1))
       '@fontsource/inter':
         specifier: ^5.3.0
         version: 5.3.0
@@ -226,6 +229,12 @@ packages:
   '@clack/prompts@1.8.1':
     resolution: {integrity: sha512-dlT1m5e/0yUL0kRNcQn7yGLVThkgbB0Ga/1AmfDDC/8ik6AIiSf2QLQO2zPYvefsHP0aFgxO93cVLCCfDp7kzQ==}
     engines: {node: '>= 20.12.0'}
+
+  '@dennismiranda/astro-cart@0.1.0':
+    resolution: {integrity: sha512-VTJgdHEf0I1y23hb48qX98rCZ8PFwPuIjq6kX+g58rLz2yVs/sJJ9eg77Er5Sk7B+y7rXwWMIFhGajOPYCNPiA==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      astro: '>=4.0.0'
 
   '@emmetio/abbreviation@2.3.3':
     resolution: {integrity: sha512-mgv58UrU3rh4YgbE/TzgLQwJ3pFsHHhCLqY20aJq+9comytTXUDNGG/SMtSeMJdkpxgXSXunBGLD8Boka3JyVA==}
@@ -1365,6 +1374,12 @@ packages:
     resolution: {integrity: sha512-U4N8FgzmWxc8k1VH8Kr6lQg18U7Fjvby6wXHVRX/ZZ7IwWbRMgrRbP0Wrb5q5NVinryp4SQampHKdvtecItxUg==}
     engines: {node: 20 || >=22}
 
+  lucide-astro@0.556.0:
+    resolution: {integrity: sha512-ugMjPb45AMfkLCaduNSbyy5NQEKvB1TxVVMmUS4S6L807PMESnX0Qp+DIKHjbyjJmPXOyLRbrzvR3YikTK7brg==}
+    deprecated: 'Deprecated: Use `@lucide/astro`'
+    peerDependencies:
+      astro: '>=2.7.1'
+
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
 
@@ -2144,6 +2159,11 @@ snapshots:
       fast-string-width: 3.0.2
       fast-wrap-ansi: 0.2.2
       sisteransi: 1.0.5
+
+  '@dennismiranda/astro-cart@0.1.0(astro@7.3.5(@types/node@24.19.0)(jiti@2.7.0)(yaml@2.9.1))':
+    dependencies:
+      astro: 7.3.5(@types/node@24.19.0)(jiti@2.7.0)(yaml@2.9.1)
+      lucide-astro: 0.556.0(astro@7.3.5(@types/node@24.19.0)(jiti@2.7.0)(yaml@2.9.1))
 
   '@emmetio/abbreviation@2.3.3':
     dependencies:
@@ -3136,6 +3156,10 @@ snapshots:
       lightningcss-win32-x64-msvc: 1.33.0
 
   lru-cache@11.5.3: {}
+
+  lucide-astro@0.556.0(astro@7.3.5(@types/node@24.19.0)(jiti@2.7.0)(yaml@2.9.1)):
+    dependencies:
+      astro: 7.3.5(@types/node@24.19.0)(jiti@2.7.0)(yaml@2.9.1)
 
   magic-string@0.30.21:
     dependencies:

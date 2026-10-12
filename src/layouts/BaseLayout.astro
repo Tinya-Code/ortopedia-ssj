@@ -2,12 +2,15 @@
 import '@fontsource/inter/400.css';
 import '@fontsource/inter/600.css';
 import '../styles/global.css';
+import '@dennismiranda/astro-cart/styles.css';
+import '../styles/cart-theme.css';
 
 import SEO from '../components/seo/SEO.astro';
 import JsonLd from '../components/seo/JsonLd.astro';
 import SkipLink from '../components/layout/SkipLink.astro';
 import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
+import Cart from '../components/cart/Cart.astro';
 import WhatsAppButton from '../components/ui/WhatsAppButton.astro';
 import { organizationSchema } from '../lib/schema';
 import { generalWhatsappMessage } from '../data/whatsapp';
@@ -62,6 +65,8 @@ const {
       message={generalWhatsappMessage()}
       mobileHidden={hideFloatingCta}
     />
+    <!-- Carrito global: drawer + checkout por WhatsApp -->
+    <Cart />
   </body>
 </html>
 
@@ -77,5 +82,18 @@ const {
     const store = window as Window & { dataLayer?: Record<string, unknown>[] };
     store.dataLayer ??= [];
     store.dataLayer.push({ event: link.getAttribute('data-event'), href: link.getAttribute('href') });
+  });
+
+  // Add-to-cart del carrito → dataLayer (GA4).
+  document.addEventListener('cart:item:add', (event) => {
+    const item = (event as CustomEvent<{ item?: { name?: string; lineTotal?: number } }>).detail?.item;
+    const store = window as Window & { dataLayer?: Record<string, unknown>[] };
+    store.dataLayer ??= [];
+    store.dataLayer.push({
+      event: 'add_to_cart',
+      item_name: item?.name,
+      value: item?.lineTotal,
+      currency: 'PEN',
+    });
   });
 </script>

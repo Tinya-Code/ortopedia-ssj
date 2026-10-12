@@ -38,6 +38,7 @@ const href = whatsappLink(message);
   target="_blank"
   rel="noopener noreferrer"
   data-event={eventName}
+  data-wa-float={variant === 'floating' ? '' : undefined}
   aria-label={label}
 >
   <Whatsapp class="size-5" />

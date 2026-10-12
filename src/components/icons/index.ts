@@ -4,6 +4,7 @@
 // - Los usos de un solo icono (menú, chevron, WhatsApp…) importan el componente
 //   directo y no pasan por este registro.
 import Activity from './Activity.astro';
+import Cart from './Cart.astro';
 import Check from './Check.astro';
 import ChevronDown from './ChevronDown.astro';
 import ClipboardCheck from './ClipboardCheck.astro';
@@ -21,6 +22,7 @@ import Whatsapp from './Whatsapp.astro';
 
 export const icons = {
   activity: Activity,
+  cart: Cart,
   check: Check,
   'chevron-down': ChevronDown,
   'clipboard-check': ClipboardCheck,

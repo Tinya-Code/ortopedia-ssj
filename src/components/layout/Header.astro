@@ -3,6 +3,7 @@
 // del html). < md el menú vive en MobileNav (<details>, sin JS).
 import ReclamacionesLink from '../legal/ReclamacionesLink.astro';
 import MobileNav from './MobileNav.astro';
+import CartButton from './CartButton.astro';
 import WhatsAppButton from '../ui/WhatsAppButton.astro';
 import { generalWhatsappMessage } from '../../data/whatsapp';
 
@@ -41,7 +42,10 @@ const path = Astro.url.pathname;
       <WhatsAppButton message={generalWhatsappMessage()} label="WhatsApp" />
     </div>
 
-    {/* < md: hamburguesa + panel desplegable */}
-    <MobileNav links={links} currentPath={path} />
+    {/* Carrito (visible también en móvil) + hamburguesa */}
+    <div class="flex items-center gap-x-2">
+      <CartButton />
+      <MobileNav links={links} currentPath={path} />
+    </div>
   </div>
 </header>
