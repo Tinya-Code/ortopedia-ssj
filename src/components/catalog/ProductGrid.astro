@@ -1,11 +1,14 @@
 ---
 import ProductCard from './ProductCard.astro';
+import type { Product } from '../../data/types';
 
 type CardProduct = {
   slug: string;
   name: string;
   price?: number;
   brand?: string;
+  sku?: string;
+  availability?: Product['availability'];
   seoDescription?: string;
   images: { src: ImageMetadata | string; alt: string }[];
 };

@@ -7,6 +7,7 @@ import AvailabilityBadge from './AvailabilityBadge.astro';
 import RegistroBadge from './RegistroBadge.astro';
 import PriceTag from '../ui/PriceTag.astro';
 import { LEGAL } from '../../data/site';
+import type { Product as CartProduct } from '@dennismiranda/astro-cart/core';
 
 interface Props {
   name: string;
@@ -15,8 +16,18 @@ interface Props {
   whatsappMessage: string;
   registroSanitario?: string;
   claseRiesgo?: string;
+  /** Payload del carrito; null = no agregable (sin precio o sin stock). */
+  cartProduct?: CartProduct | null;
 }
-const { name, price, availability, whatsappMessage, registroSanitario, claseRiesgo } = Astro.props;
+const {
+  name,
+  price,
+  availability,
+  whatsappMessage,
+  registroSanitario,
+  claseRiesgo,
+  cartProduct = null,
+} = Astro.props;
 
 // legal.md 8.3: la ficha debe aclarar que el precio final incluye IGV y demás cargos.
 const igvNote = LEGAL.pricesIncludeIGV
@@ -36,8 +47,29 @@ const igvNote = LEGAL.pricesIncludeIGV
 
   {registroSanitario && <RegistroBadge {registroSanitario} {claseRiesgo} />}
 
-  {/* CTA a ancho completo en móvil, inline en desktop ([&_a] toca al anchor). */}
-  <div class="mt-5 [&>a]:w-full [&>a]:justify-center md:[&>a]:w-auto">
-    <WhatsAppButton message={whatsappMessage} label="Pedir por WhatsApp" eventName="whatsapp_product" />
-  </div>
+  {/* CTA: agregar al carrito (primario) + WhatsApp (outline). Sin precio/stock
+      se mantiene únicamente el CTA de WhatsApp. */}
+  {cartProduct ? (
+    <div class="mt-5 flex flex-col gap-3 [&_a]:w-full [&_a]:justify-center md:[&_a]:w-auto">
+      <div data-cart-product data-id={cartProduct.id} data-product={JSON.stringify(cartProduct)}>
+        <button
+          type="button"
+          data-cart-action="add"
+          class="inline-flex w-full items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary/90 motion-reduce:transition-none md:w-auto"
+        >
+          Añadir al carrito
+        </button>
+      </div>
+      <WhatsAppButton
+        message={whatsappMessage}
+        label="Consultar por WhatsApp"
+        variant="outline"
+        eventName="whatsapp_product"
+      />
+    </div>
+  ) : (
+    <div class="mt-5 [&>a]:w-full [&>a]:justify-center md:[&>a]:w-auto">
+      <WhatsAppButton message={whatsappMessage} label="Pedir por WhatsApp" eventName="whatsapp_product" />
+    </div>
+  )}
 </section>

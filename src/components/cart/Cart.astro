@@ -1,0 +1,54 @@
+---
+// Carrito global (@dennismiranda/astro-cart): drawer lateral + checkout por
+// WhatsApp (doc/legal.md: no hay pasarela de pago; todo cierre va por chat).
+// Se monta en BaseLayout: el controlador del paquete sincroniza por DOM
+// (sin islas client:*), por eso funciona en el build estático.
+import { CartDrawer } from '@dennismiranda/astro-cart/components';
+---
+<CartDrawer
+  title="Tu carrito"
+  checkoutLabel="Pedir por WhatsApp"
+  zoneLabel="Seleccionar zona de entrega"
+  clearLabel="Vaciar carrito"
+  currency="PEN"
+  locale="es-PE"
+  options={{ openOnAdd: true, maxQuantityPerItem: 10 }}
+>
+  <div slot="empty" class="ac-empty" data-cart-empty>
+    <h3 class="ac-empty__title">Tu carrito está vacío</h3>
+    <p class="ac-empty__text">
+      Agrega productos ortopédicos desde el catálogo y pídelos por WhatsApp con
+      un solo mensaje.
+    </p>
+    <a
+      href="/catalogo/"
+      class="ac-btn ac-btn--secondary"
+      data-cart-action="close"
+      style="margin-top: 1rem"
+    >
+      Ir al catálogo
+    </a>
+  </div>
+</CartDrawer>
+
+<script>
+  import type { CheckoutContext } from '@dennismiranda/astro-cart/core';
+  import { orderWhatsappMessage } from '../../lib/cart';
+  import { whatsappLink } from '../../data/whatsapp';
+
+  // "Pedir por WhatsApp": el paquete emite `cart:checkout` (cancelable) antes
+  // de abrir su vista interna; lo vetamos y abrimos wa.me con el pedido.
+  document.addEventListener('cart:checkout', (event) => {
+    const e = event as CustomEvent<CheckoutContext>;
+    e.preventDefault();
+    const { items, totals } = e.detail;
+    if (items.length === 0) return;
+    window.open(whatsappLink(orderWhatsappMessage(items, totals)), '_blank', 'noopener,noreferrer');
+    (window as Window & { dataLayer?: Record<string, unknown>[] }).dataLayer?.push({
+      event: 'begin_checkout',
+      value: totals.total,
+      currency: 'PEN',
+      num_items: totals.itemCount,
+    });
+  });
+</script>
