@@ -27,3 +27,13 @@ body.ac-cart-lock [data-wa-float] {
   opacity: 0;
   pointer-events: none;
 }
+
+/* Modo cotización: los productos no tienen precio, así que se ocultan los
+   montos (línea y resumen) para no mostrar "S/ 0.00". Se oculta SOLO el
+   <dl class="ac-summary">; sus hermanos .ac-summary__actions (botones
+   "Cotizar ahora" y "Vaciar lista") deben seguir visibles. */
+.ac-item__price,
+.ac-item__total,
+.ac-summary {
+  display: none;
+}

@@ -1,24 +1,24 @@
 ---
-// Carrito global (@dennismiranda/astro-cart): drawer lateral + checkout por
-// WhatsApp (doc/legal.md: no hay pasarela de pago; todo cierre va por chat).
-// Se monta en BaseLayout: el controlador del paquete sincroniza por DOM
-// (sin islas client:*), por eso funciona en el build estático.
+// Carrito global (@dennismiranda/astro-cart) usado como LISTA DE COTIZACIÓN:
+// acumula productos y el cierre va por WhatsApp (doc/legal.md: no hay pasarela
+// de pago). Se monta en BaseLayout: el controlador del paquete sincroniza por
+// DOM (sin islas client:*), por eso funciona en el build estático.
 import { CartDrawer } from '@dennismiranda/astro-cart/components';
 ---
 <CartDrawer
-  title="Tu carrito"
-  checkoutLabel="Pedir por WhatsApp"
+  title="Tu cotización"
+  checkoutLabel="Cotizar ahora"
   zoneLabel="Seleccionar zona de entrega"
-  clearLabel="Vaciar carrito"
+  clearLabel="Vaciar lista"
   currency="PEN"
   locale="es-PE"
   options={{ openOnAdd: true, maxQuantityPerItem: 10 }}
 >
   <div slot="empty" class="ac-empty" data-cart-empty>
-    <h3 class="ac-empty__title">Tu carrito está vacío</h3>
+    <h3>Tu cotización está vacía</h3>
     <p class="ac-empty__text">
-      Agrega productos ortopédicos desde el catálogo y pídelos por WhatsApp con
-      un solo mensaje.
+      Agrega productos ortopédicos desde el catálogo y cotiza toda la lista por
+      WhatsApp con un solo mensaje.
     </p>
     <a
       href="/catalogo/"
@@ -33,20 +33,30 @@ import { CartDrawer } from '@dennismiranda/astro-cart/components';
 
 <script>
   import type { CheckoutContext } from '@dennismiranda/astro-cart/core';
-  import { orderWhatsappMessage } from '../../lib/cart';
+  import { quoteWhatsappMessage } from '../../lib/cart';
   import { whatsappLink } from '../../data/whatsapp';
 
-  // "Pedir por WhatsApp": el paquete emite `cart:checkout` (cancelable) antes
-  // de abrir su vista interna; lo vetamos y abrimos wa.me con el pedido.
+  // "Cotizar productos": el paquete emite `cart:checkout` (cancelable) antes
+  // de abrir su vista interna; lo vetamos y navegamos a wa.me con la lista.
   document.addEventListener('cart:checkout', (event) => {
     const e = event as CustomEvent<CheckoutContext>;
     e.preventDefault();
     const { items, totals } = e.detail;
     if (items.length === 0) return;
-    window.open(whatsappLink(orderWhatsappMessage(items, totals)), '_blank', 'noopener,noreferrer');
+
+    // Ancla real target=_blank (igual que los CTAs del navbar/flotante): los
+    // adblock y popup blockers no interceptan la navegación de un <a>, a
+    // diferencia de window.open, que era bloqueado.
+    const anchor = document.createElement('a');
+    anchor.href = whatsappLink(quoteWhatsappMessage(items));
+    anchor.target = '_blank';
+    anchor.rel = 'noopener noreferrer';
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+
     (window as Window & { dataLayer?: Record<string, unknown>[] }).dataLayer?.push({
       event: 'begin_checkout',
-      value: totals.total,
       currency: 'PEN',
       num_items: totals.itemCount,
     });
