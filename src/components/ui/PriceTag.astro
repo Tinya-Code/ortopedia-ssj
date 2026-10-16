@@ -4,10 +4,9 @@
 interface Props {
   price?: number;
   size?: 'md' | 'lg' | 'card';
-  includesIGV?: boolean;
   class?: string;
 }
-const { price, size = 'md', includesIGV = false, class: className } = Astro.props;
+const { price, size = 'md', class: className } = Astro.props;
 ---
 <p
   class:list={[
@@ -19,7 +18,4 @@ const { price, size = 'md', includesIGV = false, class: className } = Astro.prop
   ]}
 >
   {price ? `S/ ${price.toFixed(2)}` : <span class="font-medium text-neutral">Consultar precio</span>}
-  {price && includesIGV && (
-    <span class="text-xs font-normal text-neutral">Incluye IGV</span>
-  )}
 </p>

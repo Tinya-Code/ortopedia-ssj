@@ -1,6 +1,7 @@
 ---
-// mejoras.md §5.12 — sello "Registro sanitario N · Clase II" junto al precio,
-// visible sin bajar al ProductLegal. Dato factual de la ficha; sin promesas clínicas.
+// mejoras.md §5.12 — sello "Registro sanitario N · Clase II" junto al precio.
+// Dato factual de la ficha; sin promesas clínicas. Oculto si el producto no
+// tiene registro (campo opcional en el catálogo).
 interface Props {
   registroSanitario: string;
   claseRiesgo?: string;
