@@ -143,8 +143,8 @@ export const SITE = {
   url: 'https://www.tudominio.com',
   description:
     'Centro ortopédico: venta de productos ortopédicos, ortesis, prótesis y servicios de evaluación.',
-  phone: '+51 000 000 000',
-  whatsapp: '51000000000', // sin + ni espacios
+  phone: '+51 957 850 865',
+  whatsapp: '51957850865', // sin + ni espacios
   email: 'contacto@tudominio.com',
   address: {
     street: 'Av. Ejemplo 123',
@@ -155,8 +155,7 @@ export const SITE = {
   },
   geo: { lat: -12.0464, lng: -77.0428 },
   hours: [
-    { days: ['Monday','Tuesday','Wednesday','Thursday','Friday'], opens: '09:00', closes: '19:00' },
-    { days: ['Saturday'], opens: '09:00', closes: '14:00' },
+    { days: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'], opens: '09:00', closes: '19:00' },
   ],
   social: ['https://facebook.com/tumarca', 'https://instagram.com/tumarca'],
   currency: 'PEN',

@@ -1,12 +1,11 @@
 ---
-// Orden de la ficha (mejoras.md §6.4): h1 → badge → precio lg → aviso IGV → CTA.
+// Orden de la ficha (mejoras.md §6.4): h1 → badge → precio lg → CTA.
 // `self-start md:sticky md:top-24` mantiene la columna derecha visible en desktop
 // (top-24 deja pasar el header sticky de h-16).
 import WhatsAppButton from '../ui/WhatsAppButton.astro';
 import AvailabilityBadge from './AvailabilityBadge.astro';
 import RegistroBadge from './RegistroBadge.astro';
 import PriceTag from '../ui/PriceTag.astro';
-import { LEGAL } from '../../data/site';
 import type { Product as CartProduct } from '@dennismiranda/astro-cart/core';
 
 interface Props {
@@ -28,11 +27,6 @@ const {
   claseRiesgo,
   cartProduct = null,
 } = Astro.props;
-
-// legal.md 8.3: la ficha debe aclarar que el precio final incluye IGV y demás cargos.
-const igvNote = LEGAL.pricesIncludeIGV
-  ? 'El precio final incluye IGV y demás cargos.'
-  : 'El precio final no incluye IGV ni demás cargos.';
 ---
 <section class="self-start md:sticky md:top-24">
   <h1 class="font-display text-3xl font-semibold text-ink">{name}</h1>
@@ -41,9 +35,7 @@ const igvNote = LEGAL.pricesIncludeIGV
     <AvailabilityBadge availability={availability} />
   </div>
 
-  <PriceTag price={price} size="lg" includesIGV={LEGAL.pricesIncludeIGV} class="mt-3" />
-
-  <p class="mt-1 text-sm text-neutral">{igvNote}</p>
+  <PriceTag price={price} size="lg" class="mt-3" />
 
   {registroSanitario && <RegistroBadge {registroSanitario} {claseRiesgo} />}
 
@@ -57,7 +49,7 @@ const igvNote = LEGAL.pricesIncludeIGV
           data-cart-action="add"
           class="inline-flex w-full items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary/90 motion-reduce:transition-none md:w-auto"
         >
-          Añadir al carrito
+          Agregar
         </button>
       </div>
       <WhatsAppButton

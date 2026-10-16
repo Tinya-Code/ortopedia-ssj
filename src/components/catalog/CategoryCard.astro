@@ -22,11 +22,9 @@ const { category } = Astro.props;
     <Image
       src={imageSrc(category.image)}
       alt={category.imageAlt}
-      width={600}
-      height={600}
       decoding="async"
       format="webp"
-      class="aspect-square w-full rounded-lg object-cover"
+      class="aspect-square w-full rounded-lg object-contain"
     />
     <h2 class="mt-3 font-display text-lg font-semibold text-ink group-hover:underline">
       Ver {category.name.toLowerCase()}

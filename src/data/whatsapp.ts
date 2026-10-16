@@ -5,11 +5,11 @@ export function whatsappLink(message: string) {
 }
 
 /**
- * Mensaje de cotización con foco en cumplimiento: pide precio final con IGV
+ * Mensaje de cotización con foco en cumplimiento: pide precio y stock
  * y avisa que se requerirá comprobante (doc/legal.md 9.9).
  */
 export function productWhatsappMessage(name: string, url: string) {
-  return `Hola, me interesa "${name}" (${url}). ¿Tienen stock y cuál es el precio final con IGV? Necesitaré boleta o factura.`;
+  return `Hola, me interesa "${name}" (${url}). ¿Tienen stock y cuál es el precio? Necesitaré boleta o factura.`;
 }
 
 export function categoryWhatsappMessage(name: string) {

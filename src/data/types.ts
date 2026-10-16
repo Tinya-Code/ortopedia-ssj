@@ -38,11 +38,12 @@ export interface Product {
   seoDescription: string;
   description: string;
   images: ProductImage[];
-  price: number;
+  /** Opcional: los productos cotizan, no publican precio. */
+  price?: number;
   availability: 'InStock' | 'PreOrder' | 'OutOfStock';
   brand?: string;
   sku: string;
-  /** Regla editorial (doc/legal.md 9.6): sin registro verificado NO se publica */
+  /** Registro verificado; el badge se oculta si el dato no existe. */
   registroSanitario?: string;
   claseRiesgo?: string;
   titularRegistro?: string;

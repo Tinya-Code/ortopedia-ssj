@@ -9,11 +9,27 @@ interface Props {
   title: string;
   text?: string;
   image: ImageMetadata;
-  favorites?: { image: ImageMetadata; alt: string }[];
+  mobileImage?: ImageMetadata;
+  favorites?: { image: ImageMetadata; alt: string; href: string }[];
 }
-const { title, text, image, favorites = [] } = Astro.props;
+const { title, text, image, mobileImage, favorites = [] } = Astro.props;
 ---
 <section class="relative  h-[calc(100vh-63px)] isolate bg-primary flex items-center">
+  {mobileImage && (
+    <Image
+      src={mobileImage}
+      alt=""
+      width={1536}
+      height={2752}
+      widths={[640, 1080, 1536]}
+      sizes="100vw"
+      format="webp"
+      loading="eager"
+      fetchpriority="high"
+      decoding="async"
+      class="md:hidden absolute inset-0 -z-10 h-full w-full object-cover object-bottom"
+    />
+  )}
   <Image
     src={image}
     alt=""
@@ -25,27 +41,27 @@ const { title, text, image, favorites = [] } = Astro.props;
     loading="eager"
     fetchpriority="high"
     decoding="async"
-    class="absolute bottom-0 md:inset-0 -z-10 h-[calc(100vh-300px)] md:h-full w-full object-cover object-right"
+    class="hidden md:block absolute inset-0 -z-10 h-full w-full object-cover object-right"
   />
   <div
     aria-hidden="true"
-    class="absolute inset-0 -z-10 bg-linear-to-b from-primary via-primary via-25% md:via-5% to-transparent lg:bg-linear-to-r lg:via-10%"
+    class="absolute inset-0 -z-10 bg-linear-to-b from-primary/90 via-primary/40 via-10% to-transparent md:via-5% md:to-transparent lg:bg-linear-to-r lg:from-primary lg:via-primary/10 lg:via-10% lg:to-transparent"
   />
   <div class="w-full h-full px-4 sm:px-6">
     <div
-      class="flex h-full flex-col gap-10 lg:flex-row lg:items-center lg:justify-between lg:gap-8"
+      class="flex h-full flex-col gap-10 md:flex-row md:items-center md:justify-between md:gap-8 "
     >
       {/* sm/md: bloque y texto centrados; lg: vuelve a la maqueta original a la izquierda */}
-      <div class="mt-20 self-center text-center lg:mt-0 lg:ml-20 lg:max-w-xl lg:text-left">
+      <div class="mt-20 text-center md:mt-0 lg:ml-20 md:max-w-xl md:text-left">
         <h1 class="font-display text-4xl font-semibold leading-tight text-white md:text-5xl">
           {title}
         </h1>
         {text && (
-          <p class="mt-6 max-w-prose text-xl leading-relaxed text-white mx-auto lg:mx-0 ">
+          <p class="mt-6 max-w-prose text-xl leading-relaxed text-white mx-auto md:mx-0">
             {text}
           </p>
         )}
-        <div class="mt-6 flex justify-center lg:justify-start flex-wrap gap-3">
+        <div class="mt-6 flex justify-center md:justify-start flex-wrap gap-3">
           <slot />
         </div>
       </div>

@@ -2,7 +2,6 @@
 // §5.13 — menú móvil sin JS: <details>/<summary>. El panel se posiciona contra el
 // <header> (position: sticky crea contexto de posicionamiento), por eso queda
 // a ancho completo aunque el <details> viva dentro del contenedor max-w-6xl.
-import ReclamacionesLink from '../legal/ReclamacionesLink.astro';
 import Menu from '../icons/Menu.astro';
 
 interface Props {
@@ -39,9 +38,6 @@ const { links, currentPath } = Astro.props;
           </a>
         </li>
       ))}
-      <li class="mt-2 border-t border-neutral/20 pt-3">
-        <ReclamacionesLink />
-      </li>
     </ul>
   </nav>
 </details>

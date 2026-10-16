@@ -15,7 +15,7 @@ const { items } = Astro.props;
         return (
           <li class="flex flex-col items-center gap-2.5 text-neutral">
             <div class="bg-neutral/10 p-2 rounded-full">
-              <img src={it.image} alt={it.label} class="size-16" />
+              <img src={it.image} alt={it.label} class="size-16 object-contain" />
             </div>
             <span class="text-sm">{it.label}</span>
           </li>

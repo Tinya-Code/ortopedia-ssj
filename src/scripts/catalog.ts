@@ -1,6 +1,7 @@
 /**
- * Buscador + orden + paginación de productos (vanilla, sin librerías).
- * Mejora progresiva: sin JS se muestran todos los productos en el orden del build.
+ * Buscador + filtro de categoría + orden + paginación de productos
+ * (vanilla, sin librerías). Mejora progresiva: sin JS se muestran todos
+ * los productos en el orden del build.
  * Reutilizado por /catalogo/ y /catalogo/[category]/.
  */
 
@@ -9,13 +10,15 @@ type CatalogOptions = {
   gridId: string;
   /** mensaje "sin resultados" (se muestra solo con 0 coincidencias) */
   emptyId?: string;
-  /** se oculta mientras hay consulta (ej. grid de categorías) */
-  hideId?: string;
-  /** envoltorio de resultados: solo visible mientras hay consulta */
-  revealId?: string;
 };
 
-export function initCatalog({ gridId, emptyId, hideId, revealId }: CatalogOptions) {
+// Clases de los botones de filtro (CategoryFilters.astro).
+const FILTER_ACTIVE =
+  'inline-flex min-h-11 shrink-0 items-center rounded-full px-4 py-2 text-sm font-medium text-white bg-primary shadow-sm transition-colors motion-reduce:transition-none';
+const FILTER_IDLE =
+  'inline-flex min-h-11 shrink-0 items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-neutral transition-colors hover:border-tertiary motion-reduce:transition-none';
+
+export function initCatalog({ gridId, emptyId }: CatalogOptions) {
   const grid = document.getElementById(gridId);
   const input = document.getElementById('catalog-search');
   if (!(grid instanceof HTMLElement) || !(input instanceof HTMLInputElement)) return;
@@ -24,8 +27,10 @@ export function initCatalog({ gridId, emptyId, hideId, revealId }: CatalogOption
   const sortEl = document.getElementById('catalog-sort');
   const sort = sortEl instanceof HTMLSelectElement ? sortEl : null;
   const empty = emptyId ? document.getElementById(emptyId) : null;
-  const hide = hideId ? document.getElementById(hideId) : null;
-  const reveal = revealId ? document.getElementById(revealId) : null;
+
+  const filters = Array.from(
+    document.querySelectorAll<HTMLButtonElement>('[data-category-filter]'),
+  );
 
   const pager = document.getElementById('catalog-pagination');
   const pagesEl = document.getElementById('catalog-pages');
@@ -42,6 +47,8 @@ export function initCatalog({ gridId, emptyId, hideId, revealId }: CatalogOption
   const items = Array.from(grid.querySelectorAll<HTMLElement>('[data-product-item]'));
   const PER_PAGE = 12;
   let page = 1;
+  /** slug activo; null = "Todos" */
+  let activeCategory: string | null = null;
 
   const priceOf = (el: HTMLElement): number | null => {
     const raw = el.dataset.price;
@@ -83,11 +90,24 @@ export function initCatalog({ gridId, emptyId, hideId, revealId }: CatalogOption
     }
   };
 
+  const renderFilters = () => {
+    filters.forEach((btn) => {
+      const slug = btn.dataset.categoryFilter ?? '';
+      const active = (activeCategory ?? '') === slug;
+      btn.className = active ? FILTER_ACTIVE : FILTER_IDLE;
+      btn.setAttribute('aria-pressed', String(active));
+    });
+  };
+
   const apply = () => {
     const q = input.value.trim().toLowerCase();
-    const searching = q !== '';
 
-    const matched = items.filter((el) => !q || (el.dataset.search ?? '').includes(q));
+    const matched = items.filter((el) => {
+      const byCategory = !activeCategory || (el.dataset.category ?? '') === activeCategory;
+      const byQuery = !q || (el.dataset.search ?? '').includes(q);
+      return byCategory && byQuery;
+    });
+
     if (sort) {
       matched.sort((a, b) => byMode(a, b, sort.value));
       // Reordena el DOM respetando el filtro activo.
@@ -121,8 +141,6 @@ export function initCatalog({ gridId, emptyId, hideId, revealId }: CatalogOption
     }
 
     if (empty) empty.classList.toggle('hidden', total !== 0);
-    if (hide) hide.classList.toggle('hidden', searching);
-    if (reveal) reveal.classList.toggle('hidden', !searching);
   };
 
   const goTo = (target: number) => {
@@ -143,6 +161,15 @@ export function initCatalog({ gridId, emptyId, hideId, revealId }: CatalogOption
   sort?.addEventListener('change', () => {
     page = 1;
     apply();
+  });
+  filters.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const slug = btn.dataset.categoryFilter ?? '';
+      activeCategory = slug === '' ? null : slug;
+      page = 1;
+      renderFilters();
+      apply();
+    });
   });
   paged?.prev.addEventListener('click', () => {
     if (page > 1) goTo(page - 1);

@@ -7,18 +7,16 @@ import ProductGallery from '../../components/product/ProductGallery.astro';
 import ProductInfo from '../../components/product/ProductInfo.astro';
 import ProductSpecs from '../../components/product/ProductSpecs.astro';
 import RelatedProducts from '../../components/product/RelatedProducts.astro';
-import ProductLegal from '../../components/legal/ProductLegal.astro';
 import StickyProductBar from '../../components/product/StickyProductBar.astro';
 import { breadcrumbSchema, productSchema, faqSchema } from '../../lib/schema';
 import { productWhatsappMessage } from '../../data/whatsapp';
 import { isAddable, toCartProduct } from '../../lib/cart';
-import { LEGAL } from '../../data/site';
 import Container from '../../components/ui/Container.astro';
 import { absUrl } from '../../lib/url';
 
 export async function getStaticPaths() {
-  // api.products.list() solo devuelve productos publicables (con registro sanitario).
-  // Si un producto apunta a una categoría inexistente, no genera ruta.
+  // api.products.list() devuelve todo el catálogo; un producto apuntado a una
+  // categoría inexistente no genera ruta.
   const products = await api.products.list();
   const paths = await Promise.all(
     products.map(async (product) => {
@@ -107,13 +105,6 @@ const cartProduct = isAddable(product)
       {specs && <ProductSpecs specs={specs} />}
 
       <RelatedProducts products={related} />
-
-      <ProductLegal
-        registroSanitario={product.registroSanitario}
-        claseRiesgo={product.claseRiesgo}
-        titularRegistro={product.titularRegistro}
-        priceIncludesIGV={LEGAL.pricesIncludeIGV}
-      />
     </Container>
   </section>
 

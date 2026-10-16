@@ -17,7 +17,7 @@ const { images } = Astro.props;
     fetchpriority="high"
     decoding="async"
     format="webp"
-    class="aspect-square w-full rounded-xl border border-neutral/20 object-cover"
+    class="aspect-square w-full rounded-xl border border-neutral/20 bg-white object-contain"
   />
   {images.length > 1 && (
     <ul class="mt-3 flex gap-3 overflow-x-auto" role="list">
@@ -31,7 +31,7 @@ const { images } = Astro.props;
             loading="lazy"
             decoding="async"
             format="webp"
-            class="h-20 w-20 rounded-lg border border-neutral/20 object-cover"
+            class="h-20 w-20 rounded-lg border border-neutral/20 bg-white object-contain"
           />
         </li>
       ))}

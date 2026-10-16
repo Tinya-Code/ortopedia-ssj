@@ -1,0 +1,26 @@
+---
+// Paginación client-side del catálogo (markup puro).
+// La lógica vive en src/scripts/catalog.ts: se activa solo si hay más
+// productos que PER_PAGE; si no, el nav permanece oculto.
+---
+<nav
+  id="catalog-pagination"
+  aria-label="Paginación"
+  class="mt-12 mb-8 hidden items-center justify-center gap-2"
+>
+  <button
+    type="button"
+    id="catalog-prev"
+    class="inline-flex h-9 items-center rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-neutral transition-colors hover:border-tertiary disabled:pointer-events-none disabled:opacity-40"
+  >
+    ← Atrás
+  </button>
+  <div id="catalog-pages" class="flex items-center gap-2"></div>
+  <button
+    type="button"
+    id="catalog-next"
+    class="inline-flex h-9 items-center rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-neutral transition-colors hover:border-tertiary disabled:pointer-events-none disabled:opacity-40"
+  >
+    Siguiente →
+  </button>
+</nav>

@@ -1,15 +1,16 @@
 // Integración con @dennismiranda/astro-cart: mapeo de Product del sitio →
-// Product del paquete y mensaje de pedido por WhatsApp (el checkout real).
+// Product del paquete y mensaje de cotización por WhatsApp (el cierre real).
 import type { Product } from '../data/types';
-import type { CartItem, CartTotals, Product as CartProduct } from '@dennismiranda/astro-cart/core';
+import type { CartItem, Product as CartProduct } from '@dennismiranda/astro-cart/core';
 import { absUrl } from './url';
 
 /**
- * Se puede agregar al carrito solo si hay precio publicado y stock disponible.
- * "Consultar precio" / PreOrder / OutOfStock siguen su CTA de WhatsApp.
+ * Lista de cotización: cualquier producto se puede agregar. No exige precio
+ * (los productos cotizan) ni stock (agregar no compromete disponibilidad).
+ * Es la única puerta de decisión de las CTA "Agregar".
  */
-export const isAddable = (product: Pick<Product, 'price' | 'availability'>): boolean =>
-  typeof product.price === 'number' && product.price > 0 && product.availability === 'InStock';
+export const isAddable = (_product: Pick<Product, 'price' | 'availability'>): boolean =>
+  true;
 
 /** Slice mínimo que consume el carrito (no la entidad entera). */
 export type CartableProduct = Pick<Product, 'slug' | 'name' | 'price' | 'availability' | 'sku'> & {
@@ -20,7 +21,7 @@ export type CartableProduct = Pick<Product, 'slug' | 'name' | 'price' | 'availab
 /**
  * Payload que entiende el controlador del paquete (`data-product` en JSON).
  * `metadata.url` viaja a la línea del carrito y permite enlazar el producto
- * en el mensaje de pedido.
+ * en el mensaje de cotización.
  */
 export function toCartProduct(product: CartableProduct): CartProduct {
   // `image.src` es ImageMetadata (assets locales) o string (API remota).
@@ -36,22 +37,15 @@ export function toCartProduct(product: CartableProduct): CartProduct {
   };
 }
 
-const money = (n: number) => `S/ ${n.toFixed(2)}`;
-
-/** Mensaje de pedido con items, totales y datos que el cliente debe responder. */
-export function orderWhatsappMessage(items: CartItem[], totals: CartTotals): string {
-  const lines = items.map((item) => {
-    const url = absUrl(String(item.metadata?.['url'] ?? '/catalogo/'));
-    return `${item.quantity} × ${item.name} — ${money(item.lineTotal)}\n   ${url}`;
-  });
+/** Mensaje de cotización: cantidad y nombre de cada producto (sin precios ni URLs). */
+export function quoteWhatsappMessage(items: CartItem[]): string {
+  const lines = items.map((item) => `${item.quantity} × ${item.name}`);
 
   return [
-    'Hola, quiero hacer este pedido:',
+    'Hola, quiero cotizar estos productos:',
     '',
     ...lines,
     '',
-    `Subtotal: ${money(totals.subtotal)}`,
-    `Total: ${money(totals.total)}`,
-    '',
+    '¿Me podrían enviar precios y disponibilidad? Gracias.',
   ].join('\n');
 }
