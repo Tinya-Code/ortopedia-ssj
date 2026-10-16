@@ -1,7 +1,7 @@
 ---
 import { api } from '../api';
+import heroMobileImage from '../assets/home/hero-mobile.webp';
 import heroImage from '../assets/home/hero.jpeg';
-import rodilleraImage from '../assets/products/rodillera.png';
 import evaluacionImage from '../assets/services/evaluacion-ortopedica.jpeg';
 import ortesisImage from '../assets/services/ortesis-a-medida.jpeg';
 import rehabilitacionImage from '../assets/services/rehabilitacion-asesoria.jpeg';
@@ -13,13 +13,11 @@ import LocationCta from '../components/home/LocationCta.astro';
 import ServicesGrid from '../components/home/ServicesGrid.astro';
 import TopProductsBanner from '../components/home/TopProductsBanner.astro';
 import WhyUs from '../components/home/WhyUs.astro';
-import type { IconName } from '../components/icons/index';
 import Button from '../components/ui/Button.astro';
 import CtaBand from '../components/ui/CtaBand.astro';
-import { LEGAL, SITE } from '../data/site';
+import { SITE } from '../data/site';
 import { generalWhatsappMessage } from '../data/whatsapp';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { formatHours } from '../lib/hours';
 import { faqSchema } from '../lib/schema';
 
 const title = `Centro ortopédico en ${SITE.address.city}`;
@@ -54,14 +52,6 @@ const services: { title: string; text: string; href: string; image: ImageMetadat
 ];
 
 // Hechos verificables (§5.8): nada de cifras inventadas ni testimonios.
-const trustItems: { icon: IconName; label: string }[] = [
-  { icon: 'shield-check', label: 'Registro sanitario visible en cada ficha' },
-  { icon: 'receipt', label: 'Boleta o factura electrónica' },
-  { icon: 'message-circle', label: 'Atención por WhatsApp' },
-  { icon: 'clock', label: `Horario: ${formatHours()}` },
-];
-
-// Hechos verificables (§5.8): nada de cifras inventadas ni testimonios.
 const topProductsItems: { label: string; image: string }[] = [
   { image: 'https://media.falabella.com/falabellaPE/135916476_01/w=1500,h=1500,fit=cover', label: 'Fajas de rodilla' },
   { image: 'https://media.falabella.com/falabellaPE/135916476_01/w=1500,h=1500,fit=cover', label: 'Fajas de espalda' },
@@ -69,23 +59,23 @@ const topProductsItems: { label: string; image: string }[] = [
   { image: 'https://media.falabella.com/falabellaPE/135916476_01/w=1500,h=1500,fit=cover', label: 'Silla de ruedas' },
 ];
 
-// Cards glass del hero: 4 productos más vendidos (placeholder: misma imagen de prueba).
-const heroFavorites: { image: ImageMetadata; alt: string }[] = Array.from({ length: 4 }, () => ({
-  image: rodilleraImage,
-  alt: 'Rodillera ortopédica con soporte',
-}));
+// Cards glass del hero: 4 productos destacados; cada card abre el detalle.
+const featuredProducts = await api.products.featured(4);
+const heroFavorites: { image: ImageMetadata; alt: string; href: string }[] = featuredProducts.map(
+  (p) => ({
+    image: p.images[0].src as ImageMetadata,
+    alt: p.images[0].alt,
+    href: `/producto/${p.slug}/`,
+  }),
+);
 
 // Pasos de compra (§5.7) — datos en la página, no en data/.
 const steps = [
-  { title: 'Consulta', text: 'Escríbenos por WhatsApp contándonos qué necesitas o qué molestia tenés.' },
+  { title: 'Consulta', text: 'Escríbenos por WhatsApp contándonos qué necesitas o qué molestia tienes.' },
   { title: 'Asesoría', text: 'Te orientamos sobre talla, medidas y el uso correcto del producto.' },
   { title: 'Confirmación y comprobante', text: 'Confirmamos precio y disponibilidad, y emitimos el comprobante.' },
   { title: 'Entrega o recojo', text: 'Coordinamos la entrega o el recojo en el centro ortopédico.' },
 ];
-
-const igvAnswer = LEGAL.pricesIncludeIGV
-  ? 'Sí: todos los precios están expresados en soles e incluyen IGV, y emitimos comprobante de pago electrónico en cada venta.'
-  : 'Sí: todos los precios están expresados en soles y no incluyen IGV, y emitimos comprobante de pago electrónico en cada venta.';
 
 const faqs = [
   {
@@ -100,10 +90,6 @@ const faqs = [
     q: '¿Cómo elijo la talla correcta?',
     a: 'Te recomendamos medir antes de comprar y consultar tus dudas por WhatsApp; en los productos con evaluación, el personal te orienta personalmente.',
   },
-  {
-    q: '¿Los precios incluyen IGV?',
-    a: igvAnswer,
-  },
 ];
 ---
 
@@ -112,11 +98,12 @@ const faqs = [
     title="Vuelve a moverte con total libertad y confianza."
     text="Diseñamos y seleccionamos soluciones ortopédicas de grado biomecánico para aliviar la sobrecarga, corregir tu postura y devolverte la seguridad en cada paso."
     image={heroImage}
+    mobileImage={heroMobileImage}
     favorites={heroFavorites}
   >
     <Button href="/catalogo/" variant="primaryDark">Ver catálogo</Button>
   </Hero>
-  <TopProductsBanner items={topProductsItems} />
+  <!-- <TopProductsBanner items={topProductsItems} /> -->
   <FeaturedCategories categories={categories} />
   <ServicesGrid {services} />
   <WhyUs />
