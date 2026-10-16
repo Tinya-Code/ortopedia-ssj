@@ -57,7 +57,7 @@ export const LEGAL = {
   ruc: '00000000000',
   fiscalAddress: 'Av. Ejemplo 123, Distrito, Ciudad, Perú',
   email: 'contacto@tudominio.com',
-  phone: '+51 000 000 000',
+  phone: '+51 957 850 865',
   reclamosEmail: 'reclamos@tudominio.com',
   reclamosResponseDays: 15, // días hábiles [VALIDAR reglamento vigente]
   pricesIncludeIGV: true,
@@ -84,11 +84,6 @@ const year = new Date().getFullYear();
     <a href="/comprobantes-y-envios/">Comprobantes y envíos</a>
     <ReclamacionesLink />
   </nav>
-
-  <p class="legal-note">
-    Todos los precios están expresados en soles e incluyen IGV. Emitimos comprobante de pago
-    electrónico en todas nuestras ventas. © {year} {LEGAL.tradeName}.
-  </p>
 </footer>
 9.4 ReclamacionesLink.astro
 astro

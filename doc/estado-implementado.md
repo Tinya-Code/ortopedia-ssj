@@ -365,13 +365,12 @@ export const SITE = {
   name: 'Centro Ortopédico SSJ',
   url: 'https://www.example.com',           // TODO: dominio real
   description: 'Centro ortopédico: venta de productos ortopédicos, ortesis, prótesis y servicios de evaluación.',
-  phone: '+51 000 000 000',
-  whatsapp: '51000000000',                  // sin + ni espacios (formato wa.me)
+  phone: '+51 957850865',
+  whatsapp: '51957850865',                  // sin + ni espacios (formato wa.me)
   email: 'contacto@example.com',
   address: { street: 'Av. Ejemplo 123', city: 'Ciudad', region: 'Región', postalCode: '00000', country: 'PE' },
   geo: { lat: -12.0464, lng: -77.0428 },
-  hours: [ { days: ['Monday'..'Friday'], opens: '09:00', closes: '19:00' },
-           { days: ['Saturday'], opens: '09:00', closes: '14:00' } ],
+  hours: [ { days: ['Monday'..'Saturday'], opens: '09:00', closes: '19:00' },
   social: ['https://facebook.com/example', 'https://instagram.com/example'],
   currency: 'PEN',
 } as const;
@@ -382,7 +381,7 @@ export const LEGAL = {
   ruc: '20000000001',
   fiscalAddress: 'Av. Ejemplo 123, Distrito, Ciudad, Perú',
   email: 'contacto@example.com',
-  phone: '+51 000 000 000',
+  phone: '+51 957 850 865',
   reclamosEmail: 'reclamos@example.com',
   reclamosResponseDays: 15,                 // [VALIDAR reglamento vigente]
   pricesIncludeIGV: true,
@@ -480,7 +479,7 @@ ya pasan `width`/`height` explícitos, requeridos para el caso remoto).
 | `data/types.ts` | `Category`, `Product`, `Database` | contracto compartido db ↔ API (valida los dos lados) |
 | `lib/schema.ts` | `organizationSchema()` | `['MedicalBusiness','Store']` con NAP, geo, horarios, `taxID` (RUC) |
 | | `breadcrumbSchema(items)` · `itemListSchema(items)` · `productSchema(p)` · `faqSchema(items)` | builders de JSON-LD; `productSchema.image` recibe URLs absolutas en **jpg** |
-| `lib/hours.ts` | `formatHours()` | "Lun, Mar, Mié, Jue, Vie: 09:00–19:00 · Sáb: 09:00–14:00" — fuente única del horario (footer, home, contacto, términos) |
+| `lib/hours.ts` | `formatHours()` | "Lun, Mar, Mié, Jue, Vie, Sáb: 09:00–19:00" — fuente única del horario (footer, home, contacto, términos) |
 | `lib/image.ts` | `imageSrc()` | estrechamiento estático para `<Image>`: astro:assets declara ramas Props separadas (local `ImageMetadata` / remota `string`) y un union no asigna a ninguna; el runtime resuelve ambos |
 | `lib/url.ts` | `absUrl(path)` | ruta → URL absoluta con `SITE.url`; reemplaza los `new URL(p, SITE.url)` duplicados en 4 páginas (JSON-LD/WhatsApp) |
 
