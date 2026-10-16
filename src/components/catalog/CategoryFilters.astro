@@ -1,0 +1,35 @@
+---
+// Filtros de categoría client-side para /catalogo/.
+// A diferencia de CategoryChips (links de navegación a /catalogo/[category]/),
+// estos botones filtran la grilla sin recargar la página.
+// El comportamiento vive en src/scripts/catalog.ts (initCatalog).
+interface Props {
+  categories: { slug: string; name: string }[];
+}
+const { categories } = Astro.props;
+---
+<div
+  id="catalog-filters"
+  class="no-scrollbar -mx-4 flex items-center gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0"
+  role="group"
+  aria-label="Filtrar por categoría"
+>
+  <button
+    type="button"
+    data-category-filter=""
+    aria-pressed="true"
+    class="inline-flex min-h-11 shrink-0 items-center rounded-full px-4 py-2 text-sm font-medium text-white bg-primary shadow-sm transition-colors motion-reduce:transition-none"
+  >
+    Todos
+  </button>
+  {categories.map((c) => (
+    <button
+      type="button"
+      data-category-filter={c.slug}
+      aria-pressed="false"
+      class="inline-flex min-h-11 shrink-0 items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-neutral transition-colors hover:border-tertiary motion-reduce:transition-none"
+    >
+      {c.name}
+    </button>
+  ))}
+</div>

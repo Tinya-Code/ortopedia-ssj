@@ -5,6 +5,7 @@ import Breadcrumbs from '../../components/layout/Breadcrumbs.astro';
 import ProductGrid from '../../components/catalog/ProductGrid.astro';
 import CategoryChips from '../../components/catalog/CategoryChips.astro';
 import CatalogSearch from '../../components/catalog/CatalogSearch.astro';
+import CatalogPagination from '../../components/catalog/CatalogPagination.astro';
 import WhatsAppButton from '../../components/ui/WhatsAppButton.astro';
 import Callout from '../../components/ui/Callout.astro';
 import CtaBand from '../../components/ui/CtaBand.astro';
@@ -14,8 +15,7 @@ import Container from '../../components/ui/Container.astro';
 import { absUrl } from '../../lib/url';
 
 export async function getStaticPaths() {
-  // api.products.byCategory ya excluye los productos sin registro sanitario,
-  // por lo que esas fichas nunca generan ruta.
+  // Genera una ruta por categoría con sus productos ya resueltos en build.
   const categories = await api.categories.list();
   return Promise.all(
     categories.map(async (cat) => ({
@@ -94,27 +94,7 @@ const crumbs = [
             No encontramos productos que coincidan con tu búsqueda.
           </p>
 
-          <nav
-            id="catalog-pagination"
-            aria-label="Paginación"
-            class="mt-12 mb-8 hidden items-center justify-center gap-2"
-          >
-            <button
-              type="button"
-              id="catalog-prev"
-              class="inline-flex h-9 items-center rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-neutral transition-colors hover:border-tertiary disabled:pointer-events-none disabled:opacity-40"
-            >
-              ← Atrás
-            </button>
-            <div id="catalog-pages" class="flex items-center gap-2"></div>
-            <button
-              type="button"
-              id="catalog-next"
-              class="inline-flex h-9 items-center rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-neutral transition-colors hover:border-tertiary disabled:pointer-events-none disabled:opacity-40"
-            >
-              Siguiente →
-            </button>
-          </nav>
+          <CatalogPagination />
         </>
       ) : (
         <Callout tone="info" title="Sin productos publicados">

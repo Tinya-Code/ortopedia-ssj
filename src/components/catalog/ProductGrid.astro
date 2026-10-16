@@ -5,6 +5,7 @@ import type { Product } from '../../data/types';
 type CardProduct = {
   slug: string;
   name: string;
+  category?: string;
   price?: number;
   brand?: string;
   sku?: string;
@@ -30,6 +31,7 @@ const { products, id, class: className } = Astro.props;
     <li
       data-product-item
       data-name={p.name}
+      data-category={p.category ?? ''}
       data-price={p.price ?? ''}
       data-search={[p.name, p.brand, p.seoDescription].filter(Boolean).join(' ').toLowerCase()}
     >
