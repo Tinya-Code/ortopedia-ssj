@@ -34,7 +34,7 @@ export const organizationSchema = () => ({
     opens: h.opens,
     closes: h.closes,
   })),
-  sameAs: SITE.social,
+  sameAs: Object.values(SITE.social),
 });
 
 export const breadcrumbSchema = (items: { name: string; url: string }[]) => ({
