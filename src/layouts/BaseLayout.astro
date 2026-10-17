@@ -48,8 +48,7 @@ const {
     <SEO {title} {description} {image} {type} {noindex} />
     <JsonLd data={[organizationSchema(), ...schemas]} />
   </head>
-  {/* El pb vive en <body> y no en <main>: la barra fija es full-width y, si solo
-      se reservara espacio en main, taparía la última fila del footer. */}
+
   <body
     class:list={[
       'flex min-h-screen flex-col bg-white text-neutral',
