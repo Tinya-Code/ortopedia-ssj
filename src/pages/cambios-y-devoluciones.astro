@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { SITE, LEGAL } from '../data/site';
+import { legal, site } from '../api/data/site';
 import Container from '../components/ui/Container.astro';
 import PageHeader from '../components/ui/PageHeader.astro';
 import Callout from '../components/ui/Callout.astro';
@@ -11,10 +11,10 @@ const description =
 ---
 
 <BaseLayout {title} {description}>
-  <article class="pb-10">
+  <article class="mx-auto max-w-prose pb-10">
     <Container size="narrow">
       <PageHeader title="Cambios y devoluciones" />
-      <p class="mt-4 text-sm text-neutral">Última actualización: {LEGAL.lastUpdated}</p>
+      <p class="mt-4 text-sm text-neutral">Última actualización: {legal.lastUpdated}</p>
       <!-- TODO Fase 9: [VALIDAR] con el abogado los plazos, la garantía legal y el alcance de la
            garantía en compras a distancia (legal.md 8.5). -->
 
@@ -32,7 +32,7 @@ const description =
       </nav>
 
       <section class="mt-8 space-y-4">
-        <h2 id="plazo-cambio-o-devolucion" class="font-display text-xl font-semibold text-ink scroll-mt-20">1. Plazo para solicitar un cambio o devolución</h2>
+        <h2 id="plazo-cambio-o-devolucion" class="font-display text-h2 md:text-h2-lg font-semibold text-ink scroll-mt-20">1. Plazo para solicitar un cambio o devolución</h2>
         <p class="text-neutral">
           Puedes solicitar cambio o devolución dentro de los 10 días calendario posteriores a la
           recepción del producto, escribiéndonos por WhatsApp con tu número de pedido.
@@ -40,7 +40,7 @@ const description =
       </section>
 
       <section class="mt-8 space-y-4">
-        <h2 id="estado-del-producto" class="font-display text-xl font-semibold text-ink scroll-mt-20">2. Estado del producto</h2>
+        <h2 id="estado-del-producto" class="font-display text-h2 md:text-h2-lg font-semibold text-ink scroll-mt-20">2. Estado del producto</h2>
         <p class="text-neutral">
           El producto debe devolverse sin uso, completo y con su empaque y etiquetas originales. Si el
           producto llegó dañado o no corresponde a lo pedido, contáctanos apenas lo recibas y asumimos
@@ -49,7 +49,7 @@ const description =
       </section>
 
       <section class="mt-8 space-y-4">
-        <h2 id="quien-asume-el-flete" class="font-display text-xl font-semibold text-ink scroll-mt-20">3. Quién asume el flete</h2>
+        <h2 id="quien-asume-el-flete" class="font-display text-h2 md:text-h2-lg font-semibold text-ink scroll-mt-20">3. Quién asume el flete</h2>
         <ul class="list-disc space-y-1 pl-6 text-neutral">
           <li>
             <strong class="text-primary">Error nuestro o producto defectuoso:</strong> el costo de
@@ -63,7 +63,7 @@ const description =
       </section>
 
       <section class="mt-8 space-y-4">
-        <h2 id="excepciones-higiene-y-seguridad" class="font-display text-xl font-semibold text-ink scroll-mt-20">4. Excepciones por higiene y seguridad</h2>
+        <h2 id="excepciones-higiene-y-seguridad" class="font-display text-h2 md:text-h2-lg font-semibold text-ink scroll-mt-20">4. Excepciones por higiene y seguridad</h2>
         <Callout tone="legal">
           Por razones de higiene, no aceptamos devolución de productos de contacto directo con la piel
           que hayan sido usados (por ejemplo, rodilleras, fajas o prendas de compresión). Esta
@@ -72,7 +72,7 @@ const description =
       </section>
 
       <section class="mt-8 space-y-4">
-        <h2 id="reembolsos-y-nota-de-credito" class="font-display text-xl font-semibold text-ink scroll-mt-20">5. Reembolsos y nota de crédito</h2>
+        <h2 id="reembolsos-y-nota-de-credito" class="font-display text-h2 md:text-h2-lg font-semibold text-ink scroll-mt-20">5. Reembolsos y nota de crédito</h2>
         <p class="text-neutral">
           Todo reembolso se emite mediante nota de crédito asociada al comprobante original, en el
           mismo medio de pago con el que se realizó la compra, dentro de los plazos legales aplicables.
@@ -81,7 +81,7 @@ const description =
       </section>
 
       <section class="mt-8 space-y-4">
-        <h2 id="garantia" class="font-display text-xl font-semibold text-ink scroll-mt-20">6. Garantía</h2>
+        <h2 id="garantia" class="font-display text-h2 md:text-h2-lg font-semibold text-ink scroll-mt-20">6. Garantía</h2>
         <p class="text-neutral">
           Los productos cuentan con la garantía legal que corresponde según su naturaleza y con los
           derechos del consumidor en compras a distancia. Escríbenos con tu comprobante y una
@@ -90,9 +90,9 @@ const description =
       </section>
 
       <section class="mt-8 space-y-4">
-        <h2 id="como-solicitarlo" class="font-display text-xl font-semibold text-ink scroll-mt-20">7. Cómo solicitarlo</h2>
+        <h2 id="como-solicitarlo" class="font-display text-h2 md:text-h2-lg font-semibold text-ink scroll-mt-20">7. Cómo solicitarlo</h2>
         <p class="text-neutral">
-          Escríbenos por WhatsApp al {SITE.phone} indicando tu número de pedido, el motivo y, si
+          Escríbenos por WhatsApp al {site.phone} indicando tu número de pedido, el motivo y, si
           aplica, fotografías del producto. También puedes registrar un reclamo en el{' '}
           <a href="/libro-de-reclamaciones/" class="text-primary underline underline-offset-4">
             Libro de Reclamaciones

@@ -1,0 +1,67 @@
+---
+import Button from '../ui/Button.astro';
+---
+<!-- Banner de consentimiento (F7): gate de GA4 previo a activar medición — política §7. -->
+<div
+  id="cookie-consent"
+  hidden
+  role="region"
+  aria-label="Aviso de cookies"
+  class="fixed inset-x-0 bottom-0 z-40 border-t border-neutral/20 bg-white p-4 shadow-lg"
+>
+  <div class="mx-auto flex w-full max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+    <div class="text-sm">
+      <p class="font-semibold text-ink">Cookies y analítica</p>
+      <p class="mt-1 text-neutral">
+        Usamos cookies de analítica solo con tu permiso para entender cómo se usa el sitio.
+        Puedes cambiarlo cuando quieras.
+        <a
+          href="/politica-de-privacidad/#cookies-y-analitica"
+          class="font-medium text-primary underline underline-offset-2 hover:text-secondary focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2"
+        >Política de privacidad</a>
+      </p>
+    </div>
+    <div class="flex flex-wrap items-center gap-2 sm:shrink-0">
+      <Button type="button" variant="primary" label="Aceptar" data-consent="granted" />
+      <Button type="button" variant="outline" label="Rechazar" data-consent="denied" />
+    </div>
+  </div>
+</div>
+
+<script>
+  // Registro de consentimiento (F7). Cuando exista el ID de medición, inyectar
+  // gtag.js aquí, solo si analytics_storage='granted' (política §7 exige
+  // consentimiento previo); con 'denied' no se carga ningún script de medición.
+  const CONSENT_KEY = 'ssj:cookie-consent';
+
+  const banner = document.getElementById('cookie-consent');
+  if (banner) {
+    let stored: string | null = null;
+    try {
+      stored = localStorage.getItem(CONSENT_KEY);
+    } catch {
+      // Sin acceso a localStorage (modo privado): se vuelve a mostrar el banner.
+    }
+
+    // Sin elección previa visible; con elección previa el banner sigue oculto.
+    if (stored !== 'granted' && stored !== 'denied') {
+      banner.hidden = false;
+    }
+
+    banner.querySelectorAll<HTMLButtonElement>('[data-consent]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const choice = button.getAttribute('data-consent') === 'denied' ? 'denied' : 'granted';
+        try {
+          localStorage.setItem(CONSENT_KEY, choice);
+        } catch {
+          // Sin almacenamiento persistente: la elección vale solo para esta visita.
+        }
+        banner.hidden = true;
+
+        const store = window as Window & { dataLayer?: Record<string, unknown>[] };
+        store.dataLayer ??= [];
+        store.dataLayer.push({ event: 'consent_update', analytics_storage: choice });
+      });
+    });
+  }
+</script>

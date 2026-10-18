@@ -14,7 +14,10 @@ interface Props {
 }
 const { title, text, image, mobileImage, favorites = [] } = Astro.props;
 ---
-<section class="relative  h-[calc(100vh-63px)] isolate bg-primary flex items-center">
+{/* min-h en vez de h fija: con zoom 200% / viewports cortos el contenido crece
+    y empuja la siguiente sección en vez de solaparse. py-10 garantiza aire
+    vertical cuando el contenido supera la altura mínima. */}
+<section class="relative min-h-[calc(100vh-63px)] isolate bg-primary flex items-center">
   {mobileImage && (
     <Image
       src={mobileImage}
@@ -47,17 +50,18 @@ const { title, text, image, mobileImage, favorites = [] } = Astro.props;
     aria-hidden="true"
     class="absolute inset-0 -z-10 bg-linear-to-b from-primary/90 via-primary/40 via-10% to-transparent md:via-5% md:to-transparent lg:bg-linear-to-r lg:from-primary lg:via-primary/10 lg:via-10% lg:to-transparent"
   />
-  <div class="w-full h-full px-4 sm:px-6">
+  <div class="w-full h-full px-4 sm:px-6 py-10">
     <div
       class="flex h-full flex-col gap-10 md:flex-row md:items-center md:justify-between md:gap-8 "
     >
       {/* sm/md: bloque y texto centrados; lg: vuelve a la maqueta original a la izquierda */}
       <div class="mt-20 text-center md:mt-0 lg:ml-20 md:max-w-xl md:text-left">
-        <h1 class="font-display text-4xl font-semibold leading-tight text-white md:text-5xl">
+        {/* H1 del hero: pieza de presentación, escapa a la escala §2.2 (diseño exclusivo) */}
+        <h1 class="font-display text-4xl md:text-5xl font-semibold leading-tight text-white">
           {title}
         </h1>
         {text && (
-          <p class="mt-6 max-w-prose text-xl leading-relaxed text-white mx-auto md:mx-0">
+          <p class="mt-6 max-w-prose text-left text-xl leading-relaxed text-white mx-auto md:mx-0">
             {text}
           </p>
         )}

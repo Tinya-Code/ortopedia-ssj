@@ -4,7 +4,8 @@
 // Con JS: envía por fetch y muestra la confirmación en la misma página.
 // Sin JS: el POST nativo del navegador sigue funcionando (va al endpoint igual).
 // El correlativo y la fecha de registro los genera el endpoint, no el formulario.
-import { SITE, LEGAL } from '../../data/site';
+import Button from '../ui/Button.astro';
+import { legal, site } from '../../api/data/site';
 
 interface Props {
   endpoint: string;
@@ -14,10 +15,10 @@ const { endpoint } = Astro.props;
 <form action={endpoint} method="post" data-reclamacion class="mt-8 space-y-8">
   <div data-fields class="space-y-8">
     {/* Datos del proveedor que el endpoint necesita y no puede leer del HTML */}
-    <input type="hidden" name="proveedor_razon_social" value={LEGAL.legalName} />
-    <input type="hidden" name="proveedor_ruc" value={LEGAL.ruc} />
-    <input type="hidden" name="proveedor_domicilio" value={LEGAL.fiscalAddress} />
-    <input type="hidden" name="proveedor_sitio" value={SITE.url} />
+    <input type="hidden" name="proveedor_razon_social" value={legal.legalName} />
+    <input type="hidden" name="proveedor_ruc" value={legal.ruc} />
+    <input type="hidden" name="proveedor_domicilio" value={legal.fiscalAddress} />
+    <input type="hidden" name="proveedor_sitio" value={site.url} />
 
     <fieldset class="rounded-xl border border-neutral/20 p-5">
       <legend class="px-2 font-semibold text-primary">1. Identificación del consumidor</legend>
@@ -105,19 +106,20 @@ const { endpoint } = Astro.props;
       </span>
     </label>
 
-    <button
+    <Button
       type="submit"
-      class="min-h-11 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-white hover:bg-primary/90"
+      variant="primary"
+      size="md"
     >
       Enviar hoja de reclamación
-    </button>
+    </Button>
   </div>
 
   <div data-status role="status" aria-live="polite" hidden class="rounded-xl border border-primary/40 bg-primary/5 p-5">
     <div data-success hidden>
       <p class="font-semibold text-primary">Tu hoja fue enviada.</p>
       <p class="mt-2 text-sm text-neutral">
-        Te responderemos en un máximo de {LEGAL.reclamosResponseDays} días hábiles. Si necesitás una
+        Te responderemos en un máximo de {legal.reclamosResponseDays} días hábiles. Si necesitás una
         copia, escribinos por WhatsApp y te la mandamos.
       </p>
     </div>

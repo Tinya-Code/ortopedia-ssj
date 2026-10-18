@@ -1,9 +1,8 @@
 ---
 // Categorías con enlace interno a su landing (/catalogo/[slug]/) y anchor text descriptivo.
-import { Image } from "astro:assets";
 import Container from "../ui/Container.astro";
 import ChevronDown from "../icons/ChevronDown.astro";
-import { imageSrc } from "../../lib/image";
+import CategoryCard from "../catalog/CategoryCard.astro";
 
 interface Category {
   slug: string;
@@ -21,39 +20,19 @@ const { categories } = Astro.props;
 <section class="py-12 md:py-16 relative">
   <Container>
     <div>
-      <h2 class="font-display text-3xl font-semibold text-ink">
+      <h2 class="font-display text-h2 md:text-h2-lg font-semibold text-ink">
         Categorías de productos
       </h2>
     </div>
     <div class="relative mt-6">
       <ul
-        class="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-4 sm:gap-6"
+        class="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-4 no-scrollbar sm:gap-6"
         data-carousel-track
       >
         {
           categories.map((c) => (
             <li class="w-[min(82vw,20rem)] shrink-0 snap-start sm:w-[calc(50%_-_0.75rem)] lg:w-[calc(33.333%_-_1rem)]">
-              <a
-                href={`/catalogo/${c.slug}/`}
-                class="group block rounded-card bg-white p-4 transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md motion-reduce:transition-none"
-              >
-                <Image
-                  src={imageSrc(c.image)}
-                  alt={c.imageAlt}
-                  width={600}
-                  height={600}
-                  format="webp"
-                  loading="lazy"
-                  decoding="async"
-                  class="aspect-square h-auto w-full rounded-lg object-contain bg-tertiary/20 p-8"
-                />
-                <div class="mt-4 flex items-center gap-4">
-                  <h3 class="font-display text-lg font-semibold text-ink">
-                    {c.name}
-                  </h3>
-                </div>
-                <p class="mt-1 text-sm text-neutral">{c.seoDescription}</p>
-              </a>
+              <CategoryCard category={c} titleTag="h3" class="h-full" />
             </li>
           ))
         }
@@ -109,7 +88,12 @@ const { categories } = Astro.props;
           ? second.getBoundingClientRect().left -
             first.getBoundingClientRect().left
           : (first?.getBoundingClientRect().width ?? 0);
-      track.scrollBy({ left: direction * distance, behavior: "smooth" });
+      track.scrollBy({
+        left: direction * distance,
+        behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "auto"
+          : "smooth",
+      });
     };
 
     previous.addEventListener("click", () => scrollByCard(-1));

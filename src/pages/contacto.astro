@@ -2,8 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/layout/Breadcrumbs.astro';
 import LocationCta from '../components/home/LocationCta.astro';
-import { SITE } from '../data/site';
-import { whatsappLink, generalWhatsappMessage } from '../data/whatsapp';
+import { site } from '../api/data/site';
+import { whatsappLink, generalWhatsappMessage } from '../lib/whatsapp';
 import Container from '../components/ui/Container.astro';
 import PageHeader from '../components/ui/PageHeader.astro';
 import { icons, type IconName } from '../components/icons/index';
@@ -23,11 +23,11 @@ const channels: { label: string; value: string; href: string; icon: IconName }[]
   },
   {
     label: 'Teléfono',
-    value: SITE.phone,
-    href: `tel:${SITE.phone.replace(/\s/g, '')}`,
+    value: site.phone,
+    href: `tel:${site.phone.replace(/\s/g, '')}`,
     icon: 'phone-call',
   },
-  { label: 'Correo', value: SITE.email, href: `mailto:${SITE.email}`, icon: 'mail' },
+  { label: 'Correo', value: site.email, href: `mailto:${site.email}`, icon: 'mail' },
 ];
 
 const crumbs = [
@@ -56,9 +56,9 @@ const crumbs = [
         lead="Escríbenos por WhatsApp para consultar stock, tallas o coordinar una evaluación. Si prefieres llamarnos o escribir por correo, también estamos disponibles en los horarios indicados."
       />
       {/* Dato concreto de referencia desde la capa de datos (los valores reales
-          pendientes viven en src/data/site.ts junto al TODO de datos del negocio). */}
+          pendientes viven en src/api/data/site.ts junto al TODO de datos del negocio). */}
       <p class="mt-4 text-sm text-neutral">
-        Punto de referencia: {SITE.address.street}, {SITE.address.city} ({SITE.address.region}).
+        Punto de referencia: {site.address.street}, {site.address.city} ({site.address.region}).
       </p>
     </Container>
   </section>

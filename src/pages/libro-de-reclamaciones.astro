@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ReclamacionForm from '../components/legal/ReclamacionForm.astro';
-import { SITE, LEGAL } from '../data/site';
+import { legal, site } from '../api/data/site';
 import Callout from '../components/ui/Callout.astro';
 import Container from '../components/ui/Container.astro';
 import PageHeader from '../components/ui/PageHeader.astro';
@@ -12,7 +12,7 @@ import PageHeader from '../components/ui/PageHeader.astro';
 const ENDPOINT = 'https://example.com/api/reclamos';
 
 const title = 'Libro de Reclamaciones';
-const description = `Registra tu reclamo o queja. Respondemos en un máximo de ${LEGAL.reclamosResponseDays} días hábiles.`;
+const description = `Registra tu reclamo o queja. Respondemos en un máximo de ${legal.reclamosResponseDays} días hábiles.`;
 ---
 
 <BaseLayout {title} {description}>
@@ -24,15 +24,15 @@ const description = `Registra tu reclamo o queja. Respondemos en un máximo de $
            "Tu Libro de Reclamaciones" (legal.md 9.8). -->
 
       <p class="mt-4 text-neutral">
-        <strong class="text-primary">{LEGAL.legalName}</strong> · RUC {LEGAL.ruc} · {LEGAL.fiscalAddress}
+        <strong class="text-primary">{legal.legalName}</strong> · RUC {legal.ruc} · {legal.fiscalAddress}
         <br />
-        {SITE.phone} · {SITE.email}
+        {site.phone} · {site.email}
       </p>
 
       <div class="mt-4">
         <Callout tone="warning">
           Registra tu hoja y te responderemos en un máximo de{' '}
-          <strong class="text-primary">{LEGAL.reclamosResponseDays} días hábiles</strong>. Conservamos
+          <strong class="text-primary">{legal.reclamosResponseDays} días hábiles</strong>. Conservamos
           las hojas registradas por al menos dos años y puedes pedir tu copia en cualquier momento.
         </Callout>
       </div>

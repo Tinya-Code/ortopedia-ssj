@@ -1,6 +1,9 @@
 ---
-// mejoras.md §5.8 — franja de hechos verificables bajo el hero. Sin <h2> (no es
+// mejoras.md §5.8 / plan F5 — franja de garantías con hechos respaldados por las
+// páginas legales (el label lo aporta la página, no el componente). Sin <h2> (no es
 // una sección con título: es una franja, por eso lleva aria-label).
+// Contraste AA sobre bg-white: text-neutral #6b7280 = 4.83:1; iconos text-primary
+// #0d80a5 = 4.52:1 (≥3:1 para UI).
 import Container from '../ui/Container.astro';
 import { icons, type IconName } from '../icons/index';
 
@@ -9,9 +12,11 @@ interface Props {
 }
 const { items } = Astro.props;
 ---
-<section aria-label="Información de confianza" class="border-y border-neutral/20 bg-white py-6">
+<section id="garantias" aria-label="Información de confianza" class="border-y border-neutral/20 bg-white py-6">
   <Container>
-    <ul class="grid grid-cols-2 gap-x-4 gap-y-3 text-sm md:grid-cols-4" role="list">
+    {/* 1 col en móvil: labels largos (p. ej. "Atención por WhatsApp, Lun–Sáb
+        9:00–19:00") se partían en 3–4 líneas dentro de una col de ~156px. */}
+    <ul class="grid grid-cols-1 gap-x-4 gap-y-3 text-sm sm:grid-cols-2 lg:grid-cols-4" role="list">
       {items.map((it) => {
         const Icon = icons[it.icon];
         return (

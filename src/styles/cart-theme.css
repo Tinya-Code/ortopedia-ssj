@@ -37,3 +37,10 @@ body.ac-cart-lock [data-wa-float] {
 .ac-summary {
   display: none;
 }
+
+/* El contador del header del drawer solo tiene sentido con productos en la
+   lista: en vacío se oculta (el resto del drawer ya lo gestiona el paquete
+   con .ac-drawer[data-empty='true']). */
+.ac-drawer[data-empty='true'] .ac-drawer__count {
+  display: none;
+}

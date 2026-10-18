@@ -3,10 +3,16 @@
 // A diferencia de CategoryChips (links de navegación a /catalogo/[category]/),
 // estos botones filtran la grilla sin recargar la página.
 // El comportamiento vive en src/scripts/catalog.ts (initCatalog).
+// Cada botón muestra su contador "(n)": se pinta en build y el cliente lo
+// ajusta a la búsqueda actual (data-count-for → updateFilterCounts).
 interface Props {
   categories: { slug: string; name: string }[];
+  /** Conteo por slug calculado en build (contador de cada botón). */
+  counts?: Map<string, number>;
+  /** Total de productos del catálogo (contador del botón "Todos"). */
+  total?: number;
 }
-const { categories } = Astro.props;
+const { categories, counts, total = 0 } = Astro.props;
 ---
 <div
   id="catalog-filters"
@@ -21,15 +27,19 @@ const { categories } = Astro.props;
     class="inline-flex min-h-11 shrink-0 items-center rounded-full px-4 py-2 text-sm font-medium text-white bg-primary shadow-sm transition-colors motion-reduce:transition-none"
   >
     Todos
+    {/* El contador hereda el color del botón (blanco activo / neutral inactivo). */}
+    <span data-count-for="" class="ml-1.5 text-xs font-normal">({total})</span>
   </button>
   {categories.map((c) => (
     <button
       type="button"
       data-category-filter={c.slug}
+      data-label={c.name}
       aria-pressed="false"
-      class="inline-flex min-h-11 shrink-0 items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-neutral transition-colors hover:border-tertiary motion-reduce:transition-none"
+      class="inline-flex min-h-11 shrink-0 items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-neutral transition-colors hover:border-primary hover:text-primary hover:bg-slate-50 motion-reduce:transition-none"
     >
       {c.name}
+      <span data-count-for={c.slug} class="ml-1.5 text-xs font-normal">({counts?.get(c.slug) ?? 0})</span>
     </button>
   ))}
 </div>

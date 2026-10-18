@@ -7,17 +7,18 @@ interface Props {
 const { items } = Astro.props;
 ---
 <nav aria-label="Migas de pan" class="mx-auto max-w-6xl px-4 py-3 text-xs text-neutral sm:text-sm">
-  {/* En móvil la tira scrollea horizontalmente en vez de partirse (mejoras.md §4).
-     py-3/-my-3 da margen al área after: de los enlaces (≥44px) sin que el
-     overflow-x del propio <ol> la recorte ni cambie la altura de la barra. */}
-  <ol class="flex items-center gap-x-2 -my-3 overflow-x-auto whitespace-nowrap py-3 sm:flex-wrap sm:overflow-visible">
+  {/* En móvil la tira ENVUELVE (flex-wrap) en vez de scrollear horizontalmente:
+     los nombres de producto son largos y el scroll interno rompía el cierre
+     "360px sin scroll horizontal". py-1 en los enlaces da un área táctil ≥24px
+     (WCAG 2.2 AA 2.5.8); after solo expande en X para sumar a los tappings. */}
+  <ol class="flex flex-wrap items-center gap-x-2 gap-y-1">
     {items.map((it, i) => (
-      <li class="flex shrink-0 items-center gap-2">
+      <li class="flex items-center gap-2">
         {i > 0 && <span aria-hidden="true">&gt;</span>}
         {it.href && i < items.length - 1 ? (
           <a
             href={it.href}
-            class="relative after:absolute after:-inset-x-2 after:-inset-y-3 after:content-[''] hover:text-primary"
+            class="relative inline-block py-1 after:absolute after:-inset-x-2 after:inset-y-0 after:content-[''] hover:text-primary"
           >{it.name}</a>
         ) : (
           <span aria-current="page" class="text-neutral">{it.name}</span>

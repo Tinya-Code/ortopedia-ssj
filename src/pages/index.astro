@@ -5,22 +5,26 @@ import heroImage from '../assets/home/hero.jpeg';
 import evaluacionImage from '../assets/services/evaluacion-ortopedica.jpeg';
 import ortesisImage from '../assets/services/ortesis-a-medida.jpeg';
 import rehabilitacionImage from '../assets/services/rehabilitacion-asesoria.jpeg';
+import type { IconName } from '../components/icons/index';
 import Faq from '../components/home/Faq.astro';
 import FeaturedCategories from '../components/home/FeaturedCategories.astro';
 import Hero from '../components/home/Hero.astro';
 import HowItWorks from '../components/home/HowItWorks.astro';
 import LocationCta from '../components/home/LocationCta.astro';
+import PromoModal from '../components/promo/PromoModal.astro';
 import ServicesGrid from '../components/home/ServicesGrid.astro';
-import TopProductsBanner from '../components/home/TopProductsBanner.astro';
+import Team from '../components/home/Team.astro';
+import Testimonials from '../components/home/Testimonials.astro';
+import TrustBar from '../components/home/TrustBar.astro';
 import WhyUs from '../components/home/WhyUs.astro';
 import Button from '../components/ui/Button.astro';
 import CtaBand from '../components/ui/CtaBand.astro';
-import { SITE } from '../data/site';
-import { generalWhatsappMessage } from '../data/whatsapp';
+import { site } from '../api/data/site';
+import { generalWhatsappMessage } from '../lib/whatsapp';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { faqSchema } from '../lib/schema';
 
-const title = `Centro ortopédico en ${SITE.address.city}`;
+const title = `Centro ortopédico en ${site.address.city}`;
 const description =
   'Centro ortopédico con evaluación, ortesis a medida y venta de productos ortopédicos. Atención personalizada y respuesta por WhatsApp.';
 
@@ -51,14 +55,6 @@ const services: { title: string; text: string; href: string; image: ImageMetadat
   },
 ];
 
-// Hechos verificables (§5.8): nada de cifras inventadas ni testimonios.
-const topProductsItems: { label: string; image: string }[] = [
-  { image: 'https://media.falabella.com/falabellaPE/135916476_01/w=1500,h=1500,fit=cover', label: 'Fajas de rodilla' },
-  { image: 'https://media.falabella.com/falabellaPE/135916476_01/w=1500,h=1500,fit=cover', label: 'Fajas de espalda' },
-  { image: 'https://media.falabella.com/falabellaPE/135916476_01/w=1500,h=1500,fit=cover', label: 'Muletas' },
-  { image: 'https://media.falabella.com/falabellaPE/135916476_01/w=1500,h=1500,fit=cover', label: 'Silla de ruedas' },
-];
-
 // Cards glass del hero: 4 productos destacados; cada card abre el detalle.
 const featuredProducts = await api.products.featured(4);
 const heroFavorites: { image: ImageMetadata; alt: string; href: string }[] = featuredProducts.map(
@@ -75,6 +71,42 @@ const steps = [
   { title: 'Asesoría', text: 'Te orientamos sobre talla, medidas y el uso correcto del producto.' },
   { title: 'Confirmación y comprobante', text: 'Confirmamos precio y disponibilidad, y emitimos el comprobante.' },
   { title: 'Entrega o recojo', text: 'Coordinamos la entrega o el recojo en el centro ortopédico.' },
+];
+
+// Franja de garantías (§5.1 #6): cada label es un hecho verificable, no una promesa.
+// Respaldo: envío → terminos-y-condiciones.astro §4 (L71-77); cambios/devolución y
+// garantía legal → cambios-y-devoluciones.astro §1 (L36-39) y §6 (L84-89);
+// atención → site.hours + WhatsApp (api/data/site.ts). No hay "pago seguro": el sitio
+// no procesa pagos en línea (Callout de terminos §3), por eso el 4º ítem es atención.
+const trustItems: { icon: IconName; label: string }[] = [
+  { icon: 'truck', label: 'Costo y plazo de envío informados' },
+  { icon: 'rotate-ccw', label: 'Cambios y devolución en 10 días' },
+  { icon: 'shield-check', label: 'Garantía legal en cada producto' },
+  { icon: 'message-circle', label: 'Atención por WhatsApp, Lun–Sáb 9:00–19:00' },
+];
+
+// Reseñas de prueba social (§5.1 #4). PLACEHOLDER autorizado por el usuario:
+// reseñas inventadas con autorización del usuario — sustituir por reseñas reales
+// (requieren backend/CMS; ver deuda explícita del plan).
+const reviews: { quote: string; name: string; place: string }[] = [
+  {
+    quote:
+      'Coordiné todo por WhatsApp y me respondieron el mismo día. El producto llegó rápido y tal como me explicaron.',
+    name: 'María G.',
+    place: 'Villa María del Triunfo',
+  },
+  {
+    quote:
+      'Me asesoraron sobre la talla antes de comprar. La atención fue clara y el producto cumplió con lo esperado.',
+    name: 'Rosa L.',
+    place: 'San Juan de Lurigancho',
+  },
+  {
+    quote:
+      'Fui al centro y me atendieron con paciencia, explicándome el uso del producto paso a paso.',
+    name: 'Carmen P.',
+    place: 'Santiago de Surco',
+  },
 ];
 
 const faqs = [
@@ -101,13 +133,15 @@ const faqs = [
     mobileImage={heroMobileImage}
     favorites={heroFavorites}
   >
-    <Button href="/catalogo/" variant="primaryDark">Ver catálogo</Button>
+    <Button href="/catalogo/" variant="primaryDark">Ver soluciones ortopédicas</Button>
   </Hero>
-  <!-- <TopProductsBanner items={topProductsItems} /> -->
   <FeaturedCategories categories={categories} />
   <ServicesGrid {services} />
   <WhyUs />
   <HowItWorks {steps} />
+  <Testimonials {reviews} />
+  <Team />
+  <TrustBar items={trustItems} />
   <Faq items={faqs} />
   <LocationCta />
   <CtaBand
@@ -115,4 +149,6 @@ const faqs = [
     text="Cuéntanos tu caso y te orientamos sobre el producto y la talla que necesitas."
     message={generalWhatsappMessage()}
   />
+  <!-- Modal de promoción al final de la página (posición no afecta al <dialog> modal). -->
+  <PromoModal />
 </BaseLayout>

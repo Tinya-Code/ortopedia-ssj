@@ -1,0 +1,62 @@
+---
+// Sección "Guía de tallas": UNA sola tabla combinada en vez de una por
+// medida — filas = tallas, columnas = medidas (pantorrilla, tobillo…).
+// Así la página no se alarga con 3 tablas apiladas. Las unidades (cm) van en
+// el header para que las celdas queden cortas ("38 - 46") y quepan en 360px;
+// igual va envuelta en overflow-x-auto por si alguna medida es larga: el
+// scroll queda contenido en la tabla y la página nunca scrollea horizontal.
+// Oculta por completo cuando sizeGuide = [].
+import type { SizeGuideTable } from '../../api/types';
+
+interface Props {
+  sizeGuide: SizeGuideTable[];
+}
+const { sizeGuide } = Astro.props;
+
+// Tallas en orden de aparición (unión, sin duplicados) para poder transponer
+// las tablas aunque en el futuro no todas midan lo mismo o coincidan en orden.
+const sizes = [...new Set(sizeGuide.flatMap((t) => t.rows.map((r) => r.size)))];
+
+// Rango de una medida para una talla; '' si no existe esa combinación.
+const rangeOf = (table: SizeGuideTable, size: string): string =>
+  table.rows.find((r) => r.size === size)?.range.replace(/\s*cm$/i, '').trim() ?? '';
+
+// Extrae la unidad del primer rango (ej. "38 - 46 cm" → "cm") para el header.
+const unit = sizeGuide
+  .flatMap((t) => t.rows.map((r) => r.range))
+  .map((r) => (r.match(/\b(cm|mm)\b/i)?.[0] ?? ''))
+  .find(Boolean);
+---
+{sizeGuide.length > 0 && (
+  <section class="mt-10">
+    <h2 class="font-display text-h2 md:text-h2-lg font-semibold text-ink">Guía de tallas</h2>
+    <p class="mt-6 max-w-prose text-neutral">Mida el contorno de pantorrilla, tobillo y empeine antes de elegir su talla.</p>
+    <div class="mt-6 overflow-x-auto">
+      <table class="w-full border-y border-neutral/20 text-left text-sm">
+        <caption class="sr-only">Guía de tallas por medida{unit && ` (${unit})`}</caption>
+        <thead>
+          <tr class="bg-neutral/5">
+            <th scope="col" class="py-3 pl-3 pr-4 font-semibold text-ink">Talla</th>
+            {sizeGuide.map((table) => (
+              <th scope="col" class="py-3 pr-3 font-semibold text-ink">
+                {table.measure}
+                {unit && <span class="ml-1 font-normal text-neutral">({unit})</span>}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        {/* Rayado y divisores iguales a ProductSpecs (odd:bg-neutral/5). */}
+        <tbody class="divide-y divide-neutral/20">
+          {sizes.map((size) => (
+            <tr class="odd:bg-neutral/5">
+              <th scope="row" class="py-3 pl-3 pr-4 font-semibold text-ink">{size}</th>
+              {sizeGuide.map((table) => (
+                <td class="py-3 pr-3 whitespace-nowrap text-neutral">{rangeOf(table, size)}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+)}

@@ -1,13 +1,15 @@
-// Datos del negocio — TODO: sustituir por valores reales antes de publicar (Fase 9).
+import type { Legal, Site } from '../types';
 
-export const SITE = {
+// Identidad del negocio (mock de GET /site) —
+// TODO: sustituir por valores reales antes de publicar (Fase 9).
+export const site: Site = {
   name: 'Centro Ortopédico Solidario San Jose',
   url: 'https://www.example.com', // TODO: dominio real
   description:
     'Centro ortopédico: venta de productos ortopédicos, ortesis, prótesis y servicios de evaluación.',
   phone: '+51 957 850 865',
   whatsapp: '51957850865', // sin + ni espacios
-  email: 'contacto@example.com',
+  email: 'nirvanacondios@gmail.com',
   address: {
     street: 'Av. Ejemplo 123',
     city: 'Ciudad',
@@ -24,15 +26,15 @@ export const SITE = {
     },
   ],
   social: {
-    facebook: 'https://facebook.com/example',
-    tiktok: 'https://tiktok.com/@example',
+    facebook: 'https://www.facebook.com/profile.php?id=100087518483559&ref=1',
+    tiktok: 'https://www.tiktok.com/@villamariadeltriunfo4',
     instagram: 'https://instagram.com/example',
   },
   currency: 'PEN',
-} as const;
+};
 
-// Datos legales (INDECOPI) — ver doc/legal.md 9.2
-export const LEGAL = {
+// Datos legales (mock de GET /site/legal, INDECOPI) — ver doc/legal.md 9.2
+export const legal: Legal = {
   legalName: 'Centro Ortopédico Solidario San Jose S.A.C.',
   tradeName: 'Centro Ortopédico SSJ',
   ruc: '20000000001',
@@ -44,4 +46,4 @@ export const LEGAL = {
   currency: 'PEN',
   // Última actualización de las páginas legales (una sola fuente para las 3).
   lastUpdated: '30 de septiembre de 2026',
-} as const;
+};

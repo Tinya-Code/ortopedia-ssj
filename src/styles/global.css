@@ -11,11 +11,14 @@
   /* Teal más oscuro que el original (#21a7a5): el valor propuesto en el spec
      (#178582) daba 4.455:1 y no alcanzaba AA; #167f7d da 4.81:1 contra blanco. */
   --color-secondary: #054894; /* azul oscuro */
-  --color-tertiary: #71c0e2; /* celeste claro */
+  --color-tertiary: #71c0e2; /* celeste claro — SOLO decorativo (2.03:1 sobre blanco), nunca usar como color de texto */
   --color-accent: #ed2c37;
   --color-neutral: #6b7280; /* gris medio */
   --color-ink: #111827; /* casi negro */
-  --color-accent-text: #ed2c37; /* rojo*/
+  /* El #ed2c37 original fallaba AA como texto (4.19:1); #c81e28 da 5.72:1
+     sobre blanco y mantiene el rojo de marca. --color-accent (decorativo/UI)
+     se queda en #ed2c37: 4.19 ≥ 3:1 cumple para componentes. */
+  --color-accent-text: #c81e28; /* rojo de marca legible */
   --color-success: #15803d; /* verde oscuro */
   --color-warning: #b45309; /* naranja oscuro */
   --color-danger: #b91c1c; /* rojo oscuro */
@@ -42,6 +45,22 @@
     "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
 
+  /* Escala tipográfica (mejoras §2.2 — ratio 1.25): móvil por defecto, -lg para ≥768px */
+  --text-h1: 1.75rem; /* 28 px móvil */
+  --text-h1--line-height: 1.2;
+  --text-h1-lg: 2.25rem; /* 36 px desktop */
+  --text-h1-lg--line-height: 1.15;
+  --text-h2: 1.375rem; /* 22 px */
+  --text-h2--line-height: 1.25;
+  --text-h2-lg: 1.75rem; /* 28 px */
+  --text-h2-lg--line-height: 1.2;
+  --text-h3: 1.125rem; /* 18 px */
+  --text-h3--line-height: 1.3;
+  --text-h3-lg: 1.375rem; /* 22 px */
+  --text-h3-lg--line-height: 1.25;
+  --text-lead: 1.125rem; /* 18 px — descripciones largas */
+  --text-lead--line-height: 1.7;
+
   /* El preflight apunta a --font-sans; lo redirigimos a font-body */
   --default-font-family: var(--font-body);
 }
@@ -53,6 +72,30 @@
   :focus-visible {
     outline: 3px solid var(--color-primary);
     outline-offset: 2px;
+  }
+
+  /* El outline primary es invisible sobre fondos primary (CtaBand, Hero):
+     controles DENTRO de contenedores con la clase exacta bg-primary reciben
+     outline light (~4.5:1 contra --color-primary). Selector exacto, no
+     [class*="bg-primary"]: el substring también casaría con bg-primary/5
+     (p. ej. ReclamacionForm, fondo casi blanco) y ahí el outline light
+     sería ilegible. */
+  .bg-primary :focus-visible {
+    outline-color: var(--color-light);
+  }
+
+  /* Movimiento reducido (WCAG 2.3.3): paraguas global. Cubre también el CSS
+     de paquetes (p. ej. @dennismiranda/astro-cart) y las transiciones de
+     color/opacity que no están gateadas con motion-reduce. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 

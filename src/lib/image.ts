@@ -4,7 +4,7 @@
  * con union no es asignable a ninguna de las dos, aunque en runtime
  * `getImage` resuelve ambos casos.
  *
- * El contrato de datos (src/data/types.ts) es dual porque en modo api las
+ * El contrato de datos (src/api/types.ts) es dual porque en modo api las
  * imágenes llegan como URL remota —con width/height explícitos en el
  * componente—; en modo repo siempre es el asset local (ImageMetadata).
  * Este helper solo estrecha estáticamente: no transforma nada.

@@ -107,10 +107,10 @@ Principios: HTML estático (SSG), cero JS innecesario, datos estructurados (JSON
 ```js
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
-import { SITE } from './src/data/site';
+import { site } from './src/api/data/site';
 
 export default defineConfig({
-  site: SITE.url,                   // fuente única del dominio (src/data/site.ts)
+  site: site.url,                   // fuente única del dominio (src/api/data/site.ts)
   trailingSlash: 'always',          // una sola versión de cada URL
   integrations: [sitemap()],
   build: { inlineStylesheets: 'auto' },
@@ -135,10 +135,10 @@ Sitemap: https://www.tudominio.com/sitemap-index.xml
 
 Design tokens de Tailwind en `@theme` (sin `tailwind.config`): colores planos `--color-primary`, `--color-secondary`, `--color-accent`, `--color-neutral` y **dos** tipografías `--font-body` / `--font-display`, más `--default-font-family: var(--font-body)` para que `<html>` use la tipografía de cuerpo. Utilities: `bg-primary`, `text-secondary`, `border-accent`, `font-body`, `font-display`.
 
-### `src/data/site.ts`
+### `src/api/data/site.ts`
 
 ```ts
-export const SITE = {
+export const site = {
   name: 'Centro Ortopédico Tu Marca',
   url: 'https://www.tudominio.com',
   description:
@@ -166,13 +166,13 @@ export const SITE = {
 
 ## 3. Capa de datos (sin Content Collections)
 
-Los datos crudos viven en `src/data/db.ts` y el único punto de acceso es el facade
+Los datos crudos viven en `src/api/data/db.ts` y el único punto de acceso es el facade
 `api` de `src/api/` (async, siempre `await`), que además soporta un modo remoto con
 bandera (`USE_API` + `API_BASE_URL`): sin definir usa el repo local; con `USE_API=true`
 hace `GET /categories` y `GET /products` contra la API. Cero archivos `.md`, cero
 `astro:content`, cero `getCollection`.
 
-### `src/data/db.ts`
+### `src/api/data/db.ts`
 
 ```js
 import rodillera1 from '../assets/products/rodillera-1.jpg';
@@ -225,13 +225,13 @@ El facade vive en `src/api/index.ts` (ver estado-implementado §4.2): métodos
 
 ## 4. Helpers de lógica
 
-### `src/data/whatsapp.ts`
+### `src/lib/whatsapp.ts`
 
 ```ts
-import { SITE } from './site';
+import { site } from '../api/data/site';
 
 export function whatsappLink(message: string) {
-  return `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(message)}`;
+  return `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(message)}`;
 }
 
 export function productWhatsappMessage(name: string, url: string) {
@@ -242,34 +242,34 @@ export function productWhatsappMessage(name: string, url: string) {
 ### `src/lib/schema.ts`
 
 ```ts
-import { SITE } from './site';
+import { site } from '../api/data/site';
 
 export const organizationSchema = () => ({
   '@context': 'https://schema.org',
   '@type': ['MedicalBusiness', 'Store'],
-  '@id': `${SITE.url}/#business`,
-  name: SITE.name,
-  url: SITE.url,
-  image: `${SITE.url}/og-default.jpg`,
-  telephone: SITE.phone,
-  email: SITE.email,
-  description: SITE.description,
+  '@id': `${site.url}/#business`,
+  name: site.name,
+  url: site.url,
+  image: `${site.url}/og-default.jpg`,
+  telephone: site.phone,
+  email: site.email,
+  description: site.description,
   address: {
     '@type': 'PostalAddress',
-    streetAddress: SITE.address.street,
-    addressLocality: SITE.address.city,
-    addressRegion: SITE.address.region,
-    postalCode: SITE.address.postalCode,
-    addressCountry: SITE.address.country,
+    streetAddress: site.address.street,
+    addressLocality: site.address.city,
+    addressRegion: site.address.region,
+    postalCode: site.address.postalCode,
+    addressCountry: site.address.country,
   },
-  geo: { '@type': 'GeoCoordinates', latitude: SITE.geo.lat, longitude: SITE.geo.lng },
-  openingHoursSpecification: SITE.hours.map((h) => ({
+  geo: { '@type': 'GeoCoordinates', latitude: site.geo.lat, longitude: site.geo.lng },
+  openingHoursSpecification: site.hours.map((h) => ({
     '@type': 'OpeningHoursSpecification',
     dayOfWeek: h.days,
     opens: h.opens,
     closes: h.closes,
   })),
-  sameAs: SITE.social,
+  sameAs: site.social,
 });
 
 export const breadcrumbSchema = (items: { name: string; url: string }[]) => ({
@@ -299,7 +299,7 @@ export const productSchema = (p: {
     ? {
         '@type': 'Offer',
         url: p.url,
-        priceCurrency: SITE.currency,
+        priceCurrency: site.currency,
         price: p.price,
         availability: `https://schema.org/${p.availability}`,
         itemCondition: 'https://schema.org/NewCondition',
@@ -334,7 +334,7 @@ export const itemListSchema = (items: { name: string; url: string }[]) => ({
 
 ```astro
 ---
-import { SITE } from '../../data/site';
+import { site } from '../../api/data/site';
 
 interface Props {
   title: string;
@@ -347,7 +347,7 @@ const { title, description, image = '/og-default.jpg', type = 'website', noindex
 
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = new URL(image, Astro.site).href;
-const fullTitle = title.includes(SITE.name) ? title : `${title} | ${SITE.name}`;
+const fullTitle = title.includes(site.name) ? title : `${title} | ${site.name}`;
 ---
 
 <title>{fullTitle}</title>
@@ -356,7 +356,7 @@ const fullTitle = title.includes(SITE.name) ? title : `${title} | ${SITE.name}`;
 {noindex && <meta name="robots" content="noindex, nofollow" />}
 
 <meta property="og:type" content={type} />
-<meta property="og:site_name" content={SITE.name} />
+<meta property="og:site_name" content={site.name} />
 <meta property="og:title" content={fullTitle} />
 <meta property="og:description" content={description} />
 <meta property="og:url" content={canonical} />
@@ -448,7 +448,7 @@ const { items } = Astro.props;
 
 ```astro
 ---
-import { whatsappLink } from '../../data/whatsapp';
+import { whatsappLink } from '../../lib/whatsapp';
 
 interface Props {
   message: string;
@@ -561,7 +561,7 @@ import Breadcrumbs from '../../components/layout/Breadcrumbs.astro';
 import ProductGrid from '../../components/catalog/ProductGrid.astro';
 import WhatsAppButton from '../../components/ui/WhatsAppButton.astro';
 import { breadcrumbSchema, itemListSchema } from '../../lib/schema';
-import { SITE } from '../../data/site';
+import { site } from '../../api/data/site';
 
 export async function getStaticPaths() {
   const categories = await api.categories.list();
@@ -580,7 +580,7 @@ const crumbs = [
   { name: 'Catálogo', href: '/catalogo/' },
   { name: cat.name },
 ];
-const abs = (p: string) => new URL(p, SITE.url).href;
+const abs = (p: string) => new URL(p, site.url).href;
 ---
 <BaseLayout
   title={cat.seoTitle}
@@ -678,8 +678,8 @@ import ProductInfo from '../../components/product/ProductInfo.astro';
 import ProductSpecs from '../../components/product/ProductSpecs.astro';
 import RelatedProducts from '../../components/product/RelatedProducts.astro';
 import { breadcrumbSchema, productSchema, faqSchema } from '../../lib/schema';
-import { productWhatsappMessage } from '../../data/whatsapp';
-import { SITE } from '../../data/site';
+import { productWhatsappMessage } from '../../lib/whatsapp';
+import { site } from '../../api/data/site';
 
 export async function getStaticPaths() {
   const products = await api.products.list();
@@ -699,10 +699,10 @@ export async function getStaticPaths() {
 const { product, category, related } = Astro.props;
 const { name, seoTitle, seoDescription, description, images, price, availability, sku, brand, faq, specs } = product;
 
-const pageUrl = new URL(Astro.url.pathname, SITE.url).href;
+const pageUrl = new URL(Astro.url.pathname, site.url).href;
 const ogImg = await getImage({ src: images[0].src, width: 1200, height: 630, format: 'jpg' });
 const imageUrls = await Promise.all(
-  images.map(async (i) => new URL((await getImage({ src: i.src, width: 1200, format: 'jpg' })).src, SITE.url).href)
+  images.map(async (i) => new URL((await getImage({ src: i.src, width: 1200, format: 'jpg' })).src, site.url).href)
 );
 
 const crumbs = [
@@ -717,7 +717,7 @@ const crumbs = [
   image={ogImg.src}
   type="product"
   schemas={[
-    breadcrumbSchema(crumbs.map((c) => ({ name: c.name, url: new URL(c.href ?? Astro.url.pathname, SITE.url).href }))),
+    breadcrumbSchema(crumbs.map((c) => ({ name: c.name, url: new URL(c.href ?? Astro.url.pathname, site.url).href }))),
     productSchema({
       name, description: seoDescription, images: imageUrls, url: pageUrl,
       sku, brand, price, availability,
@@ -853,7 +853,7 @@ Herramientas: Google Search Console (enviar `sitemap-index.xml`), PageSpeed Insi
 
 ## 14. Checklist final antes de publicar
 
-- [ ] Dominio real en `SITE.url` (`src/data/site.ts`) — `astro.config.mjs` lo importa de ahí (canonical, sitemap, JSON-LD y WhatsApp comparten la base).
+- [ ] Dominio real en `site.url` (`src/api/data/site.ts`) — `astro.config.mjs` lo importa de ahí (canonical, sitemap, JSON-LD y WhatsApp comparten la base).
 - [ ] Un solo `<h1>` por página y jerarquía `h2 > h3` coherente.
 - [ ] `title` (≤ 60 car.) y `description` (≤ 160 car.) únicos por página.
 - [ ] Canonical correcto y `trailingSlash` consistente.

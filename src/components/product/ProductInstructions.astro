@@ -1,0 +1,28 @@
+---
+// Sección "Cómo usarlo": pasos numerados en lista ordenada, con el número
+// visible en un círculo (token primary, patrón de HowItWorks).
+// Oculta por completo cuando instructions = [].
+import type { InstructionStep } from '../../api/types';
+
+interface Props {
+  instructions: InstructionStep[];
+}
+const { instructions } = Astro.props;
+---
+{instructions.length > 0 && (
+  <section class="mt-10">
+    <h2 class="font-display text-h2 md:text-h2-lg font-semibold text-ink">Cómo usarlo</h2>
+    <ol class="mt-6 max-w-prose space-y-4">
+      {instructions.map((item) => (
+        <li class="flex items-start gap-4">
+          {/* El número visible proviene del dato (step, arranca en 1); <ol> ya
+              aporta la semántica de secuencia a lectores de pantalla. */}
+          <span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-white">
+            {item.step}
+          </span>
+          <p class="mt-1.5 text-neutral">{item.text}</p>
+        </li>
+      ))}
+    </ol>
+  </section>
+)}

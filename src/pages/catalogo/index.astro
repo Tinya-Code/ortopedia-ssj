@@ -3,12 +3,13 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/layout/Breadcrumbs.astro';
 import CatalogSearch from '../../components/catalog/CatalogSearch.astro';
 import CategoryFilters from '../../components/catalog/CategoryFilters.astro';
+import ActiveFilters from '../../components/catalog/ActiveFilters.astro';
 import ProductGrid from '../../components/catalog/ProductGrid.astro';
 import CatalogPagination from '../../components/catalog/CatalogPagination.astro';
 import CtaBand from '../../components/ui/CtaBand.astro';
 import { api } from '../../api';
 import { breadcrumbSchema, itemListSchema } from '../../lib/schema';
-import { generalWhatsappMessage } from '../../data/whatsapp';
+import { generalWhatsappMessage } from '../../lib/whatsapp';
 import Container from '../../components/ui/Container.astro';
 import PageHeader from '../../components/ui/PageHeader.astro';
 import { absUrl } from '../../lib/url';
@@ -16,14 +17,34 @@ import { absUrl } from '../../lib/url';
 const categories = await api.categories.list();
 const products = await api.products.list();
 
+// Conteo por categoría para los contadores de los filtros (build-time;
+// el cliente los ajusta a la búsqueda en apply()).
+const countsByCategory = new Map<string, number>();
+for (const p of products) {
+  if (p.category) {
+    countsByCategory.set(p.category, (countsByCategory.get(p.category) ?? 0) + 1);
+  }
+}
+
 const title = 'Catálogo de productos ortopédicos';
 const description =
   'Explora nuestro catálogo de productos ortopédicos: rodilleras, bastones y sillas de ruedas con registro sanitario verificado y atención personalizada.';
+
+// Alternativas del estado vacío: destacados o, si no hubiera, los 4 primeros.
+const featured = products.filter((p) => p.featured).slice(0, 4);
+const suggestions = featured.length > 0 ? featured : products.slice(0, 4);
 
 const crumbs = [
   { name: 'Inicio', href: '/' },
   { name: 'Catálogo' },
 ];
+
+// GA4 view_item_list: payload serializado en un data-* de la sección para el
+// script de initCatalog (máx. 20 ítems, límite GA4 razonable con 9 reales).
+const viewList = {
+  item_list_name: 'Catálogo',
+  items: products.slice(0, 20).map((p) => ({ item_id: p.slug, item_name: p.name })),
+};
 ---
 <BaseLayout
   {title}
@@ -35,7 +56,7 @@ const crumbs = [
 >
   <Breadcrumbs items={crumbs} />
 
-  <section class="pb-10">
+  <section class="pb-10" data-view-list={JSON.stringify(viewList)}>
     <Container>
       <PageHeader
         title="Catálogo"
@@ -47,16 +68,21 @@ const crumbs = [
 
       {/* Filtros de categoría (client-side, sin recargar). */}
       <div class="mt-6">
-        <CategoryFilters {categories} />
+        <CategoryFilters {categories} counts={countsByCategory} total={products.length} />
       </div>
 
       {/* Barra de orden, alineada a la derecha justo sobre la grilla. */}
       {products.length > 0 && (
-        <div class="mt-6 flex justify-end">
+        <div class="flex justify-between items-center ">
+
+          <p id="catalog-count" class="mt-4 text-sm text-neutral" aria-live="polite">
+            {products.length === 1 ? '1 producto' : `${products.length} productos`}
+          </p>
+    <div class="mt-6 flex justify-end">
           <label for="catalog-sort" class="sr-only">Ordenar productos</label>
           <select
             id="catalog-sort"
-            class="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm text-ink transition-colors hover:border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary/20 focus-visible:outline-none"
+            class="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm text-ink transition-colors hover:border-slate-300 focus:border-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
           >
             <option value="az">De la A a la Z</option>
             <option value="za">De la Z a la A</option>
@@ -64,18 +90,33 @@ const crumbs = [
             <option value="price-desc">Precio: Mayor a menor</option>
           </select>
         </div>
+        </div>
+    
       )}
 
       {products.length > 0 ? (
-        <>
-          <ProductGrid id="catalog-grid" products={products} class="mt-6" />
+   
 
-          <p id="catalog-empty" class="mt-10 hidden text-center text-sm text-neutral">
-            No encontramos productos que coincidan con tu búsqueda.
-          </p>
+          <ActiveFilters />
+          <ProductGrid id="catalog-grid" products={products} class="mt-6" />
+          <div
+            id="catalog-empty"
+            class="mt-10 hidden rounded-xl border border-neutral/20 bg-light p-6"
+          >
+            <p data-empty-title class="text-base font-semibold text-ink">
+              No hay resultados con los filtros actuales
+            </p>
+            <p class="mt-2 text-sm text-neutral">Mira estas opciones:</p>
+            <ProductGrid
+              id="catalog-suggestions"
+              products={suggestions}
+              variant="suggestions"
+              class="mt-4"
+            />
+          </div>
 
           <CatalogPagination />
-        </>
+     
       ) : (
         <p class="mt-10 text-center text-sm text-neutral">
           Próximamente publicaremos productos en el catálogo.

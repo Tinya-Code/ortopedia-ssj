@@ -17,10 +17,10 @@ const { items } = Astro.props;
       >
         {it.q}
         <ChevronDown
-          class="size-5 shrink-0 text-primary transition-transform group-open:rotate-180"
+          class="size-5 shrink-0 text-primary transition-transform group-open:rotate-180 motion-reduce:transition-none"
         />
       </summary>
-      <div class="pb-4 pr-8 text-neutral">{it.a}</div>
+      <div class="max-w-prose pb-4 pr-8 text-neutral">{it.a}</div>
     </details>
   ))}
 </div>

@@ -3,13 +3,16 @@
 // acumula productos y el cierre va por WhatsApp (doc/legal.md: no hay pasarela
 // de pago). Se monta en BaseLayout: el controlador del paquete sincroniza por
 // DOM (sin islas client:*), por eso funciona en el build estático.
+// El slot "footer-actions" reemplaza al CartSummary del paquete (sus props
+// checkoutLabel/clearLabel/zoneLabel quedarían ignoradas y se omiten); el
+// CTA conserva data-cart-action="checkout" para que el veto de cart:checkout
+// siga operando, y "Vaciar lista" pide confirmación en un <dialog> nativo.
 import { CartDrawer } from '@dennismiranda/astro-cart/components';
+import ArrowRight from '../icons/ArrowRight.astro';
+import Trash from '../icons/Trash.astro';
 ---
 <CartDrawer
   title="Tu cotización"
-  checkoutLabel="Cotizar ahora"
-  zoneLabel="Seleccionar zona de entrega"
-  clearLabel="Vaciar lista"
   currency="PEN"
   locale="es-PE"
   options={{ openOnAdd: true, maxQuantityPerItem: 10 }}
@@ -29,12 +32,61 @@ import { CartDrawer } from '@dennismiranda/astro-cart/components';
       Ir al catálogo
     </a>
   </div>
+
+  {
+    /* Pie del drawer (auto-oculto con lista vacía por CSS del paquete):
+       "Cotizar N productos" dispara el checkout vetado por el script (WhatsApp),
+       y "Vaciar lista" NO lleva data-cart-action="clear" para no vaciar sin
+       confirmar; el confirmar del diálogo sí lo lleva y burbujea al handler
+       documental del paquete. */
+  }
+  <div slot="footer-actions" class="ac-summary__actions">
+    <button type="button" class="ac-btn ac-btn--secondary" data-cart-action="checkout">
+      <span data-cart-checkout-label>Cotizar 0 productos</span>
+      <ArrowRight class="size-4" />
+    </button>
+    <button type="button" class="ac-btn ac-btn--ghost" data-cart-clear-open>
+      <Trash class="size-4" />
+      Vaciar lista
+    </button>
+  </div>
 </CartDrawer>
+
+{
+  /* Confirmación de vaciado: <dialog> nativo fuera del footer para que siga
+     visible aunque el footer se oculte; Escape y clic en el backdrop lo
+     cierran (mismo patrón que el lightbox de ProductGallery). */
+}
+<dialog
+  aria-label="¿Vaciar la lista?"
+  data-cart-clear-dialog
+  class="m-auto w-[min(24rem,92vw)] border-0 bg-transparent p-0 [&::backdrop]:bg-ink/80"
+>
+  <div class="rounded-2xl bg-white p-6 text-ink shadow-lg">
+    <h2 class="font-display text-lg font-extrabold">¿Vaciar la lista?</h2>
+    <p class="mt-2 text-sm text-neutral">
+      Se quitarán todos los productos de tu cotización.
+    </p>
+    <form method="dialog" class="mt-6 flex flex-col gap-3 sm:flex-row">
+      <button type="submit" value="cancel" class="ac-btn ac-btn--secondary w-full sm:w-auto">
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        value="confirm"
+        data-cart-action="clear"
+        class="ac-btn ac-btn--primary w-full sm:w-auto"
+      >
+        Sí, vaciar
+      </button>
+    </form>
+  </div>
+</dialog>
 
 <script>
   import type { CheckoutContext } from '@dennismiranda/astro-cart/core';
   import { quoteWhatsappMessage } from '../../lib/cart';
-  import { whatsappLink } from '../../data/whatsapp';
+  import { whatsappLink } from '../../lib/whatsapp';
 
   // "Cotizar productos": el paquete emite `cart:checkout` (cancelable) antes
   // de abrir su vista interna; lo vetamos y navegamos a wa.me con la lista.
@@ -61,4 +113,93 @@ import { CartDrawer } from '@dennismiranda/astro-cart/components';
       num_items: totals.itemCount,
     });
   });
+
+  // GA4 remove_from_cart: delegado en fase de CAPTURA a nivel documento para
+  // leer la fila ANTES de que el handler del paquete (bubble, client.js
+  // onClick) quite el item del DOM/estado. El botón de la fila del paquete
+  // (CartItemRow.astro) es [data-cart-action="remove"] con data-id; la fila
+  // contenedora es [data-cart-item] con el nombre en [data-field="name"] y el
+  // precio unitario formateado en [data-field="unitPrice"] ("S/ 123 c/u").
+  document.addEventListener(
+    'click',
+    (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const btn = target.closest<HTMLElement>('[data-cart-action="remove"]');
+      if (!btn) return;
+      const id = btn.dataset.id;
+      if (!id) return;
+      const row = btn.closest('[data-cart-item]');
+      const name = row?.querySelector('[data-field="name"]')?.textContent?.trim();
+      // El precio DOM viene formateado (moneda + " c/u"): se extrae el número
+      // tolerando separadores de miles. Los productos sin precio publicado se
+      // cotizan (price null → 0 en el carrito), así que price solo se empuja
+      // cuando es > 0 (equivalente a "no null").
+      const rawPrice = row?.querySelector('[data-field="unitPrice"]')?.textContent ?? '';
+      const parsed = Number.parseFloat(rawPrice.replace(/[^\d.,-]/g, '').replace(/,/g, ''));
+      const store = window as Window & { dataLayer?: Record<string, unknown>[] };
+      store.dataLayer ??= [];
+      store.dataLayer.push({
+        event: 'remove_from_cart',
+        items: [
+          {
+            item_id: id,
+            item_name: name,
+            ...(Number.isFinite(parsed) && parsed > 0 ? { price: parsed } : {}),
+          },
+        ],
+      });
+    },
+    true,
+  );
+
+  // Contador legible del drawer ("N productos") + etiqueta del CTA. El paquete
+  // escribe el número crudo en render() (dist/client.js L566) y ese render
+  // corre ANTES de despachar `cart:change` en documento (L804→L807), así que al
+  // escuchar el evento el texto ya es el número fresco. El render inicial
+  // (L820) NO emite evento: por eso se sincroniza una vez con rAF, tras la
+  // ejecución de todos los módulos. El selector va acotado al drawer para no
+  // tocar el badge del header ([data-cart-badge] conserva el número suelto).
+  const syncCartLabels = () => {
+    const count = document.querySelector('[data-cart-drawer] [data-cart-count]');
+    if (!count) return;
+    const n = Number.parseInt(count.textContent ?? '0', 10) || 0;
+    const word = n === 1 ? 'producto' : 'productos';
+    count.textContent = `${n} ${word}`;
+    const label = document.querySelector('[data-cart-drawer] [data-cart-checkout-label]');
+    if (label) label.textContent = `Cotizar ${n} ${word}`;
+  };
+  document.addEventListener('cart:change', syncCartLabels);
+  requestAnimationFrame(syncCartLabels);
+
+  // Confirmación de "Vaciar lista" con <dialog> nativo. El botón abrir NO lleva
+  // data-cart-action; el confirmar sí, y su click burbujea al handler
+  // documental del paquete (client.js L674-676 → cart.clear()).
+  const clearDialog = document.querySelector<HTMLDialogElement>('[data-cart-clear-dialog]');
+  if (clearDialog) {
+    document.querySelectorAll<HTMLElement>('[data-cart-clear-open]').forEach((opener) => {
+      opener.addEventListener('click', () => clearDialog.showModal());
+    });
+    // Clic en el backdrop: el evento apunta al propio <dialog> (el contenido
+    // vive en un div interno, así que fuera de él target === dialog).
+    clearDialog.addEventListener('click', (event) => {
+      if (event.target === clearDialog) clearDialog.close();
+    });
+    // El Tab-trap y el Escape del paquete operan a nivel document con el drawer
+    // abierto (client.js L752-782): sin stopPropagation, Escape cerraría
+    // también el drawer y Tab robaría el foco al diálogo. El <dialog> modal ya
+    // contiene el foco y se cierra con Escape por sí solo.
+    clearDialog.addEventListener('keydown', (event) => event.stopPropagation());
+    // Si se confirmó el vaciado, el opener queda oculto (el footer se esconde
+    // con la lista vacía) y el navegador no puede devolverle el foco: se
+    // devuelve al botón de cerrar del drawer.
+    clearDialog.addEventListener('close', () => {
+      const opener = document.querySelector<HTMLElement>('[data-cart-clear-open]');
+      if (opener && opener.offsetParent === null) {
+        document
+          .querySelector<HTMLElement>('[data-cart-drawer] [data-cart-action="close"]')
+          ?.focus();
+      }
+    });
+  }
 </script>

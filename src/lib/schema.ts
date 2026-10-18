@@ -1,4 +1,4 @@
-import { SITE, LEGAL } from '../data/site';
+import { legal, site } from '../api/data/site';
 
 type Condition = 'new' | 'refurbished' | 'used';
 
@@ -10,31 +10,31 @@ const conditionToSchema = (condition: Condition = 'new') =>
 export const organizationSchema = () => ({
   '@context': 'https://schema.org',
   '@type': ['MedicalBusiness', 'Store'],
-  '@id': `${SITE.url}/#business`,
-  name: SITE.name,
-  legalName: LEGAL.legalName,
-  taxID: LEGAL.ruc,
-  url: SITE.url,
-  image: `${SITE.url}/og-default.jpg`,
-  telephone: SITE.phone,
-  email: SITE.email,
-  description: SITE.description,
+  '@id': `${site.url}/#business`,
+  name: site.name,
+  legalName: legal.legalName,
+  taxID: legal.ruc,
+  url: site.url,
+  image: `${site.url}/og-default.jpg`,
+  telephone: site.phone,
+  email: site.email,
+  description: site.description,
   address: {
     '@type': 'PostalAddress',
-    streetAddress: SITE.address.street,
-    addressLocality: SITE.address.city,
-    addressRegion: SITE.address.region,
-    postalCode: SITE.address.postalCode,
-    addressCountry: SITE.address.country,
+    streetAddress: site.address.street,
+    addressLocality: site.address.city,
+    addressRegion: site.address.region,
+    postalCode: site.address.postalCode,
+    addressCountry: site.address.country,
   },
-  geo: { '@type': 'GeoCoordinates', latitude: SITE.geo.lat, longitude: SITE.geo.lng },
-  openingHoursSpecification: SITE.hours.map((h) => ({
+  geo: { '@type': 'GeoCoordinates', latitude: site.geo.lat, longitude: site.geo.lng },
+  openingHoursSpecification: site.hours.map((h) => ({
     '@type': 'OpeningHoursSpecification',
     dayOfWeek: h.days,
     opens: h.opens,
     closes: h.closes,
   })),
-  sameAs: Object.values(SITE.social),
+  sameAs: Object.values(site.social),
 });
 
 export const breadcrumbSchema = (items: { name: string; url: string }[]) => ({
@@ -54,8 +54,10 @@ export const productSchema = (p: {
   images: string[];
   url: string;
   sku?: string;
-  brand?: string;
-  price?: number;
+  /** '' (sin marca) y null se descartan: la clave no viaja al JSON-LD. */
+  brand?: string | null;
+  /** null (sin precio publicado) se descarta: sin precio no hay offers. */
+  price?: number | null;
   availability: string;
   condition?: Condition;
 }) => ({
@@ -66,12 +68,13 @@ export const productSchema = (p: {
   image: p.images,
   sku: p.sku,
   brand: p.brand ? { '@type': 'Brand', name: p.brand } : undefined,
-  // offers solo si hay precio (Google lo exige para rich results)
+  // offers solo si hay precio (Google lo exige para rich results); el guard
+  // truthy también descarta null y 0 igual que antes con la clave ausente.
   offers: p.price
     ? {
         '@type': 'Offer',
         url: p.url,
-        priceCurrency: SITE.currency,
+        priceCurrency: site.currency,
         price: p.price,
         availability: `https://schema.org/${p.availability}`,
         itemCondition: conditionToSchema(p.condition),

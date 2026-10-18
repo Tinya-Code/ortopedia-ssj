@@ -5,13 +5,13 @@ import tailwindcss from '@tailwindcss/vite';
 
 import sitemap from '@astrojs/sitemap';
 
-import { SITE } from './src/data/site';
+import { site } from './src/api/data/site';
 
 // https://astro.build/config
 export default defineConfig({
-  // Fuente única del dominio: cambiar SITE.url en src/data/site.ts (TODO: dominio real).
-  // De aquí salen canonical, sitemap, og:url y — vía SITE.url — JSON-LD y WhatsApp.
-  site: SITE.url,
+  // Fuente única del dominio: cambiar site.url en src/api/data/site.ts (TODO: dominio real).
+  // De aquí salen canonical, sitemap, og:url y — vía site.url — JSON-LD y WhatsApp.
+  site: site.url,
   trailingSlash: 'always',
   build: { inlineStylesheets: 'auto' },
   compressHTML: true,

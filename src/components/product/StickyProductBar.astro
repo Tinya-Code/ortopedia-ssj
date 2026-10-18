@@ -3,13 +3,15 @@
 // Regla de la spec: en esta página el flotante global queda oculto en móvil
 // (BaseLayout `hideFloatingCta` → `hidden md:flex`) para no superponer dos CTA
 // fijos; el body lleva `pb-24 md:pb-0` para que la barra no tape el final.
+import Button from '../ui/Button.astro';
 import WhatsAppButton from '../ui/WhatsAppButton.astro';
 import PriceTag from '../ui/PriceTag.astro';
 import type { Product as CartProduct } from '@dennismiranda/astro-cart/core';
 
 interface Props {
   name: string;
-  price?: number;
+  /** null = cotiza, sin precio publicado (PriceTag muestra "Consultar precio"). */
+  price: number | null;
   whatsappMessage: string;
   /** Payload del carrito; null = no agregable (sin precio o sin stock). */
   cartProduct?: CartProduct | null;
@@ -28,13 +30,14 @@ const { name, price, whatsappMessage, cartProduct = null } = Astro.props;
     <div class="flex shrink-0 items-center gap-2">
       {cartProduct && (
         <div data-cart-product data-id={cartProduct.id} data-product={JSON.stringify(cartProduct)}>
-          <button
+          <Button
             type="button"
             data-cart-action="add"
-            class="inline-flex items-center rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary/90 motion-reduce:transition-none"
+            variant="primary"
+            size="md"
           >
             Agregar
-          </button>
+          </Button>
         </div>
       )}
       <WhatsAppButton

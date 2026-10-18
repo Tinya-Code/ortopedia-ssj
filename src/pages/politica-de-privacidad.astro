@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { SITE, LEGAL } from '../data/site';
+import { legal, site } from '../api/data/site';
 import Container from '../components/ui/Container.astro';
 import PageHeader from '../components/ui/PageHeader.astro';
 import Callout from '../components/ui/Callout.astro';
@@ -11,10 +11,10 @@ const description =
 ---
 
 <BaseLayout {title} {description}>
-  <article class="pb-10">
+  <article class="mx-auto max-w-prose pb-10">
     <Container size="narrow">
       <PageHeader title="Política de privacidad" />
-      <p class="mt-4 text-sm text-neutral">Última actualización: {LEGAL.lastUpdated}</p>
+      <p class="mt-4 text-sm text-neutral">Última actualización: {legal.lastUpdated}</p>
       <!-- TODO Fase 9: [VALIDAR] inscripción del banco de datos ante la Autoridad Nacional de
            Protección de Datos Personales (legal.md 8.4) y plazos de respuesta con el abogado. -->
 
@@ -33,15 +33,15 @@ const description =
       </nav>
 
       <section class="mt-8 space-y-4">
-        <h2 id="quien-es-responsable-de-tus-datos" class="font-display text-xl font-semibold text-ink scroll-mt-20">1. Quién es responsable de tus datos</h2>
+        <h2 id="quien-es-responsable-de-tus-datos" class="font-display text-h2 md:text-h2-lg font-semibold text-ink scroll-mt-20">1. Quién es responsable de tus datos</h2>
         <p class="text-neutral">
-          El titular del banco de datos es <strong class="text-primary">{LEGAL.legalName}</strong>,
-          RUC {LEGAL.ruc}, con domicilio en {LEGAL.fiscalAddress}. Contacto: {SITE.email} y {SITE.phone}.
+          El titular del banco de datos es <strong class="text-primary">{legal.legalName}</strong>,
+          RUC {legal.ruc}, con domicilio en {legal.fiscalAddress}. Contacto: {site.email} y {site.phone}.
         </p>
       </section>
 
       <section class="mt-8 space-y-4">
-        <h2 id="que-datos-recogemos" class="font-display text-xl font-semibold text-ink scroll-mt-20">2. Qué datos recogemos</h2>
+        <h2 id="que-datos-recogemos" class="font-display text-h2 md:text-h2-lg font-semibold text-ink scroll-mt-20">2. Qué datos recogemos</h2>
         <p class="text-neutral">
           Este sitio no tiene formularios ni compras en línea: solo publica catálogo e información.
           Cuando nos escribes por WhatsApp, correo o teléfono, recibimos los datos que decides
@@ -55,7 +55,7 @@ const description =
       </section>
 
       <section class="mt-8 space-y-4">
-        <h2 id="para-que-usamos-tus-datos" class="font-display text-xl font-semibold text-ink scroll-mt-20">3. Para qué usamos tus datos</h2>
+        <h2 id="para-que-usamos-tus-datos" class="font-display text-h2 md:text-h2-lg font-semibold text-ink scroll-mt-20">3. Para qué usamos tus datos</h2>
         <ul class="list-disc space-y-1 pl-6 text-neutral">
           <li>Responder consultas y preparar cotizaciones.</li>
           <li>Gestionar pedidos, entregas y comprobantes.</li>
@@ -65,7 +65,7 @@ const description =
       </section>
 
       <section class="mt-8 space-y-4">
-        <h2 id="cuanto-tiempo-los-conservamos" class="font-display text-xl font-semibold text-ink scroll-mt-20">4. Durante cuánto tiempo los conservamos</h2>
+        <h2 id="cuanto-tiempo-los-conservamos" class="font-display text-h2 md:text-h2-lg font-semibold text-ink scroll-mt-20">4. Durante cuánto tiempo los conservamos</h2>
         <p class="text-neutral">
           Conservamos tus datos mientras atendemos tu consulta o pedido y, después, durante los plazos
           que exige la ley. Las hojas de reclamación se guardan por al menos dos años desde su registro.
@@ -73,7 +73,7 @@ const description =
       </section>
 
       <section class="mt-8 space-y-4">
-        <h2 id="con-quien-los-compartimos" class="font-display text-xl font-semibold text-ink scroll-mt-20">5. Con quién los compartimos</h2>
+        <h2 id="con-quien-los-compartimos" class="font-display text-h2 md:text-h2-lg font-semibold text-ink scroll-mt-20">5. Con quién los compartimos</h2>
         <p class="text-neutral">
           No vendemos tus datos personales. Solo los comunicamos a los proveedores necesarios para
           prestarte el servicio (empresa de envíos, plataforma de mensajería o correo que uses para
@@ -82,18 +82,18 @@ const description =
       </section>
 
       <section class="mt-8 space-y-4">
-        <h2 id="derechos-arco" class="font-display text-xl font-semibold text-ink scroll-mt-20">6. Cómo ejercer tus derechos ARCO</h2>
+        <h2 id="derechos-arco" class="font-display text-h2 md:text-h2-lg font-semibold text-ink scroll-mt-20">6. Cómo ejercer tus derechos ARCO</h2>
         <p class="text-neutral">
           Puedes solicitar el acceso, rectificación, cancelación u oposición al tratamiento de tus
           datos, así como revocar tu consentimiento, escribiendo a{' '}
-          <a href={`mailto:${SITE.email}`} class="text-primary underline underline-offset-4">{SITE.email}</a>{' '}
+          <a href={`mailto:${site.email}`} class="text-primary underline underline-offset-4">{site.email}</a>{' '}
           con el asunto <em>Derechos ARCO</em>, indicando tu nombre y el derecho que quieres ejercer.
           Responderemos en el plazo que marca la normativa vigente.
         </p>
       </section>
 
       <section class="mt-8 space-y-4">
-        <h2 id="cookies-y-analitica" class="font-display text-xl font-semibold text-ink scroll-mt-20">7. Cookies y analítica</h2>
+        <h2 id="cookies-y-analitica" class="font-display text-h2 md:text-h2-lg font-semibold text-ink scroll-mt-20">7. Cookies y analítica</h2>
         <Callout tone="legal">
           Actualmente este sitio no instala cookies de seguimiento ni píxeles publicitarios. Si en el
           futuro incorporamos herramientas de medición, avisaremos aquí y habilitaremos un aviso de
@@ -102,10 +102,10 @@ const description =
       </section>
 
       <section class="mt-8 space-y-4">
-        <h2 id="cambios-a-esta-politica" class="font-display text-xl font-semibold text-ink scroll-mt-20">8. Cambios a esta política</h2>
+        <h2 id="cambios-a-esta-politica" class="font-display text-h2 md:text-h2-lg font-semibold text-ink scroll-mt-20">8. Cambios a esta política</h2>
         <p class="text-neutral">
           Publicaremos cualquier actualización en esta página. Para dudas sobre el tratamiento de tus
-          datos, escríbenos a {SITE.email} o por WhatsApp.
+          datos, escríbenos a {site.email} o por WhatsApp.
         </p>
       </section>
     </Container>

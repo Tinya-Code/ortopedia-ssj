@@ -1,0 +1,27 @@
+---
+// Sección "Cuidados": lista breve con marcador decorativo (ícono star del
+// registro; tertiary es un token decorativo y el ícono lleva aria-hidden).
+// Oculta por completo cuando care = [].
+import { icons } from '../icons/index';
+
+interface Props {
+  care: string[];
+}
+const { care } = Astro.props;
+
+// Ícono decorativo (aria-hidden interno).
+const StarIcon = icons.star;
+---
+{care.length > 0 && (
+  <section class="mt-10">
+    <h2 class="font-display text-h2 md:text-h2-lg font-semibold text-ink">Cuidados</h2>
+    <ul class="mt-6 max-w-prose space-y-3">
+      {care.map((item) => (
+        <li class="flex items-start gap-3">
+          <StarIcon class="mt-0.5 h-4 w-4 shrink-0 text-tertiary" />
+          <span class="text-neutral">{item}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}

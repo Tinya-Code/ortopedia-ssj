@@ -2,15 +2,20 @@
 // Acceso al carrito en el header (desktop y móvil). No se usa el CartTrigger
 // flotante del paquete: chocaría con el CTA flotante de WhatsApp y con la
 // StickyProductBar de la ficha en móvil.
-import Cart from '../icons/Cart.astro';
+import Button from "../ui/Button.astro";
+import Cart from "../icons/Cart.astro";
 ---
-<button
-  type="button"
-  data-cart-action="open"
-  aria-label="Ver cotización"
-  class="relative inline-flex h-11 w-11 items-center justify-center rounded-lg border border-neutral/20 text-ink transition-colors hover:border-primary/40 hover:text-primary motion-reduce:transition-none"
->
-  <Cart class="size-6" />
+
+<div class="relative">
+  <Button
+    type="button"
+    data-cart-action="open"
+    aria-label="Ver cotización"
+    variant="icon"
+    class="h-11 w-11 px-0! py-0! rounded-lg border border-neutral/20"
+  >
+    <Cart class="size-6" />
+  </Button>
   <span
     data-cart-badge
     data-cart-count
@@ -19,16 +24,22 @@ import Cart from '../icons/Cart.astro';
   >
     0
   </span>
-</button>
+</div>
 
 <script>
   // El controlador del paquete escribe el total en [data-cart-count] (textContent).
   // Un MutationObserver evita depender del orden de ejecución de los <script type=module>.
-  document.querySelectorAll<HTMLElement>('[data-cart-badge]').forEach((badge) => {
-    const sync = () => {
-      badge.hidden = Number(badge.textContent ?? 0) === 0;
-    };
-    sync();
-    new MutationObserver(sync).observe(badge, { childList: true, characterData: true, subtree: true });
-  });
+  document
+    .querySelectorAll<HTMLElement>("[data-cart-badge]")
+    .forEach((badge) => {
+      const sync = () => {
+        badge.hidden = Number(badge.textContent ?? 0) === 0;
+      };
+      sync();
+      new MutationObserver(sync).observe(badge, {
+        childList: true,
+        characterData: true,
+        subtree: true,
+      });
+    });
 </script>

@@ -5,12 +5,13 @@ import Breadcrumbs from '../../components/layout/Breadcrumbs.astro';
 import ProductGrid from '../../components/catalog/ProductGrid.astro';
 import CategoryChips from '../../components/catalog/CategoryChips.astro';
 import CatalogSearch from '../../components/catalog/CatalogSearch.astro';
+import ActiveFilters from '../../components/catalog/ActiveFilters.astro';
 import CatalogPagination from '../../components/catalog/CatalogPagination.astro';
 import WhatsAppButton from '../../components/ui/WhatsAppButton.astro';
 import Callout from '../../components/ui/Callout.astro';
 import CtaBand from '../../components/ui/CtaBand.astro';
 import { breadcrumbSchema, itemListSchema } from '../../lib/schema';
-import { categoryWhatsappMessage } from '../../data/whatsapp';
+import { categoryWhatsappMessage } from '../../lib/whatsapp';
 import Container from '../../components/ui/Container.astro';
 import { absUrl } from '../../lib/url';
 
@@ -28,11 +29,24 @@ export async function getStaticPaths() {
 const { cat, products } = Astro.props;
 const categories = await api.categories.list();
 
+// Alternativas del estado vacío: destacados de la categoría o, si no
+// hubiera, sus primeros 4 productos (la categoría siempre tiene ≥1 aquí).
+const featuredInCategory = products.filter((p) => p.featured).slice(0, 4);
+const suggestions =
+  featuredInCategory.length > 0 ? featuredInCategory : products.slice(0, 4);
+
 const crumbs = [
   { name: 'Inicio', href: '/' },
   { name: 'Catálogo', href: '/catalogo/' },
   { name: cat.name },
 ];
+
+// GA4 view_item_list: payload serializado en un data-* de la sección para el
+// script de initCatalog (máx. 20 ítems, límite GA4 razonable con el catálogo actual).
+const viewList = {
+  item_list_name: cat.name,
+  items: products.slice(0, 20).map((p) => ({ item_id: p.slug, item_name: p.name })),
+};
 ---
 <BaseLayout
   title={cat.seoTitle ?? cat.name}
@@ -44,12 +58,12 @@ const crumbs = [
 >
   <Breadcrumbs items={crumbs} />
 
-  <section class="pb-10">
+  <section class="pb-10" data-view-list={JSON.stringify(viewList)}>
     <Container>
       {/* Cabecera: h1 + descripción completa de la categoría + CTA de asesoría. */}
       <header class="flex flex-col gap-4 pt-6 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">{cat.name}</h1>
+          <h1 class="text-h1 sm:text-h1-lg font-bold tracking-tight text-ink">{cat.name}</h1>
           <p class="mt-3 max-w-3xl text-sm leading-relaxed text-neutral sm:text-base">
             {cat.intro}
           </p>
@@ -68,18 +82,19 @@ const crumbs = [
       </div>
 
       {products.length > 0 ? (
-        <>
-          {/* Buscador global: ancho completo, simple y accesible. */}
+
           <div class="mt-8">
             <CatalogSearch />
           </div>
-
-          {/* Barra de orden, alineada a la derecha justo sobre la grilla. */}
-          <div class="mt-6 flex justify-end">
+<div class="flex justify-between items-center">          
+  <p id="catalog-count" class="mt-4 text-sm text-neutral" aria-live="polite">
+            {products.length === 1 ? '1 producto' : `${products.length} productos`}
+          </p>
+            <div class="mt-6 flex justify-end">
             <label for="catalog-sort" class="sr-only">Ordenar productos</label>
             <select
               id="catalog-sort"
-              class="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm text-ink transition-colors hover:border-slate-300 focus:border-primary focus:ring-1 focus:ring-primary/20 focus-visible:outline-none"
+              class="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm text-ink transition-colors hover:border-slate-300 focus:border-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
             >
               <option value="az">De la A a la Z</option>
               <option value="za">De la Z a la A</option>
@@ -88,14 +103,32 @@ const crumbs = [
             </select>
           </div>
 
+</div>
+
+
+
+          <ActiveFilters />
+
           <ProductGrid id="catalog-grid" products={products} class="mt-6" />
 
-          <p id="catalog-empty" class="mt-10 hidden text-center text-sm text-neutral">
-            No encontramos productos que coincidan con tu búsqueda.
-          </p>
+          <div
+            id="catalog-empty"
+            class="mt-10 hidden rounded-xl border border-neutral/20 bg-light p-6"
+          >
+            <p data-empty-title class="text-base font-semibold text-ink">
+              No hay resultados con los filtros actuales
+            </p>
+            <p class="mt-2 text-sm text-neutral">Mira estas opciones:</p>
+            <ProductGrid
+              id="catalog-suggestions"
+              products={suggestions}
+              variant="suggestions"
+              class="mt-4"
+            />
+          </div>
 
           <CatalogPagination />
-        </>
+  
       ) : (
         <Callout tone="info" title="Sin productos publicados">
           Por el momento no hay productos publicados en esta categoría. Consultanos por

@@ -49,9 +49,9 @@ src/
 │  ├─ cambios-y-devoluciones.astro
 │  ├─ libro-de-reclamaciones.astro
 │  └─ comprobantes-y-envios.astro    # cómo se emite el comprobante, tiempos y costos
-9.2 Datos legales en src/data/site.ts
+9.2 Datos legales en src/api/data/site.ts
 ts
-export const LEGAL = {
+export const legal = {
   legalName: 'RAZÓN SOCIAL DEL NEGOCIO S.A.C.',
   tradeName: 'Centro Ortopédico Tu Marca',
   ruc: '00000000000',
@@ -66,15 +66,15 @@ export const LEGAL = {
 9.3 LegalFooter.astro
 astro
 ---
-import { LEGAL } from '../../data/site';
+import { legal } from '../../api/data/site';
 import ReclamacionesLink from './ReclamacionesLink.astro';
 const year = new Date().getFullYear();
 ---
 <footer class="legal-footer">
   <p>
-    <strong>{LEGAL.legalName}</strong> · RUC {LEGAL.ruc}<br />
-    {LEGAL.fiscalAddress}<br />
-    <a href={`mailto:${LEGAL.email}`}>{LEGAL.email}</a> · {LEGAL.phone}
+    <strong>{legal.legalName}</strong> · RUC {legal.ruc}<br />
+    {legal.fiscalAddress}<br />
+    <a href={`mailto:${legal.email}`}>{legal.email}</a> · {legal.phone}
   </p>
 
   <nav aria-label="Información legal">
@@ -147,12 +147,12 @@ const products = (await getCollection('products'))
 En organizationSchema() de src/lib/schema.ts:
 
 ts
-import { LEGAL } from './site';
+import { legal } from '../api/data/site';
 
 export const organizationSchema = () => ({
   // ...campos existentes...
-  legalName: LEGAL.legalName,
-  taxID: LEGAL.ruc, // RUC
+  legalName: legal.legalName,
+  taxID: legal.ruc, // RUC
 });
 
 Y para el producto, refleja la condición real:
@@ -176,15 +176,15 @@ Aceptación de tratamiento de datos personales
 astro
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { LEGAL } from '../data/site';
+import { legal } from '../api/data/site';
 ---
 <BaseLayout
   title="Libro de Reclamaciones"
-  description={`Registra tu reclamo o queja. Respondemos en un máximo de ${LEGAL.reclamosResponseDays} días hábiles.`}
+  description={`Registra tu reclamo o queja. Respondemos en un máximo de ${legal.reclamosResponseDays} días hábiles.`}
 >
   <h1>Libro de Reclamaciones</h1>
   <p>
-    {LEGAL.legalName} · RUC {LEGAL.ruc} · {LEGAL.fiscalAddress}
+    {legal.legalName} · RUC {legal.ruc} · {legal.fiscalAddress}
   </p>
 
   <form action="/api/reclamos" method="post">
@@ -246,7 +246,7 @@ En todos los casos, define un responsable interno y un procedimiento para respon
 
 9.9 Mensaje de WhatsApp con foco en cumplimiento
 
-En src/data/whatsapp.ts, el mensaje inicial puede pedir directamente lo que necesitas para el comprobante:
+En src/lib/whatsapp.ts, el mensaje inicial puede pedir directamente lo que necesitas para el comprobante:
 
 ts
 export function productWhatsappMessage(name: string, url: string) {

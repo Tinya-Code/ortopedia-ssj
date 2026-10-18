@@ -1,7 +1,17 @@
-import { SITE } from './site';
+import { site } from '../api/data/site';
 
+/**
+ * Base de wa.me con el número del negocio, sin mensaje:
+ * `https://wa.me/<dígitos>`. Exportada para que scripts de cliente compongan
+ * el href sin necesitar el helper completo de mensajes.
+ */
+export function waBase(): string {
+  return `https://wa.me/${site.whatsapp}`;
+}
+
+/** href de WhatsApp con el mensaje precargado (URL-encoded). */
 export function whatsappLink(message: string) {
-  return `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(message)}`;
+  return `${waBase()}?text=${encodeURIComponent(message)}`;
 }
 
 /**

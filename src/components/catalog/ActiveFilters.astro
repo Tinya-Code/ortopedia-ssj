@@ -1,0 +1,57 @@
+---
+// Chips de filtros activos (búsqueda / categoría) + botón "Limpiar filtros".
+// Presente en /catalogo/ y /catalogo/[category]/. Oculto en build; el estado
+// lo pinta src/scripts/catalog.ts (initCatalog → renderStatus) según la
+// búsqueda y el filtro de categoría vigentes. En páginas de categoría solo
+// puede aparecer el chip de búsqueda (no hay botones de categoría).
+//
+// Lenguaje visual alineado con CategoryChips (pills del mismo catálogo):
+// cápsula blanca, borde slate-200, texto neutral y hover en primary/ink.
+// Los × son <button> crudos a propósito: Button.astro fuerza
+// rounded-lg/font-semibold/min-h-11, que dentro de un pill de 24px obligaba
+// a overrides contradictorios. size-6 = 24px cumple target size (WCAG 2.2).
+import XIcon from '../icons/X.astro';
+
+const chipClass =
+  'inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white py-1 pl-3 pr-1 text-xs text-neutral';
+
+const removeClass =
+  'inline-flex size-6 shrink-0 items-center justify-center rounded-full text-neutral hover:bg-slate-100 hover:text-ink focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-1';
+---
+
+<div
+  id="catalog-active-filters"
+  class="mt-4 hidden flex-wrap items-center gap-2"
+  role="group"
+  aria-label="Filtros activos"
+>
+  <span class={chipClass} data-chip-query>
+    <span data-chip-query-text></span>
+    <button
+      type="button"
+      data-remove="query"
+      aria-label="Quitar búsqueda"
+      class={removeClass}
+    >
+      <XIcon class="size-3.5" />
+    </button>
+  </span>
+  <span class={`${chipClass} hidden`} data-chip-category>
+    <span data-chip-category-text></span>
+    <button
+      type="button"
+      data-remove="category"
+      aria-label="Quitar filtro de categoría"
+      class={removeClass}
+    >
+      <XIcon class="size-3.5" />
+    </button>
+  </span>
+  <button
+    type="button"
+    data-clear-all
+    class="min-h-9 px-2 text-xs font-medium text-primary underline underline-offset-2 hover:text-secondary focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 motion-reduce:transition-none"
+  >
+    Limpiar filtros
+  </button>
+</div>

@@ -5,13 +5,9 @@ import { Image } from 'astro:assets';
 import logo from '../../assets/logo-ortopedia-solidaria-san-jose.png';
 import MobileNav from './MobileNav.astro';
 import CartButton from './CartButton.astro';
+import { NAV_LINKS } from '../../config/nav';
 
-const links = [
-  { href: '/', label: 'Inicio' },
-  { href: '/catalogo/', label: 'Catálogo' },
-  { href: '/servicios/', label: 'Servicios' },
-  { href: '/contacto/', label: 'Contacto' },
-];
+const links = NAV_LINKS;
 const path = Astro.url.pathname;
 ---
 <header class="sticky top-0 z-40 h-16 border-b border-neutral/20 bg-white/95 backdrop-blur">

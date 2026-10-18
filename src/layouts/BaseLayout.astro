@@ -12,8 +12,9 @@ import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
 import Cart from '../components/cart/Cart.astro';
 import WhatsAppButton from '../components/ui/WhatsAppButton.astro';
+import CookieConsent from '../components/layout/CookieConsent.astro';
 import { organizationSchema } from '../lib/schema';
-import { generalWhatsappMessage } from '../data/whatsapp';
+import { generalWhatsappMessage } from '../lib/whatsapp';
 
 interface Props {
   title: string;
@@ -68,6 +69,7 @@ const {
     />
     <!-- Carrito global: drawer + checkout por WhatsApp -->
     <Cart />
+    <CookieConsent />
   </body>
 </html>
 

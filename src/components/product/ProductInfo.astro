@@ -1,20 +1,26 @@
 ---
-// Orden de la ficha (mejoras.md §6.4): h1 → badge → precio lg → CTA.
+// Orden de la ficha (mejoras.md §6.4): h1 → precio lg → disponibilidad →
+// registro sanitario → CTA → bloque de envío/cambios.
 // `self-start md:sticky md:top-24` mantiene la columna derecha visible en desktop
 // (top-24 deja pasar el header sticky de h-16).
+import Button from '../ui/Button.astro';
 import WhatsAppButton from '../ui/WhatsAppButton.astro';
 import AvailabilityBadge from './AvailabilityBadge.astro';
 import RegistroBadge from './RegistroBadge.astro';
 import PriceTag from '../ui/PriceTag.astro';
+import { icons } from '../icons/index';
 import type { Product as CartProduct } from '@dennismiranda/astro-cart/core';
 
 interface Props {
   name: string;
-  price?: number;
+  /** null = cotiza, sin precio publicado (PriceTag muestra "Consultar precio"). */
+  price: number | null;
   availability: string;
   whatsappMessage: string;
-  registroSanitario?: string;
-  claseRiesgo?: string;
+  /** '' = sin registro; el badge se oculta porque '' es falsy. */
+  registroSanitario: string;
+  /** '' = sin clase de riesgo; no se muestra el tramo "· Clase". */
+  claseRiesgo: string;
   /** Payload del carrito; null = no agregable (sin precio o sin stock). */
   cartProduct?: CartProduct | null;
 }
@@ -27,41 +33,63 @@ const {
   claseRiesgo,
   cartProduct = null,
 } = Astro.props;
+
+// Iconos decorativos (aria-hidden interno) del bloque de confianza.
+const TruckIcon = icons.truck;
+const RotateCcwIcon = icons['rotate-ccw'];
 ---
 <section class="self-start md:sticky md:top-24">
-  <h1 class="font-display text-3xl font-semibold text-ink">{name}</h1>
+  <h1 class="font-display text-h1 md:text-h1-lg font-semibold text-ink">{name}</h1>
 
-  <div class="mt-4">
+  <PriceTag price={price} size="lg" class="mt-4" />
+
+  <div class="mt-3">
     <AvailabilityBadge availability={availability} />
   </div>
 
-  <PriceTag price={price} size="lg" class="mt-3" />
-
   {registroSanitario && <RegistroBadge {registroSanitario} {claseRiesgo} />}
 
-  {/* CTA: agregar al carrito (primario) + WhatsApp (outline). Sin precio/stock
-      se mantiene únicamente el CTA de WhatsApp. */}
   {cartProduct ? (
-    <div class="mt-5 flex flex-col gap-3 [&_a]:w-full [&_a]:justify-center md:[&_a]:w-auto">
+    <div class="mt-5 flex flex-col gap-3 md:flex-row">
       <div data-cart-product data-id={cartProduct.id} data-product={JSON.stringify(cartProduct)}>
-        <button
+        <Button
           type="button"
           data-cart-action="add"
-          class="inline-flex w-full items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary/90 motion-reduce:transition-none md:w-auto"
+          variant="primary"
+          class="w-full justify-center md:w-auto"
         >
           Agregar
-        </button>
+        </Button>
       </div>
       <WhatsAppButton
         message={whatsappMessage}
         label="Consultar por WhatsApp"
         variant="outline"
         eventName="whatsapp_product"
+        class="w-full justify-center md:w-auto"
       />
     </div>
   ) : (
-    <div class="mt-5 [&>a]:w-full [&>a]:justify-center md:[&>a]:w-auto">
-      <WhatsAppButton message={whatsappMessage} label="Pedir por WhatsApp" eventName="whatsapp_product" />
+    <div class="mt-5">
+      <WhatsAppButton
+        message={whatsappMessage}
+        label="Pedir por WhatsApp"
+        eventName="whatsapp_product"
+        class="w-full justify-center md:w-auto"
+      />
     </div>
   )}
+
+  {/* Confianza bajo el CTA: envío y cambios, sin cifras ni plazos inventados.
+      El enlace hereda el foco visible global (:focus-visible en global.css). */}
+  <div class="mt-5 flex flex-col gap-2 text-sm text-neutral">
+    <p class="flex items-center gap-2">
+      <TruckIcon class="h-4 w-4 shrink-0" />
+      <span>Envío a coordinar por WhatsApp.</span>
+    </p>
+    <p class="flex items-center gap-2">
+      <RotateCcwIcon class="h-4 w-4 shrink-0" />
+      <span>Cambios y devoluciones: <a href="/cambios-y-devoluciones/" class="text-primary underline underline-offset-4">ver condiciones</a>.</span>
+    </p>
+  </div>
 </section>

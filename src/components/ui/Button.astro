@@ -1,25 +1,94 @@
 ---
-// Enlace con apariencia de botón. Usar <slot /> cuando el texto lleve marca/énfasis.
+// Botón unificado: soporta <button> (acciones) y <a> (navegación).
+// Usa <slot /> para contenido con marca/énfasis o iconos.
 interface Props {
-  href: string;
+  /** Si se proporciona href, renderiza <a>; si no, renderiza <button> */
+  href?: string;
+  /** Texto del botón (opcional si usas slot) */
   label?: string;
-  variant?: 'primary' | 'secondary' | 'outline' | 'primaryDark' | 'outlineDark';
-  eventName?: string; // para analytics
+  /** Tipo de botón (solo para <button>) */
+  type?: 'button' | 'submit' | 'reset';
+  /** Variante visual */
+  variant?: 'primary' | 'secondary' | 'outline' | 'outlineWhite' | 'primaryDark' | 'outlineDark' | 'ghost' | 'ghostWhite' | 'icon';
+  /** Tamaño del botón (controla padding) */
+  size?: 'sm' | 'md' | 'lg';
+  /** Para analytics */
+  eventName?: string;
+  /** Para <a>: atributo rel */
   rel?: string;
+  /** Para <a>: target="_blank" */
+  external?: boolean;
+  /** Deshabilitar el botón */
+  disabled?: boolean;
+  /** aria-label para accesibilidad */
+  ariaLabel?: string;
+  /** aria-pressed para botones de toggle */
+  ariaPressed?: boolean | 'true' | 'false';
+  /** ID del elemento */
+  id?: string;
+  /** Clases adicionales */
+  class?: string;
 }
-const { href, label, variant = 'primary', eventName, rel } = Astro.props;
+const {
+  href,
+  label,
+  type = 'button',
+  variant = 'primary',
+  size = 'md',
+  eventName,
+  rel,
+  external = false,
+  disabled = false,
+  ariaLabel,
+  ariaPressed,
+  class: extraClass = '',
+  ...rest
+} = Astro.props;
 
-const base =
-  'inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold transition-colors';
-const variants = {
-  primary: 'bg-primary text-white hover:bg-primary/90',
-  secondary: 'bg-secondary text-white hover:bg-secondary/90',
-  primaryDark: 'bg-white text-primary hover:bg-white/90',
-  outline: 'border border-primary text-primary hover:bg-primary/5',
-  outlineDark: 'border border-light text-light hover:bg-light/5',
+const sizes = {
+  sm: 'min-h-9 px-4 py-2 text-xs',
+  md: 'min-h-11 px-5 py-3 text-sm',
+  lg: 'min-h-12 px-6 py-3.5 text-base',
 };
-const cls = `${base} ${variants[variant]}`;
+const base =
+  `inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-colors motion-reduce:transition-none ${sizes[size]}`;
+const variants = {
+  primary: 'bg-primary text-white hover:bg-secondary focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2',
+  secondary: 'bg-secondary text-white hover:bg-secondary/90 focus-visible:ring-2 focus-visible:ring-secondary/50 focus-visible:ring-offset-2',
+  primaryDark: 'bg-white text-primary shadow-sm hover:bg-slate-100 hover:text-secondary focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2',
+  outline: 'border border-primary text-primary hover:bg-primary hover:text-white focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2',
+  outlineWhite: 'border border-slate-200 bg-white text-neutral hover:border-primary hover:text-primary hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2',
+  outlineDark: 'border border-light text-light hover:bg-light hover:text-ink focus-visible:ring-2 focus-visible:ring-light/50 focus-visible:ring-offset-2',
+  ghost: 'text-primary hover:bg-primary/10 hover:text-secondary focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2',
+  ghostWhite: 'text-white hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2',
+  icon: 'text-ink hover:text-primary hover:bg-tertiary/20 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2',
+};
+const disabledClass = disabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : '';
+const cls = `${base} ${variants[variant]} ${disabledClass} ${extraClass}`;
+
+const props = {
+  class: cls,
+  'data-event': eventName,
+  'aria-label': ariaLabel,
+  'aria-pressed': ariaPressed,
+  disabled: disabled,
+  ...rest,
+};
+
+const buttonType = type;
 ---
-<a href={href} class={cls} data-event={eventName} rel={rel}>
-  {label ?? <slot />}
-</a>
+
+{href ? (
+  <a
+    href={href}
+    rel={external ? 'noopener noreferrer' : rel}
+    target={external ? '_blank' : undefined}
+    {...props}
+  >
+    {label ?? <slot />}
+  </a>
+) : (
+  <button type={buttonType} {...props}>
+    {label ?? <slot />}
+  </button>
+)}

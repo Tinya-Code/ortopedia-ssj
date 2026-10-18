@@ -1,5 +1,5 @@
 ---
-import { whatsappLink } from '../../data/whatsapp';
+import { whatsappLink } from '../../lib/whatsapp';
 import Whatsapp from '../icons/Whatsapp.astro';
 
 interface Props {
@@ -9,6 +9,8 @@ interface Props {
   eventName?: string; // para analytics
   /** Solo variante flotante: la oculta en móvil cuando la reemplaza StickyProductBar. */
   mobileHidden?: boolean;
+  /** Clases extra (ancho/márgenes). Sin esto los consumidores caían en hacks [&_a]. */
+  class?: string;
 }
 const {
   message,
@@ -16,6 +18,7 @@ const {
   variant = 'primary',
   eventName = 'whatsapp_click',
   mobileHidden = false,
+  class: extraClass = '',
 } = Astro.props;
 const href = whatsappLink(message);
 ---
@@ -26,20 +29,27 @@ const href = whatsappLink(message);
     // verde de marca (única excepción hex de la regla 3) y el texto/ícono pasa a
     // ink: 8.94:1 sobre #25d366 y 7.24:1 sobre el hover #1ebe5b.
     variant === 'primary'
-      ? 'inline-flex items-center gap-2 rounded-lg bg-[#25d366] px-5 py-3 text-sm font-semibold text-ink hover:bg-[#1ebe5b]'
+      ? 'inline-flex items-center gap-2 rounded-lg bg-[#25d366] px-5 py-3 text-sm font-semibold text-ink transition-colors hover:bg-[#1ebe5b] motion-reduce:transition-none'
       : variant === 'white'
-        ? 'inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-semibold text-primary hover:bg-neutral/10'
+        ? 'inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-semibold text-primary shadow-sm transition-colors hover:bg-slate-100 hover:text-secondary motion-reduce:transition-none'
         : variant === 'outline'
-          ? 'inline-flex items-center gap-2 rounded-full border border-primary px-5 py-2.5 text-sm font-medium text-primary transition-colors hover:bg-tertiary/20 motion-reduce:transition-none'
-          : `fixed bottom-4 right-4 z-50 ${
+          ? 'inline-flex items-center gap-2 rounded-full border border-primary px-5 py-2.5 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-white motion-reduce:transition-none'
+          // bottom-40 (160px) en móvil: el banner de cookies (F7, ~170px a
+          // 360px de ancho) lo taparía a bottom-24 (96–140px caen dentro del
+          // banner); z-50 lo mantiene visible y clicable sobre el banner.
+          // md:bottom-24 (96px): despeja el © del footer en 360px/zoom y el
+          // banner en desktop (~76–96px). En ficha de producto el float está
+          // oculto en móvil (lo sustituye la StickyProductBar), sin choque.
+          : `fixed bottom-40 md:bottom-24 right-4 z-50 ${
               mobileHidden ? 'hidden md:flex' : 'inline-flex'
-            } items-center gap-2 rounded-full bg-[#25d366] px-5 py-3 text-sm font-semibold text-ink shadow-lg hover:bg-[#1ebe5b]`,
+            } items-center gap-2 rounded-full bg-[#25d366] px-5 py-3 text-sm font-semibold text-ink shadow-lg transition-colors hover:bg-[#1ebe5b] motion-reduce:transition-none`,
   ]}
   target="_blank"
   rel="noopener noreferrer"
   data-event={eventName}
   data-wa-float={variant === 'floating' ? '' : undefined}
   aria-label={label}
+  class={extraClass}
 >
   <Whatsapp class="size-5" />
   <span>{label}</span>

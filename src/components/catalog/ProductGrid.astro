@@ -1,12 +1,16 @@
 ---
+import { Image } from 'astro:assets';
 import ProductCard from './ProductCard.astro';
-import type { Product } from '../../data/types';
+import PriceTag from '../ui/PriceTag.astro';
+import { imageSrc } from '../../lib/image';
+import type { Product } from '../../api/types';
 
 type CardProduct = {
   slug: string;
   name: string;
   category?: string;
-  price?: number;
+  /** null = cotiza, sin precio publicado (data-price queda ''). */
+  price: number | null;
   brand?: string;
   sku?: string;
   availability?: Product['availability'];
@@ -17,25 +21,53 @@ interface Props {
   products: CardProduct[]; // slice que consume, no la entidad entera
   id?: string;
   class?: string;
+  /**
+   * 'default' → grilla principal del catálogo: data-product-item + tarjeta
+   * completa (hooks de carrito y GA4). 'suggestions' → grilla secundaria del
+   * estado vacío: SIN atributos de filtrado ni hooks de carrito/GA4, para que
+   * apply() no la cuente ni se dupliquen eventos.
+   */
+  variant?: 'default' | 'suggestions';
 }
-const { products, id, class: className } = Astro.props;
+const { products, id, class: className, variant = 'default' } = Astro.props;
 ---
 <ul
   id={id}
   class:list={[
-    'grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+    'grid grid-cols-2 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
     className,
   ]}
 >
-  {products.map((p, i) => (
-    <li
-      data-product-item
-      data-name={p.name}
-      data-category={p.category ?? ''}
-      data-price={p.price ?? ''}
-      data-search={[p.name, p.brand, p.seoDescription].filter(Boolean).join(' ').toLowerCase()}
-    >
-      <ProductCard product={p} priority={i < 4} />
-    </li>
-  ))}
+  {products.map((p, i) =>
+    variant === 'suggestions' ? (
+      <li>
+        <a
+          href={`/producto/${p.slug}/`}
+          class="group flex h-full flex-col rounded-xl border border-slate-100 bg-light p-3 transition-all duration-200 hover:border-slate-200 hover:shadow-md motion-reduce:transition-none"
+        >
+          <div class="flex h-32 items-center justify-center overflow-hidden rounded-lg bg-white">
+            <Image
+              src={imageSrc(p.images[0].src)}
+              alt={p.images[0].alt}
+              loading="lazy"
+              format="webp"
+              class="h-full w-full object-contain"
+            />
+          </div>
+          <p class="mt-3 line-clamp-2 text-sm font-semibold text-ink">{p.name}</p>
+          <PriceTag price={p.price} size="md" class="mt-auto pt-1" />
+        </a>
+      </li>
+    ) : (
+      <li
+        data-product-item
+        data-name={p.name}
+        data-category={p.category ?? ''}
+        data-price={p.price ?? ''}
+        data-search={[p.name, p.brand, p.seoDescription].filter(Boolean).join(' ').toLowerCase()}
+      >
+        <ProductCard product={p} priority={i < 4} />
+      </li>
+    )
+  )}
 </ul>

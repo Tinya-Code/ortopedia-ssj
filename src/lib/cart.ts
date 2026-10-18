@@ -1,6 +1,6 @@
 // Integración con @dennismiranda/astro-cart: mapeo de Product del sitio →
 // Product del paquete y mensaje de cotización por WhatsApp (el cierre real).
-import type { Product } from '../data/types';
+import type { Product } from '../api/types';
 import type { CartItem, Product as CartProduct } from '@dennismiranda/astro-cart/core';
 
 /**
@@ -31,7 +31,7 @@ export function toCartProduct(product: CartableProduct): CartProduct {
     price: product.price ?? 0,
     // Ruta relativa al origen (astro:assets → /_astro/…): el carrito corre en
     // el mismo dominio, no necesita absUrl (que además depende del TODO de
-    // SITE.url y rompía la imagen en local/preview).
+    // site.url y rompía la imagen en local/preview).
     imageUrl: typeof src === 'string' ? src : src.src,
     description: product.seoDescription ?? null,
     sku: product.sku,

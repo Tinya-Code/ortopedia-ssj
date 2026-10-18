@@ -3,6 +3,7 @@
 // id="servicios" es obligatorio: el header enlaza a /#servicios.
 import { Image } from 'astro:assets';
 import Container from '../ui/Container.astro';
+import ArrowRight from '../icons/ArrowRight.astro';
 
 interface Service {
   title: string;
@@ -18,15 +19,15 @@ const { services } = Astro.props;
 
 // Bento Grid: card destacada (izquierda, vertical) + dos cards en fila (derecha).
 const cardBase =
-  'group relative flex h-full flex-col overflow-hidden rounded-3xl border border-neutral/15 bg-white transition-all duration-300 ease-out hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-neutral/10';
+  'group relative flex h-full flex-col overflow-hidden rounded-3xl border border-neutral/15 bg-white transition-all duration-300 ease-out hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-neutral/10 motion-reduce:transition-none motion-reduce:transform-none';
 const imageBoxBase = 'order-1 h-56 w-full shrink-0 overflow-hidden md:h-64';
 const imageClass =
-  'h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105';
+  'h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transition-none motion-reduce:transform-none';
 const textBoxBase = 'order-2 flex flex-1 flex-col justify-between p-6 md:p-8';
 ---
 <section id="servicios" class="bg-light py-12 md:py-16">
   <Container>
-    <h2 class="font-display text-3xl font-semibold text-ink">Servicios</h2>
+    <h2 class="font-display text-h2 md:text-h2-lg font-semibold text-ink">Servicios</h2>
     <p class="mt-4 max-w-prose text-neutral">
       Acompañamiento personalizado en cada etapa: desde la evaluación hasta la elección del
       producto ortopédico adecuado.
@@ -59,23 +60,14 @@ const textBoxBase = 'order-2 flex flex-1 flex-col justify-between p-6 md:p-8';
               </div>
               <div class={textBoxClass}>
                 <div>
-                  <h3 class="text-xl font-semibold tracking-tight text-ink md:text-2xl">{s.title}</h3>
+                  <h3 class="text-h3 md:text-h3-lg font-semibold tracking-tight text-ink">{s.title}</h3>
                   <p class="mb-6 mt-2 text-sm leading-relaxed text-neutral md:text-base">{s.text}</p>
                 </div>
-                <span class="inline-flex items-center gap-2 font-medium text-primary transition-colors duration-200 group-hover:text-secondary">
-                  Ver más
-                  <svg
-                    aria-hidden="true"
-                    class="h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1.5"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path d="M5 12h14M12 5l7 7-7 7" />
-                  </svg>
+                <span class="inline-flex items-center gap-2 font-medium text-primary transition-colors duration-200">
+                  <span class="group-hover:text-secondary">Ver más</span>
+                  <ArrowRight
+                    class="h-4 w-4 shrink-0 text-primary transition-transform duration-200 group-hover:translate-x-1.5 motion-reduce:transition-none motion-reduce:transform-none"
+                  />
                 </span>
               </div>
             </a>

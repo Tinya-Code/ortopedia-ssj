@@ -11,7 +11,7 @@ página y con qué datos reales trabaja**, sin tener que reconstruirlo leyendo e
 
 1. §2 tablas de rutas y componentes → dónde está cada cosa.
 2. §3 composición página por página → en qué orden se renderiza y con qué props.
-3. §4 datos reales → `SITE`, `LEGAL`, la forma de `db.ts` y la capa `src/api` (bandera repo/api).
+3. §4 datos reales → `site`, `legal`, la forma de `db.ts` y la capa `src/api` (bandera repo/api).
 4. §6 comandos → verificar que el documento sigue siendo cierto.
 
 ---
@@ -22,9 +22,9 @@ página y con qué datos reales trabaja**, sin tener que reconstruirlo leyendo e
 |---|---|
 | Framework | Astro 7, output estático (SSG). Sin adaptador, sin SSR. |
 | Estilos | Tailwind v4 vía `@tailwindcss/vite`; tokens en `src/styles/global.css` `@theme` |
-| Contenido | **No** usa `astro:content` ni content collections: los datos viven en `src/data/db.ts` (contracto `src/data/types.ts`) y el acceso pasa por `src/api/` |
+| Contenido | **No** usa `astro:content` ni content collections: los datos viven en `src/api/data/db.ts` (contracto `src/api/types.ts`) y el acceso pasa por `src/api/` |
 | JS en cliente | Solo dos `<script>` inline: handler de submit del libro de reclamaciones y hook `dataLayer`. Cero frameworks (React/Vue) |
-| `site` | `SITE.url` (importado desde `src/data/site.ts` — fuente única del dominio; placeholder pendiente) |
+| `site` | `site.url` (importado desde `src/api/data/site.ts` — fuente única del dominio; placeholder pendiente) |
 | `trailingSlash` | `'always'`: **toda** URL interna termina en `/` |
 | Sitemap | `@astrojs/sitemap` → `sitemap-index.xml` + `sitemap-0.xml` (16 URLs); referenciado en `public/robots.txt` |
 | Build | `build: { inlineStylesheets: 'auto' }`, `compressHTML: true` |
@@ -83,7 +83,7 @@ src/
 │                index.ts → facade `api` (único acceso a datos; async, siempre `await`)
 ├─ lib/          hours.ts · schema.ts · image.ts · url.ts   (lógica pura, sin datos)
 ├─ data/         db.ts (3 categorías, 7 productos, `: Database`) · types.ts (contracto
-│                db ↔ API) · site.ts (SITE+LEGAL) · whatsapp.ts
+│                db ↔ API) · site.ts (site+legal) · whatsapp.ts
 ├─ assets/       home/hero.jpg · products/*.jpg  (imágenes de prueba)
 └─ styles/global.css
 ```
@@ -126,7 +126,7 @@ src/
 | `layout/MobileNav.astro` | `links, currentPath` | `<details>/<summary>` sin JS (hamburguesa 44×44 con `aria-label`); panel `absolute top-16` a ancho completo; estado expuesto nativamente por AX (`DisclosureTriangle` + `expanded`) | Header (`md:hidden`) |
 | `layout/Footer.astro` | — | 2 columnas (`sm:grid-cols-2`): NAP + contacto (`min-h-11`) + nav, y `LegalFooter` | BaseLayout |
 | `layout/Breadcrumbs.astro` | `items: {name, href?}[]` | `<nav aria-label="Migas de pan">` con `>` separadores; en móvil scrollea (`overflow-x-auto` con `py-3/-my-3` para no recortar el área táctil `after:*`); último item sin enlace | catálogo, categoría, producto, contacto |
-| `seo/SEO.astro` | `title, description, image?='/og-default.jpg', type?='website', noindex?=false` | `<title>` (agrega `\| {SITE.name}` si no viene), description, canonical, `noindex` condicional, OG y Twitter. Avisa en dev si title >60 o description >160 | BaseLayout |
+| `seo/SEO.astro` | `title, description, image?='/og-default.jpg', type?='website', noindex?=false` | `<title>` (agrega `\| {site.name}` si no viene), description, canonical, `noindex` condicional, OG y Twitter. Avisa en dev si title >60 o description >160 | BaseLayout |
 | `seo/JsonLd.astro` | `data: obj \| obj[]` | `<script type="application/ld+json">` con `set:html` | BaseLayout |
 | `ui/Container.astro` | `size?='wide'\|'narrow'` | Envoltorio `mx-auto max-w-6xl` (wide) o `max-w-3xl` (narrow) con `px-4` | páginas (reemplaza divs sueltos) |
 | `ui/PageHeader.astro` | `title, lead?` | Encabezado de sección/página: `<h1>` o `<h2>` + párrafo lead en medida `max-w-prose` | home, catálogo, categoría, contacto, 404 |
@@ -198,7 +198,7 @@ BaseLayout (title: "Centro ortopédico en {city}", schemas: faqSchema ×4)
 4. FeaturedCategories  categories = api.categories.list() (3 CategoryCard)
 5. WhyUs         datos fijos dentro del componente
 6. HowItWorks    steps: 3 pasos numerados (círculos + conector)
-7. Faq           4 FAQs definidos en la página (una usa LEGAL.pricesIncludeIGV)
+7. Faq           4 FAQs definidos en la página (una usa legal.pricesIncludeIGV)
                  → renderiza <Accordion> de <details> (1er ítem abierto)
 8. LocationCta   NAP + "Punto de referencia" + iframe de mapa + CTA "Cómo llegar"
 9. CtaBand       title/text/message  ← banda bg-primary de cierre
@@ -312,8 +312,8 @@ BaseLayout
 article
 1. h1
 2. Callout tone="warning"   aviso oficial de INDECOPI pendiente de subir (TODO)
-3. p            identificación del proveedor (LEGAL.legalName/RUC/domicilio + SITE phone/email)
-4. div aviso    "respondemos en máximo {LEGAL.reclamosResponseDays} días hábiles" + 2 años
+3. p            identificación del proveedor (legal.legalName/RUC/domicilio + site phone/email)
+4. div aviso    "respondemos en máximo {legal.reclamosResponseDays} días hábiles" + 2 años
 5. ReclamacionForm  endpoint={ENDPOINT}
 6. p            enlace a WhatsApp
 ```
@@ -328,10 +328,10 @@ sueltos. Al confirmar, **los campos desaparecen y el mensaje de éxito ocupa su 
 
 ### Legales — `terminos/`, `politica-de-privacidad/`, `cambios-y-devoluciones/`
 Estructura idéntica: `BaseLayout` → `<Container size="narrow">` → `h1` → `p "Última
-actualización: {LEGAL.lastUpdated}"` → `<nav aria-label="Índice">` con enlaces a cada
+actualización: {legal.lastUpdated}"` → `<nav aria-label="Índice">` con enlaces a cada
 `h2` (`min-h-11`) → `<section class="mt-8">` numeradas con `h2 id` (`scroll-mt-20`) →
 `Callout tone="legal"` de cierre. **Sin breadcrumbs y sin JSON-LD propio**
-(solo el de la organización). Contenido en español neutro, datos desde `LEGAL`/`SITE` +
+(solo el de la organización). Contenido en español neutro, datos desde `legal`/`site` +
 `formatHours()` (horario compartido con footer y LocationCta).
 
 **Distribución**: columna estrecha centrada (`max-w-3xl`) y puramente vertical: `h1` seguido
@@ -358,10 +358,10 @@ los 2 botones van en fila y apilan sueltas en móvil (`flex flex-wrap gap-3`).
 
 ## 4. Datos reales (el objeto)
 
-### 4.1 `src/data/site.ts`
+### 4.1 `src/api/data/site.ts`
 
 ```ts
-export const SITE = {
+export const site = {
   name: 'Centro Ortopédico SSJ',
   url: 'https://www.example.com',           // TODO: dominio real
   description: 'Centro ortopédico: venta de productos ortopédicos, ortesis, prótesis y servicios de evaluación.',
@@ -375,7 +375,7 @@ export const SITE = {
   currency: 'PEN',
 } as const;
 
-export const LEGAL = {
+export const legal = {
   legalName: 'RAZÓN SOCIAL DE PRUEBA S.A.C.',
   tradeName: 'Centro Ortopédico SSJ',
   ruc: '20000000001',
@@ -393,10 +393,10 @@ export const LEGAL = {
 **Son datos de prueba.** Todo lo que se ve en footer, contacto, términos y JSON-LD sale de
 estos dos objetos: cambiarlos aquí cambia el sitio completo (coherencia NAP garantizada).
 
-### 4.2 Datos (`src/data/db.ts`) y capa de acceso (`src/api/`)
+### 4.2 Datos (`src/api/data/db.ts`) y capa de acceso (`src/api/`)
 
 Estructura: `db: Database = { categories: [...], products: [...] }` — el tipo
-`Database` vive en `src/data/types.ts` y valida la forma en ambos sentidos (db ↔
+`Database` vive en `src/api/types.ts` y valida la forma en ambos sentidos (db ↔
 JSON de API). Las páginas **nunca** importan `db`: el único acceso es el facade
 `api` de `src/api/` (async, siempre `await`). Importa las imágenes como
 `ImageMetadata` (import de jpg).
@@ -468,20 +468,20 @@ modo repo (datos locales de `db.ts`). Imágenes remotas: pendiente declarar
 `image.domains` en `astro.config.mjs` cuando exista el backend real (los componentes
 ya pasan `width`/`height` explícitos, requeridos para el caso remoto).
 
-### 4.3 `src/data/*` y `src/lib/*`
+### 4.3 `src/api/data/*` y `src/lib/*`
 
 | Archivo | Exporta | Comportamiento |
 |---|---|---|
-| `data/site.ts` | `SITE`, `LEGAL` | §4.1 (antes en `lib/`) |
-| `data/whatsapp.ts` | `whatsappLink(msg)` | `https://wa.me/{SITE.whatsapp}?text=…` (URL-encoded) |
+| `api/data/site.ts` | `site`, `legal` | §4.1 (antes en `lib/`) |
+| `lib/whatsapp.ts` | `whatsappLink(msg)` | `https://wa.me/{site.whatsapp}?text=…` (URL-encoded) |
 | | `productWhatsappMessage(name, url)` | incluye nombre, URL y "precio final con IGV… boleta o factura" |
 | | `categoryWhatsappMessage(name)` / `generalWhatsappMessage()` | mensajes de asesoría / genérico |
-| `data/types.ts` | `Category`, `Product`, `Database` | contracto compartido db ↔ API (valida los dos lados) |
+| `api/types.ts` | `Category`, `Product`, `Database` | contracto compartido db ↔ API (valida los dos lados) |
 | `lib/schema.ts` | `organizationSchema()` | `['MedicalBusiness','Store']` con NAP, geo, horarios, `taxID` (RUC) |
 | | `breadcrumbSchema(items)` · `itemListSchema(items)` · `productSchema(p)` · `faqSchema(items)` | builders de JSON-LD; `productSchema.image` recibe URLs absolutas en **jpg** |
 | `lib/hours.ts` | `formatHours()` | "Lun, Mar, Mié, Jue, Vie, Sáb: 09:00–19:00" — fuente única del horario (footer, home, contacto, términos) |
 | `lib/image.ts` | `imageSrc()` | estrechamiento estático para `<Image>`: astro:assets declara ramas Props separadas (local `ImageMetadata` / remota `string`) y un union no asigna a ninguna; el runtime resuelve ambos |
-| `lib/url.ts` | `absUrl(path)` | ruta → URL absoluta con `SITE.url`; reemplaza los `new URL(p, SITE.url)` duplicados en 4 páginas (JSON-LD/WhatsApp) |
+| `lib/url.ts` | `absUrl(path)` | ruta → URL absoluta con `site.url`; reemplaza los `new URL(p, site.url)` duplicados en 4 páginas (JSON-LD/WhatsApp) |
 
 ### 4.4 JSON-LD emitido por página
 
@@ -555,14 +555,14 @@ temporales (M9) y no son reproducibles con un solo comando.
 
 - [ ] El árbol de §1 coincide con `find src -type f`
 - [ ] La tabla de rutas de §2.1 coincide con `dist/`
-- [ ] Los valores de §4.1 coinciden con `src/data/site.ts`
-- [ ] La tabla de productos de §4.2 coincide con `src/data/db.ts`
+- [ ] Los valores de §4.1 coinciden con `src/api/data/site.ts`
+- [ ] La tabla de productos de §4.2 coincide con `src/api/data/db.ts`
 - [ ] La capa de §4.2 coincide con `src/api/{config,client,index}.ts`
 
 ## 7. Gotchas para un agente nuevo
 
 1. **`pages/` smart, `components/` dumb**: los componentes reciben *slices* de props, no la
-   entidad completa; los datos viven en `src/data/` (`db.ts`, `site.ts`) y el acceso es
+   entidad completa; los datos viven en `src/api/data/` (`db.ts`, `site.ts`) y el acceso es
    `src/api`, nunca dentro de componentes.
 2. **`<Image>` y strings**: en modo repo la imagen SIEMPRE es `ImageMetadata` (pasar
    `image.src` hace que Astro **no** transforme y entregue el jpg ignorando `format` —
@@ -612,5 +612,5 @@ están en la rama local (`doc/plan-mejoras.md` lleva el registro).
 ## 9. Mantenimiento de este documento
 
 Actualizarlo al: añadir/quitar una ruta, cambiar el orden de componentes de una página,
-modificar `SITE`/`LEGAL` (el dominio real se cambia solo en `SITE.url`: `astro.config.mjs` lo importa de ahí),
+modificar `site`/`legal` (el dominio real se cambia solo en `site.url`: `astro.config.mjs` lo importa de ahí),
 agregar un producto/categoría, o tocar `astro.config.mjs` (p. ej. `image.domains`).

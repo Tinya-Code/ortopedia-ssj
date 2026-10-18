@@ -1,0 +1,27 @@
+---
+// Sección "Beneficios" de la ficha: lista con ícono check por beneficio.
+// Oculta por completo (no emite nada) cuando benefits = [] — centinela del
+// schema uniforme para productos sin datos documentados todavía.
+import { icons } from '../icons/index';
+
+interface Props {
+  benefits: string[];
+}
+const { benefits } = Astro.props;
+
+// Ícono decorativo (aria-hidden interno, patrón del registro src/components/icons).
+const CheckIcon = icons.check;
+---
+{benefits.length > 0 && (
+  <section class="mt-10">
+    <h2 class="font-display text-h2 md:text-h2-lg font-semibold text-ink">Beneficios</h2>
+    <ul class="mt-6 max-w-prose space-y-3">
+      {benefits.map((benefit) => (
+        <li class="flex items-start gap-3">
+          <CheckIcon class="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+          <span class="text-neutral">{benefit}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}

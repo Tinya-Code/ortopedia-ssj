@@ -5,7 +5,7 @@
  * Uso:
  *   USE_API=true API_BASE_URL=https://api.ejemplo.com pnpm build
  *
- * Sin definir → modo repo (datos locales de src/data/db.ts).
+ * Sin definir → modo repo (datos locales de src/api/data/db.ts).
  * Ambas son variables de entorno normales (sin PUBLIC_): Astro las expone en
  * server-side vía import.meta.env (docs.astro.build/en/guides/environment-variables).
  */

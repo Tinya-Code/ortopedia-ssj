@@ -1,0 +1,148 @@
+---
+// Modal automático de promoción (excepción §5.1 — "cero pop-ups", autorizada
+// por el usuario el 2026-10-17; ver doc/plan-mejora-ui.md F5).
+//
+// - Los datos viven en src/content/promos.ts (patrón db.ts: imagen importada
+//   estáticamente). Si activePromo() devuelve null (lista vacía o fuera de
+//   ventana de campaña) el componente NO renderiza nada.
+// - <dialog> nativo, mismo patrón que el lightbox de ProductGallery y el
+//   confirmar del carrito: role/aria-modal implícitos, Escape lo cierra el
+//   navegador y el navegador devuelve el foco al cerrar.
+// - Sin transiciones ni animaciones (seguro para prefers-reduced-motion por
+//   construcción): el flyer entra en pantalla de inmediato.
+// - Se monta SOLO en src/pages/index.astro (home), no en BaseLayout: en v1 el
+//   modal vive únicamente en la portada.
+import { Image } from 'astro:assets';
+import { activePromo } from '../../content/promos';
+import { icons } from '../icons/index';
+import Button from '../ui/Button.astro';
+
+const promo = activePromo();
+const XIcon = icons.x;
+---
+
+<!-- Promo modal: excepción §5.1 autorizada explícitamente por el usuario (2026-10-17) — abre automático al cargar. -->
+{
+  promo && (
+    <dialog
+      aria-label="Promoción"
+      data-promo-dialog
+      class="m-auto max-h-[100dvh] w-fit max-w-[100vw]  border-0 bg-transparent p-2 [&::backdrop]:bg-ink/80"
+    >
+      <div class="relative flex flex-col gap-3">
+        {
+          /* El flyer lleva su propio texto baked-in: no se le superpone copy.
+             max-h + object-contain garantiza que el retrato quepa en cualquier
+             viewport sin scroll. */
+        }
+        <Image
+          src={promo.image}
+          alt={promo.imageAlt}
+          width={896}
+          height={1200}
+          format="webp"
+          loading="eager"
+          decoding="async"
+          class="max-w-[80vw] md:max-w-md max-h-[85dvh] w-auto h-auto object-contain rounded-lg"
+        />
+        <button
+          type="button"
+          data-promo-close
+          aria-label="Cerrar promoción"
+          class="absolute -right-2 -top-2 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 p-2 text-ink hover:bg-white focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2"
+        >
+          <XIcon class="h-5 w-5" />
+        </button>
+        <Button
+          id="promo-cta"
+          href={promo.href}
+          variant="primary"
+          eventName="promo_cta_click"
+          label={promo.ctaLabel}
+          class="w-full sm:w-auto"
+        />
+      </div>
+    </dialog>
+  )
+}
+
+<script>
+  // Apertura automática + guard de cierre (14 días) en localStorage.
+  // El script se empaqueta/defer: el DOM ya está parseado al ejecutarse.
+  import { activePromo } from '../../content/promos';
+
+  const STORAGE_KEY = 'ssj:promo-dismissed';
+  const REOPEN_AFTER_DAYS = 14;
+
+  // Fecha local 'YYYY-MM-DD' (misma normalización que content/promos.ts; usar UTC
+  // aquí y local allí desfasaría el guard un día en zonas UTC-negativas).
+  const localDateKey = (date: Date): string => {
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${date.getFullYear()}-${month}-${day}`;
+  };
+
+  const promo = activePromo();
+  const dialog = document.querySelector<HTMLDialogElement>('[data-promo-dialog]');
+
+  if (promo && dialog) {
+    const readDismissals = (): Record<string, string> => {
+      // localStorage tira en modo privado / con storage bloqueado: se trata como
+      // "sin registro" para no romper la apertura del modal.
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return {};
+        const parsed: unknown = JSON.parse(raw);
+        return parsed && typeof parsed === 'object' ? (parsed as Record<string, string>) : {};
+      } catch {
+        return {};
+      }
+    };
+
+    // Se muestra solo si nunca se cerró o si el cierre tiene 14 días o más.
+    const isDismissedRecently = (): boolean => {
+      const dismissedOn = readDismissals()[promo.id];
+      if (!dismissedOn) return false;
+
+      const closed = new Date(`${dismissedOn}T00:00:00`);
+      if (Number.isNaN(closed.getTime())) return false; // valor corrupto → volver a mostrar
+
+      const ageDays = (Date.now() - closed.getTime()) / 86_400_000;
+      return ageDays < REOPEN_AFTER_DAYS;
+    };
+
+    // El evento 'close' cubre todos los cierres del diálogo: Escape (cancel),
+    // clic en el backdrop y botón X.
+    const recordDismissal = (): void => {
+      try {
+        const dismissals = readDismissals();
+        dismissals[promo.id] = localDateKey(new Date());
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(dismissals));
+      } catch {
+        // Sin persistencia posible: al próximo visitante volverá a mostrarse.
+      }
+    };
+
+    dialog.addEventListener('close', recordDismissal);
+    dialog
+      .querySelector('[data-promo-close]')
+      ?.addEventListener('click', () => dialog.close());
+    // Clic en el CTA (#promo-cta): es un <a> normal, navega a la ficha sin
+    // disparar 'close'; se registra aquí (escritura síncrona, anterior a la
+    // descarga de la página) para no volver a interrumpir en la próxima visita.
+    dialog.querySelector<HTMLAnchorElement>('#promo-cta')?.addEventListener('click', recordDismissal);
+    // Clic en el backdrop: el evento apunta al propio <dialog> (el contenido
+    // vive en un div interno, así que fuera de él target === dialog).
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+
+    if (!isDismissedRecently()) {
+      dialog.showModal();
+      // GA4: mismo patrón de dataLayer que BaseLayout.
+      const store = window as Window & { dataLayer?: Record<string, unknown>[] };
+      store.dataLayer ??= [];
+      store.dataLayer.push({ event: 'promo_view', promo_id: promo.id });
+    }
+  }
+</script>

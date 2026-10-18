@@ -2,7 +2,8 @@
 // mejoras.md §5.5 — único lugar que formatea precios (`S/ 120.00`).
 // Reemplaza el formato duplicado de ProductCard, ProductInfo y RelatedProducts.
 interface Props {
-  price?: number;
+  /** null = cotiza, sin precio publicado → fallback "Consultar precio". */
+  price: number | null;
   size?: 'md' | 'lg' | 'card';
   class?: string;
 }

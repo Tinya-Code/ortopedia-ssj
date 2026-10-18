@@ -16,9 +16,35 @@ type CatalogOptions = {
 const FILTER_ACTIVE =
   'inline-flex min-h-11 shrink-0 items-center rounded-full px-4 py-2 text-sm font-medium text-white bg-primary shadow-sm transition-colors motion-reduce:transition-none';
 const FILTER_IDLE =
-  'inline-flex min-h-11 shrink-0 items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-neutral transition-colors hover:border-tertiary motion-reduce:transition-none';
+  'inline-flex min-h-11 shrink-0 items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-neutral transition-colors hover:border-primary hover:text-primary hover:bg-slate-50 motion-reduce:transition-none';
 
 export function initCatalog({ gridId, emptyId }: CatalogOptions) {
+  // GA4 view_item_list: push único al init con la lista renderizada en build.
+  // El payload viaja serializado en data-view-list (JSON) de la sección contenedora
+  // (catálogo o categoría); guard: solo se emite si aún no se emitió en esta página.
+  const viewListSection = document.querySelector<HTMLElement>('[data-view-list]');
+  if (viewListSection?.dataset.viewList) {
+    let pushed = false;
+    if (!pushed) {
+      pushed = true;
+      try {
+        const payload = JSON.parse(viewListSection.dataset.viewList) as {
+          item_list_name: string;
+          items: { item_id: string; item_name: string }[];
+        };
+        const store = window as Window & { dataLayer?: Record<string, unknown>[] };
+        store.dataLayer ??= [];
+        store.dataLayer.push({
+          event: 'view_item_list',
+          item_list_name: payload.item_list_name,
+          items: payload.items,
+        });
+      } catch {
+        // JSON malformado en el atributo: no se emite el evento.
+      }
+    }
+  }
+
   const grid = document.getElementById(gridId);
   const input = document.getElementById('catalog-search');
   if (!(grid instanceof HTMLElement) || !(input instanceof HTMLInputElement)) return;
@@ -28,9 +54,28 @@ export function initCatalog({ gridId, emptyId }: CatalogOptions) {
   const sort = sortEl instanceof HTMLSelectElement ? sortEl : null;
   const empty = emptyId ? document.getElementById(emptyId) : null;
 
+  // Contador de resultados (zona aria-live) + chips de filtros activos.
+  const count = document.getElementById('catalog-count');
+  const activeFilters = document.getElementById('catalog-active-filters');
+  const chipQuery = activeFilters?.querySelector<HTMLElement>('[data-chip-query]');
+  const chipCategory = activeFilters?.querySelector<HTMLElement>('[data-chip-category]');
+  const chipQueryText = activeFilters?.querySelector<HTMLElement>('[data-chip-query-text]');
+  const chipCategoryText = activeFilters?.querySelector<HTMLElement>('[data-chip-category-text]');
+  const clearAllBtn = activeFilters?.querySelector<HTMLButtonElement>('[data-clear-all]');
+  const removeBtns = activeFilters
+    ? Array.from(activeFilters.querySelectorAll<HTMLButtonElement>('[data-remove]'))
+    : [];
+
+  // Preferencia del sistema: se consulta en cada scroll (matchMedia es live).
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
   const filters = Array.from(
     document.querySelectorAll<HTMLButtonElement>('[data-category-filter]'),
   );
+
+  /** Etiqueta visible de un chip de categoría: el nombre sin el contador "(n)". */
+  const categoryLabel = (slug: string) =>
+    filters.find((btn) => (btn.dataset.categoryFilter ?? '') === slug)?.dataset.label ?? slug;
 
   const pager = document.getElementById('catalog-pagination');
   const pagesEl = document.getElementById('catalog-pages');
@@ -79,7 +124,7 @@ export function initCatalog({ gridId, emptyId }: CatalogOptions) {
       btn.className = `inline-flex h-9 min-w-9 items-center justify-center rounded-lg border px-3 text-sm font-medium transition-colors ${
         i === page
           ? 'border-primary bg-primary text-white'
-          : 'border-slate-200 bg-white text-neutral hover:border-tertiary'
+          : 'border-slate-200 bg-white text-neutral hover:border-primary hover:text-primary hover:bg-slate-50'
       }`;
       container.appendChild(btn);
     }
@@ -97,6 +142,33 @@ export function initCatalog({ gridId, emptyId }: CatalogOptions) {
       btn.className = active ? FILTER_ACTIVE : FILTER_IDLE;
       btn.setAttribute('aria-pressed', String(active));
     });
+  };
+
+  /**
+   * Pinta el contador de resultados (zona aria-live) y los chips de filtros
+   * activos. El markup de ActiveFilters.astro nace oculto: aquí se muestra el
+   * contenedor solo si hay búsqueda y/o categoría activas, se etiqueta cada
+   * chip y, sin filtros activos, vuelve a ocultarse.
+   */
+  const renderStatus = (total: number) => {
+    const label = `${total} ${total === 1 ? 'producto' : 'productos'}`;
+    if (count && count.textContent?.trim() !== label) count.textContent = label;
+
+    if (!activeFilters) return;
+    const query = input.value.trim();
+    const hasQuery = query !== '';
+    const hasCategory = activeCategory !== null;
+
+    activeFilters.classList.toggle('hidden', !hasQuery && !hasCategory);
+    // Mismo patrón que el paginador: el markup no trae `flex`, se añade al
+    // mostrarse para que flex-wrap/gap-2/items-center surtan efecto.
+    activeFilters.classList.toggle('flex', hasQuery || hasCategory);
+    chipQuery?.classList.toggle('hidden', !hasQuery);
+    chipCategory?.classList.toggle('hidden', !hasCategory);
+    if (hasQuery && chipQueryText) chipQueryText.textContent = `Búsqueda: ${query}`;
+    if (hasCategory && activeCategory && chipCategoryText) {
+      chipCategoryText.textContent = categoryLabel(activeCategory);
+    }
   };
 
   const apply = () => {
@@ -141,17 +213,36 @@ export function initCatalog({ gridId, emptyId }: CatalogOptions) {
     }
 
     if (empty) empty.classList.toggle('hidden', total !== 0);
+    renderStatus(total);
   };
 
   const goTo = (target: number) => {
     page = target;
     apply();
-    grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    grid.scrollIntoView({
+      behavior: reducedMotion.matches ? 'auto' : 'smooth',
+      block: 'start',
+    });
   };
 
+  // GA4 search: debounce de 400 ms sobre el mismo input. Se emite solo si la
+  // consulta no está vacía y cambió respecto al último push (evita duplicados
+  // por keystrokes repetidos o re-enfoques del campo).
+  let lastSearchTerm: string | null = null;
+  let searchTimer: ReturnType<typeof setTimeout> | undefined;
   input.addEventListener('input', () => {
     page = 1;
     apply();
+
+    const term = input.value.trim();
+    if (searchTimer) clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      if (term === '' || term === lastSearchTerm) return;
+      lastSearchTerm = term;
+      const store = window as Window & { dataLayer?: Record<string, unknown>[] };
+      store.dataLayer ??= [];
+      store.dataLayer.push({ event: 'search', search_term: term });
+    }, 400);
   });
   searchBtn?.addEventListener('click', () => {
     page = 1;
@@ -170,6 +261,36 @@ export function initCatalog({ gridId, emptyId }: CatalogOptions) {
       renderFilters();
       apply();
     });
+  });
+  // Chips de filtros activos: quitar un chip elimina SOLO ese filtro y
+  // re-renderiza; "Limpiar filtros" resetea búsqueda y categoría. Como el
+  // botón enfocado queda oculto al eliminarse el chip, el foco vuelve a un
+  // control estable (nunca al body).
+  removeBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.remove === 'query') {
+        input.value = '';
+        page = 1;
+        apply();
+        input.focus({ preventScroll: true });
+      } else if (btn.dataset.remove === 'category') {
+        activeCategory = null;
+        page = 1;
+        renderFilters();
+        apply();
+        // El chip de categoría solo existe junto a los botones de filtro;
+        // filters[0] es "Todos", que vuelve a quedar activo.
+        filters[0]?.focus({ preventScroll: true });
+      }
+    });
+  });
+  clearAllBtn?.addEventListener('click', () => {
+    input.value = '';
+    activeCategory = null;
+    page = 1;
+    renderFilters();
+    apply();
+    input.focus({ preventScroll: true });
   });
   paged?.prev.addEventListener('click', () => {
     if (page > 1) goTo(page - 1);

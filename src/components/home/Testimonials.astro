@@ -1,0 +1,46 @@
+---
+// PLACEHOLDER (autorizado por el usuario): reseñas inventadas mientras se consiguen
+// reseñas reales. mejorasui.md §5.1 #4 / §6.1 "prueba social con rostro".
+// Los datos viven en la página (capa smart), igual que TrustBar.
+// Avatar con inicial: no se usan fotos falsas de personas. Calificación fija 5★.
+import Container from '../ui/Container.astro';
+import { icons } from '../icons/index';
+
+interface Props {
+  reviews: { quote: string; name: string; place: string }[];
+}
+const { reviews } = Astro.props;
+const Star = icons.star;
+---
+<!-- PLACEHOLDER: reseñas de ejemplo inventadas — reemplazar con reseñas reales de clientes -->
+<section id="resenas" class="bg-neutral/5 py-12 md:py-16">
+  <Container>
+    <h2 class="font-display text-h2 md:text-h2-lg font-semibold text-ink">Lo que dicen nuestros clientes</h2>
+    <ul class="mt-6 grid gap-4 sm:gap-6 md:grid-cols-3" role="list">
+      {reviews.map((r) => (
+        <li class="rounded-card border border-neutral/20 bg-white p-6 shadow-card">
+          <span role="img" aria-label="5 de 5 estrellas" class="flex gap-0.5">
+            {Array.from({ length: 5 }).map(() => (
+              <Star class="size-4 text-warning" />
+            ))}
+          </span>
+          <blockquote class="mt-3">
+            <p class="text-sm leading-relaxed text-ink">“{r.quote}”</p>
+          </blockquote>
+          <footer class="mt-4 flex items-center gap-3">
+            <span
+              aria-hidden="true"
+              class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary font-semibold text-white"
+            >
+              {r.name.charAt(0)}
+            </span>
+            <div>
+              <cite class="text-sm font-semibold not-italic text-ink">{r.name}</cite>
+              <p class="text-xs text-neutral">{r.place}</p>
+            </div>
+          </footer>
+        </li>
+      ))}
+    </ul>
+  </Container>
+</section>

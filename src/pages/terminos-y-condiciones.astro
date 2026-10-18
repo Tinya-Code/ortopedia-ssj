@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { SITE, LEGAL } from '../data/site';
+import { legal, site } from '../api/data/site';
 import { formatHours } from '../lib/hours';
 import Container from '../components/ui/Container.astro';
 import PageHeader from '../components/ui/PageHeader.astro';
@@ -13,10 +13,10 @@ const hoursText = formatHours();
 ---
 
 <BaseLayout {title} {description}>
-  <article class="pb-10">
+  <article class="mx-auto max-w-prose pb-10">
     <Container size="narrow">
       <PageHeader title="Términos y condiciones" />
-      <p class="mt-4 text-sm text-neutral">Última actualización: {LEGAL.lastUpdated}</p>
+      <p class="mt-4 text-sm text-neutral">Última actualización: {legal.lastUpdated}</p>
       <nav aria-label="Índice" class="mt-6 rounded-card border border-neutral/20 bg-neutral/5 p-4">
         <p class="text-sm font-semibold text-ink">Índice</p>
         <ol class="mt-2 list-decimal space-y-1 pl-6 text-sm text-neutral">
@@ -33,19 +33,19 @@ const hoursText = formatHours();
       </nav>
 
       <section class="mt-8 space-y-4">
-        <h2 id="identificacion-del-comercio" class="font-display text-xl font-semibold text-ink scroll-mt-20">1. Identificación del comercio</h2>
+        <h2 id="identificacion-del-comercio" class="font-display text-h2 md:text-h2-lg font-semibold text-ink scroll-mt-20">1. Identificación del comercio</h2>
         <ul class="list-disc space-y-1 pl-6 text-neutral">
-          <li><strong class="text-primary">Razón social:</strong> {LEGAL.legalName}</li>
-          <li><strong class="text-primary">RUC:</strong> {LEGAL.ruc}</li>
-          <li><strong class="text-primary">Domicilio fiscal:</strong> {LEGAL.fiscalAddress}</li>
-          <li><strong class="text-primary">Teléfono:</strong> {SITE.phone}</li>
-          <li><strong class="text-primary">Correo:</strong> {SITE.email}</li>
+          <li><strong class="text-primary">Razón social:</strong> {legal.legalName}</li>
+          <li><strong class="text-primary">RUC:</strong> {legal.ruc}</li>
+          <li><strong class="text-primary">Domicilio fiscal:</strong> {legal.fiscalAddress}</li>
+          <li><strong class="text-primary">Teléfono:</strong> {site.phone}</li>
+          <li><strong class="text-primary">Correo:</strong> {site.email}</li>
           <li><strong class="text-primary">Horario de atención:</strong> {hoursText}</li>
         </ul>
       </section>
 
       <section class="mt-8 space-y-4">
-        <h2 id="precios" class="font-display text-xl font-semibold text-ink scroll-mt-20">2. Precios</h2>
+        <h2 id="precios" class="font-display text-h2 md:text-h2-lg font-semibold text-ink scroll-mt-20">2. Precios</h2>
         <p class="text-neutral">
           Los precios se cotizan según el producto y pueden modificarse sin previo aviso; el
           precio válido es el que confirmamos contigo al momento de concretar el pedido.
@@ -53,7 +53,7 @@ const hoursText = formatHours();
       </section>
 
       <section class="mt-8 space-y-4">
-        <h2 id="como-comprar" class="font-display text-xl font-semibold text-ink scroll-mt-20">3. Cómo comprar</h2>
+        <h2 id="como-comprar" class="font-display text-h2 md:text-h2-lg font-semibold text-ink scroll-mt-20">3. Cómo comprar</h2>
         <ol class="list-decimal space-y-2 pl-6 text-neutral">
           <li>Elegís el producto en el catálogo y verificás talla, stock y precio en su ficha.</li>
           <li>Nos escribís por WhatsApp para confirmar disponibilidad, datos de entrega y medio de pago.</li>
@@ -68,7 +68,7 @@ const hoursText = formatHours();
       </section>
 
       <section class="mt-8 space-y-4">
-        <h2 id="envios-cobertura-y-plazos" class="font-display text-xl font-semibold text-ink scroll-mt-20">4. Envíos, cobertura y plazos</h2>
+        <h2 id="envios-cobertura-y-plazos" class="font-display text-h2 md:text-h2-lg font-semibold text-ink scroll-mt-20">4. Envíos, cobertura y plazos</h2>
         <p class="text-neutral">
           La cobertura, el costo y el plazo de envío dependen del destino y se te informan antes de
           concretar el pedido. Una vez coordinado el envío, te avisamos por WhatsApp el estado de la
@@ -78,7 +78,7 @@ const hoursText = formatHours();
       </section>
 
       <section class="mt-8 space-y-4">
-        <h2 id="comprobante-electronico" class="font-display text-xl font-semibold text-ink scroll-mt-20">5. Comprobante electrónico</h2>
+        <h2 id="comprobante-electronico" class="font-display text-h2 md:text-h2-lg font-semibold text-ink scroll-mt-20">5. Comprobante electrónico</h2>
         <p class="text-neutral">
           Emitimos <strong class="text-primary">comprobante de pago electrónico (boleta o factura)</strong>{' '}
           en todas nuestras ventas. Si necesitas factura, indícanos los datos tributarios al confirmar
@@ -87,7 +87,7 @@ const hoursText = formatHours();
       </section>
 
       <section class="mt-8 space-y-4">
-        <h2 id="disponibilidad-y-registro-sanitario" class="font-display text-xl font-semibold text-ink scroll-mt-20">6. Disponibilidad y registro sanitario</h2>
+        <h2 id="disponibilidad-y-registro-sanitario" class="font-display text-h2 md:text-h2-lg font-semibold text-ink scroll-mt-20">6. Disponibilidad y registro sanitario</h2>
         <p class="text-neutral">
           Publicamos únicamente productos con registro sanitario verificado, y cada ficha muestra su
           número de registro y titular. Si un producto se agota, mantenemos su página con la
@@ -96,18 +96,18 @@ const hoursText = formatHours();
       </section>
 
       <section class="mt-8 space-y-4">
-        <h2 id="reclamos" class="font-display text-xl font-semibold text-ink scroll-mt-20">7. Reclamos</h2>
+        <h2 id="reclamos" class="font-display text-h2 md:text-h2-lg font-semibold text-ink scroll-mt-20">7. Reclamos</h2>
         <p class="text-neutral">
           Puedes registrar tu reclamo o queja en nuestro{' '}
           <a href="/libro-de-reclamaciones/" class="text-primary underline underline-offset-4">
             Libro de Reclamaciones
-          </a>. Respondemos en un máximo de {LEGAL.reclamosResponseDays} días hábiles desde el
+          </a>. Respondemos en un máximo de {legal.reclamosResponseDays} días hábiles desde el
           registro de tu hoja.
         </p>
       </section>
 
       <section class="mt-8 space-y-4">
-        <h2 id="cambios-devoluciones-y-datos-personales" class="font-display text-xl font-semibold text-ink scroll-mt-20">8. Cambios, devoluciones y datos personales</h2>
+        <h2 id="cambios-devoluciones-y-datos-personales" class="font-display text-h2 md:text-h2-lg font-semibold text-ink scroll-mt-20">8. Cambios, devoluciones y datos personales</h2>
         <p class="text-neutral">
           Las condiciones de cambio, devolución y garantía están detalladas en nuestra{' '}
           <a href="/cambios-y-devoluciones/" class="text-primary underline underline-offset-4">
@@ -120,10 +120,10 @@ const hoursText = formatHours();
       </section>
 
       <section class="mt-8 space-y-4">
-        <h2 id="modificaciones" class="font-display text-xl font-semibold text-ink scroll-mt-20">9. Modificaciones</h2>
+        <h2 id="modificaciones" class="font-display text-h2 md:text-h2-lg font-semibold text-ink scroll-mt-20">9. Modificaciones</h2>
         <p class="text-neutral">
           Podemos actualizar estas condiciones; la versión vigente es la publicada en esta página. Si
-          tienes dudas, escríbenos por WhatsApp o al correo {SITE.email}.
+          tienes dudas, escríbenos por WhatsApp o al correo {site.email}.
         </p>
       </section>
     </Container>

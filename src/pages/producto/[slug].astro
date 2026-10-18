@@ -3,16 +3,22 @@ import { api } from '../../api';
 import { getImage } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../components/layout/Breadcrumbs.astro';
+import ProductBenefits from '../../components/product/ProductBenefits.astro';
+import ProductCare from '../../components/product/ProductCare.astro';
 import ProductGallery from '../../components/product/ProductGallery.astro';
 import ProductInfo from '../../components/product/ProductInfo.astro';
+import ProductInstructions from '../../components/product/ProductInstructions.astro';
+import ProductSizeGuide from '../../components/product/ProductSizeGuide.astro';
 import ProductSpecs from '../../components/product/ProductSpecs.astro';
 import RelatedProducts from '../../components/product/RelatedProducts.astro';
 import StickyProductBar from '../../components/product/StickyProductBar.astro';
+import Accordion from '../../components/ui/Accordion.astro';
 import { breadcrumbSchema, productSchema, faqSchema } from '../../lib/schema';
-import { productWhatsappMessage } from '../../data/whatsapp';
+import { productWhatsappMessage } from '../../lib/whatsapp';
 import { isAddable, toCartProduct } from '../../lib/cart';
 import Container from '../../components/ui/Container.astro';
 import { absUrl } from '../../lib/url';
+import { site } from '../../api/data/site';
 
 export async function getStaticPaths() {
   // api.products.list() devuelve todo el catálogo; un producto apuntado a una
@@ -56,6 +62,16 @@ const crumbs = [
 const cartProduct = isAddable(product)
   ? toCartProduct({ ...product, image: images[0] })
   : null;
+
+// GA4 view_item: payload serializado en un data-* del section para que el
+// script inline no re-derivar datos. El precio solo viaja si está publicado
+// (null = cotiza); currency siempre (site.currency).
+const viewItem = {
+  item_id: product.slug,
+  item_name: name,
+  currency: site.currency,
+  ...(price !== null ? { price } : {}),
+};
 ---
 <BaseLayout
   title={seoTitle ?? name}
@@ -74,15 +90,17 @@ const cartProduct = isAddable(product)
       brand,
       price,
       availability,
-      // condition ya viene tipado como vocabulario restringido (src/data/types.ts)
+      // condition ya viene tipado como vocabulario restringido (src/api/types.ts)
       condition: product.condition,
     }),
-    ...(faq ? [faqSchema(faq)] : []),
+    // faq es requerido (schema uniforme): [] = sin preguntas, no se emite JSON-LD
+    // (un array vacío sería truthy y generaría un FAQPage inválido).
+    ...(faq.length > 0 ? [faqSchema(faq)] : []),
   ]}
 >
   <Breadcrumbs items={crumbs} />
 
-  <section class="py-8">
+  <section class="py-8" data-view-item={JSON.stringify(viewItem)}>
     <Container>
       <div class="grid gap-8 md:grid-cols-2">
         <ProductGallery images={images} />
@@ -97,12 +115,29 @@ const cartProduct = isAddable(product)
         />
       </div>
 
-      <section class="py-8">
-        <h2 class="font-display text-2xl font-semibold text-ink">Descripción</h2>
+      <section class="mt-8">
+        <h2 class="font-display text-h2 md:text-h2-lg font-semibold text-ink">Descripción</h2>
         <p class="mt-6 max-w-prose text-neutral">{description}</p>
       </section>
 
+      {/* Cada sección se emite solo si su array tiene datos (centinela [] del
+          schema uniforme); los productos sin contenido no muestran nada. */}
+      {product.benefits.length > 0 && <ProductBenefits benefits={product.benefits} />}
+      {product.instructions.length > 0 && <ProductInstructions instructions={product.instructions} />}
+      {product.sizeGuide.length > 0 && <ProductSizeGuide sizeGuide={product.sizeGuide} />}
+      {product.care.length > 0 && <ProductCare care={product.care} />}
+
       {specs && <ProductSpecs specs={specs} />}
+
+      {/* Mismo array que el JSON-LD FAQPage: HTML visible y schema coinciden. */}
+      {faq.length > 0 && (
+        <section class="mt-10">
+          <h2 class="font-display text-h2 md:text-h2-lg font-semibold text-ink">Preguntas frecuentes</h2>
+          <div class="mt-6">
+            <Accordion items={faq} />
+          </div>
+        </section>
+      )}
 
       <RelatedProducts products={related} />
     </Container>
@@ -116,3 +151,24 @@ const cartProduct = isAddable(product)
     {cartProduct}
   />
 </BaseLayout>
+
+<script>
+  // GA4 view_item: push único al cargar la ficha. Los datos viajan en
+  // data-view-item (JSON serializado en build) para no duplicarlos con el
+  // JSON-LD. No carga analítica: el evento solo se acumula en dataLayer
+  // hasta que entre la etiqueta (lote B, consentimiento).
+  const section = document.querySelector<HTMLElement>('[data-view-item]');
+  const raw = section?.dataset.viewItem;
+  let pushed = false; // guarda: solo un view_item por carga de página
+  if (raw && !pushed) {
+    pushed = true;
+    try {
+      const item = JSON.parse(raw) as Record<string, unknown>;
+      const store = window as Window & { dataLayer?: Record<string, unknown>[] };
+      store.dataLayer ??= [];
+      store.dataLayer.push({ event: 'view_item', items: [item] });
+    } catch {
+      // JSON malformado en el atributo: no se emite el evento.
+    }
+  }
+</script>
