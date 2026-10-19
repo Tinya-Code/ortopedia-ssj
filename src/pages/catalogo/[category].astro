@@ -28,6 +28,8 @@ export async function getStaticPaths() {
 
 const { cat, products } = Astro.props;
 const categories = await api.categories.list();
+const site = await api.site.get();
+const legal = await api.site.legal();
 
 // Alternativas del estado vacío: destacados de la categoría o, si no
 // hubiera, sus primeros 4 productos (la categoría siempre tiene ≥1 aquí).
@@ -49,11 +51,13 @@ const viewList = {
 };
 ---
 <BaseLayout
+  {site}
+  {legal}
   title={cat.seoTitle ?? cat.name}
   description={cat.seoDescription}
   schemas={[
-    breadcrumbSchema(crumbs.map((c) => ({ name: c.name, url: absUrl(c.href ?? Astro.url.pathname) }))),
-    itemListSchema(products.map((p) => ({ name: p.name, url: absUrl(`/producto/${p.slug}/`) }))),
+    breadcrumbSchema(crumbs.map((c) => ({ name: c.name, url: absUrl(site, c.href ?? Astro.url.pathname) }))),
+    itemListSchema(products.map((p) => ({ name: p.name, url: absUrl(site, `/producto/${p.slug}/`) }))),
   ]}
 >
   <Breadcrumbs items={crumbs} />
@@ -70,6 +74,7 @@ const viewList = {
         </div>
         <div class="shrink-0 sm:self-start">
           <WhatsAppButton
+            {site}
             variant="outline"
             message={categoryWhatsappMessage(cat.name)}
             label="Asesoría por WhatsApp"
@@ -109,7 +114,7 @@ const viewList = {
 
           <ActiveFilters />
 
-          <ProductGrid id="catalog-grid" products={products} class="mt-6" />
+          <ProductGrid {site} id="catalog-grid" products={products} class="mt-6" />
 
           <div
             id="catalog-empty"
@@ -120,6 +125,7 @@ const viewList = {
             </p>
             <p class="mt-2 text-sm text-neutral">Mira estas opciones:</p>
             <ProductGrid
+              {site}
               id="catalog-suggestions"
               products={suggestions}
               variant="suggestions"
@@ -135,6 +141,7 @@ const viewList = {
           WhatsApp para conocer disponibilidad.
           <div class="mt-4">
             <WhatsAppButton
+              {site}
               message={categoryWhatsappMessage(cat.name)}
               label="Consultar disponibilidad"
             />
@@ -146,6 +153,7 @@ const viewList = {
 
   {/* Único CTA final de la página (§6.3). */}
   <CtaBand
+    {site}
     title="¿Necesitas asesoría para elegir?"
     text={`Te orientamos sobre tallas, medidas y disponibilidad de ${cat.name.toLowerCase()}.`}
     message={categoryWhatsappMessage(cat.name)}

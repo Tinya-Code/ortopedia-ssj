@@ -19,10 +19,12 @@ import TrustBar from '../components/home/TrustBar.astro';
 import WhyUs from '../components/home/WhyUs.astro';
 import Button from '../components/ui/Button.astro';
 import CtaBand from '../components/ui/CtaBand.astro';
-import { site } from '../api/data/site';
 import { generalWhatsappMessage } from '../lib/whatsapp';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { faqSchema } from '../lib/schema';
+
+const site = await api.site.get();
+const legal = await api.site.legal();
 
 const title = `Centro ortopédico en ${site.address.city}`;
 const description =
@@ -125,7 +127,7 @@ const faqs = [
 ];
 ---
 
-<BaseLayout {title} {description} schemas={[faqSchema(faqs)]}>
+<BaseLayout {site} {legal} {title} {description} schemas={[faqSchema(faqs)]}>
   <Hero
     title="Vuelve a moverte con total libertad y confianza."
     text="Diseñamos y seleccionamos soluciones ortopédicas de grado biomecánico para aliviar la sobrecarga, corregir tu postura y devolverte la seguridad en cada paso."
@@ -143,8 +145,9 @@ const faqs = [
   <Team />
   <TrustBar items={trustItems} />
   <Faq items={faqs} />
-  <LocationCta />
+  <LocationCta {site} />
   <CtaBand
+    {site}
     title="¿Necesitas ayuda para elegir?"
     text="Cuéntanos tu caso y te orientamos sobre el producto y la talla que necesitas."
     message={generalWhatsappMessage()}

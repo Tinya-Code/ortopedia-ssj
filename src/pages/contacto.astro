@@ -1,13 +1,16 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { api } from '../api';
 import Breadcrumbs from '../components/layout/Breadcrumbs.astro';
 import LocationCta from '../components/home/LocationCta.astro';
-import { site } from '../api/data/site';
 import { whatsappLink, generalWhatsappMessage } from '../lib/whatsapp';
 import Container from '../components/ui/Container.astro';
 import PageHeader from '../components/ui/PageHeader.astro';
 import { icons, type IconName } from '../components/icons/index';
 import { absUrl } from '../lib/url';
+
+const site = await api.site.get();
+const legal = await api.site.legal();
 
 const title = 'Contacto';
 const description =
@@ -18,7 +21,7 @@ const channels: { label: string; value: string; href: string; icon: IconName }[]
   {
     label: 'WhatsApp',
     value: 'Escríbenos ahora',
-    href: whatsappLink(generalWhatsappMessage()),
+    href: whatsappLink(site, generalWhatsappMessage()),
     icon: 'message-circle',
   },
   {
@@ -36,6 +39,8 @@ const crumbs = [
 ];
 ---
 <BaseLayout
+  {site}
+  {legal}
   {title}
   {description}
   schemas={[
@@ -43,7 +48,7 @@ const crumbs = [
       '@context': 'https://schema.org',
       '@type': 'ContactPage',
       name: 'Contacto',
-      url: absUrl('/contacto/'),
+      url: absUrl(site, '/contacto/'),
     },
   ]}
 >
@@ -63,7 +68,7 @@ const crumbs = [
     </Container>
   </section>
 
-  <LocationCta />
+  <LocationCta {site} />
 
   {/* Canales de contacto (§6.5): tarjetas reutilizando el estilo de tarjeta. */}
   <section aria-label="Canales de contacto" class="bg-neutral/5 py-12 md:py-16">

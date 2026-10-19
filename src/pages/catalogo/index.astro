@@ -16,6 +16,8 @@ import { absUrl } from '../../lib/url';
 
 const categories = await api.categories.list();
 const products = await api.products.list();
+const site = await api.site.get();
+const legal = await api.site.legal();
 
 // Conteo por categoría para los contadores de los filtros (build-time;
 // el cliente los ajusta a la búsqueda en apply()).
@@ -47,11 +49,13 @@ const viewList = {
 };
 ---
 <BaseLayout
+  {site}
+  {legal}
   {title}
   {description}
   schemas={[
-    breadcrumbSchema(crumbs.map((c) => ({ name: c.name, url: absUrl(c.href ?? Astro.url.pathname) }))),
-    itemListSchema(products.map((p) => ({ name: p.name, url: absUrl(`/producto/${p.slug}/`) }))),
+    breadcrumbSchema(crumbs.map((c) => ({ name: c.name, url: absUrl(site, c.href ?? Astro.url.pathname) }))),
+    itemListSchema(products.map((p) => ({ name: p.name, url: absUrl(site, `/producto/${p.slug}/`) }))),
   ]}
 >
   <Breadcrumbs items={crumbs} />
@@ -98,7 +102,7 @@ const viewList = {
    
 
           <ActiveFilters />
-          <ProductGrid id="catalog-grid" products={products} class="mt-6" />
+          <ProductGrid {site} id="catalog-grid" products={products} class="mt-6" />
           <div
             id="catalog-empty"
             class="mt-10 hidden rounded-xl border border-neutral/20 bg-light p-6"
@@ -108,6 +112,7 @@ const viewList = {
             </p>
             <p class="mt-2 text-sm text-neutral">Mira estas opciones:</p>
             <ProductGrid
+              {site}
               id="catalog-suggestions"
               products={suggestions}
               variant="suggestions"
@@ -126,6 +131,7 @@ const viewList = {
   </section>
 
   <CtaBand
+    {site}
     title="¿No encuentras lo que buscas?"
     text="Escríbenos por WhatsApp y te ayudamos a encontrar el producto que necesitas."
     message={generalWhatsappMessage()}

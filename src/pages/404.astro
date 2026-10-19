@@ -11,9 +11,11 @@ import { whatsappLink, generalWhatsappMessage } from '../lib/whatsapp';
 const title = 'Página no encontrada';
 const description = 'La página que busca no existe. Vuelva al inicio o explore el catálogo.';
 const categories = await api.categories.list();
+const site = await api.site.get();
+const legal = await api.site.legal();
 ---
 
-<BaseLayout {title} {description} noindex>
+<BaseLayout {site} {legal} {title} {description} noindex>
   <article class="pb-16">
     <Container size="narrow">
       <PageHeader
@@ -26,7 +28,7 @@ const categories = await api.categories.list();
       <div class="mt-6 flex flex-wrap gap-3">
         <Button href="/">Volver al inicio</Button>
         <Button
-          href={whatsappLink(generalWhatsappMessage())}
+          href={whatsappLink(site, generalWhatsappMessage())}
           variant="outline"
           eventName="whatsapp_click"
         >

@@ -8,10 +8,12 @@ import { imageSrc } from '../../lib/image';
 import { productWhatsappMessage } from '../../lib/whatsapp';
 import { absUrl } from '../../lib/url';
 import { isAddable, toCartProduct } from '../../lib/cart';
-import type { Product } from '../../api/types';
+import type { Product, Site } from '../../api/types';
 
 // Slice mínimo que consume la tarjeta (ISP): no el objeto entero.
 interface Props {
+  /** Identidad del negocio — necesita el dominio (absUrl) y el número de WhatsApp. */
+  site: Site;
   product: {
     slug: string;
     name: string;
@@ -28,7 +30,7 @@ interface Props {
   /** Etiqueta del título: h2 en el catálogo, h3 dentro de otra sección con h2. */
   titleTag?: 'h2' | 'h3';
 }
-const { product, priority = false, compact = false, titleTag = 'h2' } = Astro.props;
+const { site, product, priority = false, compact = false, titleTag = 'h2' } = Astro.props;
 const Heading = titleTag;
 const { slug, name, price, seoDescription, images } = product;
 const href = `/producto/${slug}/`;
@@ -113,7 +115,8 @@ const availability = product.availability ?? 'InStock';
       </Button>
     ) : (
       <WhatsAppButton
-        message={productWhatsappMessage(name, absUrl(href))}
+        {site}
+        message={productWhatsappMessage(name, absUrl(site, href))}
         label={price ? 'Pedir por WhatsApp' : 'Consultar precio'}
         eventName="whatsapp_product"
         variant="primary"

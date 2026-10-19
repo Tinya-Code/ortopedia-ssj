@@ -1,0 +1,94 @@
+---
+// Acciones principales de la página de enlaces:4 botones táctiles en grilla 2×2
+// (WhatsApp, llamar, ubicación y catálogo). Mismo patrón que el Footer: el dato
+// declara la clave `IconName` y el renderer resuelve `icons[clave]`.
+import { icons, type IconName } from '../icons/index';
+import { whatsappLink, generalWhatsappMessage } from '../../lib/whatsapp';
+import type { Site } from '../../api/types';
+
+interface Props {
+  /** Identidad del negocio — la inyecta la página. */
+  site: Site;
+}
+const { site } = Astro.props;
+
+const telHref = `tel:${site.phone.replace(/\s/g, '')}`;
+const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${site.geo.lat},${site.geo.lng}`;
+
+interface Action {
+  icon: IconName;
+  label: string;
+  /** Segunda línea: dato real del negocio o ayuda corta. */
+  detail: string;
+  href: string;
+  event: string;
+  external?: boolean;
+  /** WhatsApp lleva el verde de marca (misma excepción hex que WhatsAppButton). */
+  whatsapp?: boolean;
+}
+
+const actions: Action[] = [
+  {
+    icon: 'whatsapp',
+    label: 'WhatsApp',
+    detail: 'Respuesta rápida',
+    href: whatsappLink(site, generalWhatsappMessage()),
+    event: 'whatsapp_click',
+    external: true,
+    whatsapp: true,
+  },
+  {
+    icon: 'phone-call',
+    label: 'Llamar',
+    detail: site.phone,
+    href: telHref,
+    event: 'phone_click',
+  },
+  {
+    icon: 'map-pin',
+    label: 'Cómo llegar',
+    detail: 'Ubicación en el mapa',
+    href: mapsUrl,
+    event: 'maps_click',
+    external: true,
+  },
+  {
+    icon: 'package',
+    label: 'Catálogo',
+    detail: 'Productos ortopédicos',
+    href: '/catalogo/',
+    event: 'catalog_click',
+  },
+];
+---
+<nav aria-label="Contacto rápido">
+  <ul class="grid grid-cols-2 gap-3" role="list">
+    {
+      actions.map((action) => {
+        const Icon = icons[action.icon];
+        return (
+          <li>
+            <a
+              href={action.href}
+              target={action.external ? '_blank' : undefined}
+              rel={action.external ? 'noopener noreferrer' : undefined}
+              data-event={action.event}
+              class:list={[
+                'flex min-h-20 flex-col items-start justify-center gap-1.5 rounded-xl border p-4 transition-colors motion-reduce:transition-none',
+                action.whatsapp
+                  ? 'border-transparent bg-[#25d366] text-ink hover:bg-[#1ebe5b]'
+                  : 'border-neutral/20 bg-white text-ink hover:border-primary hover:text-primary',
+              ]}
+            >
+              <Icon class="size-5" />
+              <span class="text-sm font-semibold">{action.label}</span>
+              <span class:list={['text-xs', action.whatsapp ? 'text-ink/75' : 'text-neutral']}>
+                {action.detail}
+              </span>
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</nav>

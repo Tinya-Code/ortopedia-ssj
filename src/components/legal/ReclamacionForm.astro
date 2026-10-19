@@ -5,12 +5,15 @@
 // Sin JS: el POST nativo del navegador sigue funcionando (va al endpoint igual).
 // El correlativo y la fecha de registro los genera el endpoint, no el formulario.
 import Button from '../ui/Button.astro';
-import { legal, site } from '../../api/data/site';
+import type { Legal, Site } from '../../api/types';
 
 interface Props {
   endpoint: string;
+  /** Datos del proveedor — los inyecta la página libro-de-reclamaciones. */
+  site: Site;
+  legal: Legal;
 }
-const { endpoint } = Astro.props;
+const { endpoint, site, legal } = Astro.props;
 ---
 <form action={endpoint} method="post" data-reclamacion class="mt-8 space-y-8">
   <div data-fields class="space-y-8">

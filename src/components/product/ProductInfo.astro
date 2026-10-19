@@ -9,9 +9,12 @@ import AvailabilityBadge from './AvailabilityBadge.astro';
 import RegistroBadge from './RegistroBadge.astro';
 import PriceTag from '../ui/PriceTag.astro';
 import { icons } from '../icons/index';
+import type { Site } from '../../api/types';
 import type { Product as CartProduct } from '@dennismiranda/astro-cart/core';
 
 interface Props {
+  /** Número de WhatsApp del negocio — lo baja la ficha de producto. */
+  site: Site;
   name: string;
   /** null = cotiza, sin precio publicado (PriceTag muestra "Consultar precio"). */
   price: number | null;
@@ -25,6 +28,7 @@ interface Props {
   cartProduct?: CartProduct | null;
 }
 const {
+  site,
   name,
   price,
   availability,
@@ -62,6 +66,7 @@ const RotateCcwIcon = icons['rotate-ccw'];
         </Button>
       </div>
       <WhatsAppButton
+        {site}
         message={whatsappMessage}
         label="Consultar por WhatsApp"
         variant="outline"
@@ -72,6 +77,7 @@ const RotateCcwIcon = icons['rotate-ccw'];
   ) : (
     <div class="mt-5">
       <WhatsAppButton
+        {site}
         message={whatsappMessage}
         label="Pedir por WhatsApp"
         eventName="whatsapp_product"

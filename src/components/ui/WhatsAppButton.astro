@@ -1,8 +1,11 @@
 ---
+import type { Site } from '../../api/types';
 import { whatsappLink } from '../../lib/whatsapp';
 import Whatsapp from '../icons/Whatsapp.astro';
 
 interface Props {
+  /** Identidad del negocio (número de WhatsApp) — la inyecta el consumidor. */
+  site: Site;
   message: string;
   label?: string;
   variant?: 'primary' | 'floating' | 'white' | 'outline';
@@ -13,6 +16,7 @@ interface Props {
   class?: string;
 }
 const {
+  site,
   message,
   label = 'Consultar por WhatsApp',
   variant = 'primary',
@@ -20,7 +24,7 @@ const {
   mobileHidden = false,
   class: extraClass = '',
 } = Astro.props;
-const href = whatsappLink(message);
+const href = whatsappLink(site, message);
 ---
 <a
   href={href}

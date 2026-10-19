@@ -10,6 +10,13 @@
 import { CartDrawer } from '@dennismiranda/astro-cart/components';
 import ArrowRight from '../icons/ArrowRight.astro';
 import Trash from '../icons/Trash.astro';
+import type { Site } from '../../api/types';
+
+interface Props {
+  /** Número de WhatsApp del negocio — viaja al DOM para que el script (cliente) lo lea. */
+  site: Site;
+}
+const { site } = Astro.props;
 ---
 <CartDrawer
   title="Tu cotización"
@@ -40,7 +47,7 @@ import Trash from '../icons/Trash.astro';
        confirmar; el confirmar del diálogo sí lo lleva y burbujea al handler
        documental del paquete. */
   }
-  <div slot="footer-actions" class="ac-summary__actions">
+  <div slot="footer-actions" class="ac-summary__actions" data-wa-number={site.whatsapp}>
     <button type="button" class="ac-btn ac-btn--secondary" data-cart-action="checkout">
       <span data-cart-checkout-label>Cotizar 0 productos</span>
       <ArrowRight class="size-4" />
@@ -86,7 +93,6 @@ import Trash from '../icons/Trash.astro';
 <script>
   import type { CheckoutContext } from '@dennismiranda/astro-cart/core';
   import { quoteWhatsappMessage } from '../../lib/cart';
-  import { whatsappLink } from '../../lib/whatsapp';
 
   // "Cotizar productos": el paquete emite `cart:checkout` (cancelable) antes
   // de abrir su vista interna; lo vetamos y navegamos a wa.me con la lista.
@@ -96,11 +102,19 @@ import Trash from '../icons/Trash.astro';
     const { items, totals } = e.detail;
     if (items.length === 0) return;
 
+    // Número del negocio inyectado por el frontmatter (data-wa-number): el
+    // script corre en cliente y no puede esperar al facade, así que lo lee
+    // del DOM. Componer wa.me aquí mantiene el módulo cliente sin datos.
+    const waNumber = document
+      .querySelector('[data-wa-number]')
+      ?.getAttribute('data-wa-number');
+    if (!waNumber) return;
+
     // Ancla real target=_blank (igual que los CTAs del navbar/flotante): los
     // adblock y popup blockers no interceptan la navegación de un <a>, a
     // diferencia de window.open, que era bloqueado.
     const anchor = document.createElement('a');
-    anchor.href = whatsappLink(quoteWhatsappMessage(items));
+    anchor.href = `https://wa.me/${waNumber}?text=${encodeURIComponent(quoteWhatsappMessage(items))}`;
     anchor.target = '_blank';
     anchor.rel = 'noopener noreferrer';
     document.body.appendChild(anchor);

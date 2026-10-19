@@ -1,16 +1,19 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { legal, site } from '../api/data/site';
+import { api } from '../api';
 import Container from '../components/ui/Container.astro';
 import PageHeader from '../components/ui/PageHeader.astro';
 import Callout from '../components/ui/Callout.astro';
+
+const site = await api.site.get();
+const legal = await api.site.legal();
 
 const title = 'Cambios y devoluciones';
 const description =
   'Plazos, estado del producto, quién asume el flete, excepciones de higiene y nota de crédito en reembolsos.';
 ---
 
-<BaseLayout {title} {description}>
+<BaseLayout {site} {legal} {title} {description}>
   <article class="mx-auto max-w-prose pb-10">
     <Container size="narrow">
       <PageHeader title="Cambios y devoluciones" />

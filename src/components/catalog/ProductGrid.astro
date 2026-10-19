@@ -3,7 +3,7 @@ import { Image } from 'astro:assets';
 import ProductCard from './ProductCard.astro';
 import PriceTag from '../ui/PriceTag.astro';
 import { imageSrc } from '../../lib/image';
-import type { Product } from '../../api/types';
+import type { Product, Site } from '../../api/types';
 
 type CardProduct = {
   slug: string;
@@ -18,6 +18,8 @@ type CardProduct = {
   images: { src: ImageMetadata | string; alt: string }[];
 };
 interface Props {
+  /** Identidad del negocio — la baja al ProductCard (absUrl + WhatsApp). */
+  site: Site;
   products: CardProduct[]; // slice que consume, no la entidad entera
   id?: string;
   class?: string;
@@ -29,7 +31,7 @@ interface Props {
    */
   variant?: 'default' | 'suggestions';
 }
-const { products, id, class: className, variant = 'default' } = Astro.props;
+const { site, products, id, class: className, variant = 'default' } = Astro.props;
 ---
 <ul
   id={id}
@@ -66,7 +68,7 @@ const { products, id, class: className, variant = 'default' } = Astro.props;
         data-price={p.price ?? ''}
         data-search={[p.name, p.brand, p.seoDescription].filter(Boolean).join(' ').toLowerCase()}
       >
-        <ProductCard product={p} priority={i < 4} />
+        <ProductCard {site} product={p} priority={i < 4} />
       </li>
     )
   )}

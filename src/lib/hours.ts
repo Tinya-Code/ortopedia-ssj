@@ -1,8 +1,7 @@
-// Horario legible a partir de site.hours — usado en el footer, en la home
-// y en /contacto/ para mantener una única redacción (coherencia NAP).
-// TODO de arquitectura: idealmente recibiría el objeto Site como parámetro
-// para que el facade (src/api) sea la única entrada de datos.
-import { site } from '../api/data/site';
+// Horario legible — usado en /terminos-y-condiciones/ y en LocationCta para
+// mantener una única redacción (coherencia NAP). Recibe el arreglo de horarios
+// que baja del facade (src/api), sin estado propio.
+import type { SiteHours } from '../api/types';
 
 const dayShort: Record<string, string> = {
   Monday: 'Lun',
@@ -14,7 +13,7 @@ const dayShort: Record<string, string> = {
   Sunday: 'Dom',
 };
 
-export function formatHours(hours = site.hours): string {
+export function formatHours(hours: SiteHours[]): string {
   return hours
     .map((h) => `${h.days.map((d) => dayShort[d] ?? d).join(', ')}: ${h.opens}–${h.closes}`)
     .join(' · ');

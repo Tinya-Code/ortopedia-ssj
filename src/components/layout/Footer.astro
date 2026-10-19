@@ -1,12 +1,17 @@
 ---
 import { Image } from "astro:assets";
-import { site } from "../../api/data/site";
+// `site` baja del facade vía BaseLayout — el Footer no fija origen de datos.
+import type { Site } from "../../api/types";
 import logo from "../../assets/logo-ortopedia-solidaria-san-jose.png";
 import Facebook from "../icons/Facebook.astro";
 import Instagram from "../icons/Instagram.astro";
 import TikTok from "../icons/TikTok.astro";
 import ReclamacionesLink from "../legal/ReclamacionesLink.astro";
 
+interface Props {
+  site: Site;
+}
+const { site } = Astro.props;
 const year = new Date().getFullYear();
 
 const legalDocs = [

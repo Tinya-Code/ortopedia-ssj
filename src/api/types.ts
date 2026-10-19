@@ -168,8 +168,10 @@ export interface ServicePoint {
 
 /**
  * Servicio del negocio — contrato de GET /services.
- * `href` NO viaja crudo de la API: se calcula en la capa de datos con
- * whatsappLink() (ver src/api/data/services.ts).
+ * Solo lleva el texto crudo del mensaje: el `href` de WhatsApp NO viaja del
+ * API ni se calcula en el mock — lo deriva el facade (src/api/index.ts) con
+ * el `site` vigente, así el mismo servicio sirve el href correcto en modo
+ * repo y en modo api.
  */
 export interface Service {
   /** Ancla de sección, ej. 'evaluacion-ortopedica'. */
@@ -180,8 +182,8 @@ export interface Service {
   cases: string[];
   solution: { lead?: string; items: ServiceBenefit[] };
   points: ServicePoint[];
-  /** CTA de WhatsApp — computado en la capa de datos, no crudo del API. */
-  href: string;
+  /** Texto crudo del mensaje de WhatsApp (el facade arma el href). */
+  whatsappMessage: string;
   /** repo: asset local (ImageMetadata) · api: URL remota */
   image: ImageMetadata | string;
   imageAlt: string;
@@ -190,3 +192,6 @@ export interface Service {
   /** Orden de columnas en el layout (true = imagen a la izquierda). */
   reverse: boolean;
 }
+
+/** Servicio ya enlazado: lo que consumen las páginas (href derivado por el facade). */
+export type LinkedService = Service & { href: string };

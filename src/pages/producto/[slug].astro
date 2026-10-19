@@ -18,7 +18,6 @@ import { productWhatsappMessage } from '../../lib/whatsapp';
 import { isAddable, toCartProduct } from '../../lib/cart';
 import Container from '../../components/ui/Container.astro';
 import { absUrl } from '../../lib/url';
-import { site } from '../../api/data/site';
 
 export async function getStaticPaths() {
   // api.products.list() devuelve todo el catálogo; un producto apuntado a una
@@ -42,13 +41,16 @@ export async function getStaticPaths() {
 const { product, category, related } = Astro.props;
 const { name, seoTitle, seoDescription, description, images, price, availability, sku, brand, faq, specs } = product;
 
-const pageUrl = absUrl(Astro.url.pathname);
+const site = await api.site.get();
+const legal = await api.site.legal();
+
+const pageUrl = absUrl(site, Astro.url.pathname);
 
 // OG 1200×630 a partir de la primera imagen del producto
 const ogImage = await getImage({ src: images[0].src, width: 1200, height: 630, format: 'jpg' });
 const imageUrls = await Promise.all(
   images.map(
-    async (i) => absUrl((await getImage({ src: i.src, width: 1200, format: 'jpg' })).src),
+    async (i) => absUrl(site, (await getImage({ src: i.src, width: 1200, format: 'jpg' })).src),
   ),
 );
 
@@ -74,13 +76,15 @@ const viewItem = {
 };
 ---
 <BaseLayout
+  {site}
+  {legal}
   title={seoTitle ?? name}
   description={seoDescription ?? description}
   image={ogImage.src}
   type="product"
   hideFloatingCta
   schemas={[
-    breadcrumbSchema(crumbs.map((c) => ({ name: c.name, url: absUrl(c.href ?? Astro.url.pathname) }))),
+    breadcrumbSchema(crumbs.map((c) => ({ name: c.name, url: absUrl(site, c.href ?? Astro.url.pathname) }))),
     productSchema({
       name,
       description: seoDescription ?? description,
@@ -90,6 +94,7 @@ const viewItem = {
       brand,
       price,
       availability,
+      currency: site.currency,
       // condition ya viene tipado como vocabulario restringido (src/api/types.ts)
       condition: product.condition,
     }),
@@ -105,6 +110,7 @@ const viewItem = {
       <div class="grid gap-8 md:grid-cols-2">
         <ProductGallery images={images} />
         <ProductInfo
+          {site}
           {name}
           {price}
           {availability}
@@ -139,12 +145,13 @@ const viewItem = {
         </section>
       )}
 
-      <RelatedProducts products={related} />
+      <RelatedProducts {site} products={related} />
     </Container>
   </section>
 
   {/* §6.4: barra fija solo móvil; el flotante global queda oculto en esta página. */}
   <StickyProductBar
+    {site}
     {name}
     {price}
     whatsappMessage={productWhatsappMessage(name, pageUrl)}

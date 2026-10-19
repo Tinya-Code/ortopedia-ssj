@@ -1,0 +1,32 @@
+---
+// Cabecera de la página de enlaces (bio link / Linktree): logo, nombre y
+// descripción corta. Sin navegación ni CTA propio: todos los enlaces viven en
+// los bloques que siguen (ActionGrid, FeaturedLinkList, SocialBar).
+import { Image } from 'astro:assets';
+import logo from '../../assets/logo-ortopedia-solidaria-san-jose.png';
+
+interface Props {
+  name: string;
+  /** Descripción corta del negocio (site.description). */
+  description: string;
+  /** Lema de marca bajo el nombre; lo inyecta la página, no es un campo de Site. */
+  tagline?: string;
+}
+const { name, description, tagline } = Astro.props;
+---
+<header class="flex flex-col items-center text-center">
+  {/* Logo decorativo: el nombre ya está en el <h1> de al lado (mismo criterio
+      que Header y Footer, que también usan alt=""). */}
+  <Image
+    src={logo}
+    alt=""
+    width={200}
+    height={200}
+    format="webp"
+    quality={90}
+    class="size-24 rounded-full border border-neutral/20 bg-white object-cover"
+  />
+  <h1 class="mt-4 font-display text-h2 font-semibold text-ink">{name}</h1>
+  {tagline && <p class="mt-1 text-sm font-medium text-primary">{tagline}</p>}
+  <p class="mt-3 max-w-sm text-sm leading-6 text-neutral">{description}</p>
+</header>

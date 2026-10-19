@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { api } from '../api';
 import ReclamacionForm from '../components/legal/ReclamacionForm.astro';
-import { legal, site } from '../api/data/site';
 import Callout from '../components/ui/Callout.astro';
 import Container from '../components/ui/Container.astro';
 import PageHeader from '../components/ui/PageHeader.astro';
@@ -11,11 +11,14 @@ import PageHeader from '../components/ui/PageHeader.astro';
 // real (webhook de Apps Script, Make, Zapier o el endpoint propio) antes de publicar.
 const ENDPOINT = 'https://example.com/api/reclamos';
 
+const site = await api.site.get();
+const legal = await api.site.legal();
+
 const title = 'Libro de Reclamaciones';
 const description = `Registra tu reclamo o queja. Respondemos en un máximo de ${legal.reclamosResponseDays} días hábiles.`;
 ---
 
-<BaseLayout {title} {description}>
+<BaseLayout {site} {legal} {title} {description}>
   <article class="pb-10">
     <Container size="narrow">
       <PageHeader title="Libro de Reclamaciones" />
@@ -37,7 +40,7 @@ const description = `Registra tu reclamo o queja. Respondemos en un máximo de $
         </Callout>
       </div>
 
-      <ReclamacionForm endpoint={ENDPOINT} />
+      <ReclamacionForm endpoint={ENDPOINT} {site} {legal} />
 
       <p class="mt-6 text-sm text-neutral">
         Si prefieres, también puedes escribirnos por{' '}

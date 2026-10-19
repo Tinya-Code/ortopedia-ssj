@@ -1,0 +1,53 @@
+---
+// Redes sociales + sitio web: fila de iconos circulares, mismo tratamiento
+// accesible que el Footer (aria-label con el nombre del negocio + red).
+import { icons, type IconName } from '../icons/index';
+import type { Site } from '../../api/types';
+
+interface Props {
+  /** Identidad del negocio — de ahí salen las URLs de perfil. */
+  site: Site;
+  /** URL absoluta del sitio (absUrl(site, '/')). */
+  websiteUrl: string;
+}
+const { site, websiteUrl } = Astro.props;
+
+interface Social {
+  icon: IconName;
+  label: string;
+  href: string;
+  event: string;
+  /** Las redes son perfiles de terceros (pestaña nueva); el sitio es propio. */
+  external: boolean;
+}
+
+const links: Social[] = [
+  { icon: 'facebook', label: 'Facebook', href: site.social.facebook, event: 'social_click', external: true },
+  { icon: 'instagram', label: 'Instagram', href: site.social.instagram, event: 'social_click', external: true },
+  { icon: 'tiktok', label: 'TikTok', href: site.social.tiktok, event: 'social_click', external: true },
+  { icon: 'globe', label: 'Sitio web', href: websiteUrl, event: 'website_click', external: false },
+];
+---
+<nav aria-label="Redes sociales y sitio web">
+  <ul class="flex flex-wrap justify-center gap-3" role="list">
+    {
+      links.map((link) => {
+        const Icon = icons[link.icon];
+        return (
+          <li>
+            <a
+              href={link.href}
+              data-event={link.event}
+              aria-label={link.external ? `${site.name} en ${link.label}` : `Ir al sitio web de ${site.name}`}
+              target={link.external ? '_blank' : undefined}
+              rel={link.external ? 'noopener noreferrer' : undefined}
+              class="inline-flex size-12 items-center justify-center rounded-full border border-neutral/20 bg-white text-neutral transition-colors hover:border-primary hover:text-primary motion-reduce:transition-none"
+            >
+              <Icon class="size-5" />
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</nav>

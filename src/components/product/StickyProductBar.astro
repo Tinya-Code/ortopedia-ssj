@@ -6,9 +6,12 @@
 import Button from '../ui/Button.astro';
 import WhatsAppButton from '../ui/WhatsAppButton.astro';
 import PriceTag from '../ui/PriceTag.astro';
+import type { Site } from '../../api/types';
 import type { Product as CartProduct } from '@dennismiranda/astro-cart/core';
 
 interface Props {
+  /** Número de WhatsApp del negocio — lo baja la ficha de producto. */
+  site: Site;
   name: string;
   /** null = cotiza, sin precio publicado (PriceTag muestra "Consultar precio"). */
   price: number | null;
@@ -16,7 +19,7 @@ interface Props {
   /** Payload del carrito; null = no agregable (sin precio o sin stock). */
   cartProduct?: CartProduct | null;
 }
-const { name, price, whatsappMessage, cartProduct = null } = Astro.props;
+const { site, name, price, whatsappMessage, cartProduct = null } = Astro.props;
 ---
 <aside
   aria-label="Compra rápida"
@@ -41,6 +44,7 @@ const { name, price, whatsappMessage, cartProduct = null } = Astro.props;
         </div>
       )}
       <WhatsAppButton
+        {site}
         message={whatsappMessage}
         label="Consultar"
         eventName="whatsapp_product"

@@ -1,13 +1,18 @@
 ---
 // NAP visible en HTML (texto, no solo dentro del iframe) + mapa con loading="lazy".
-import { site } from '../../api/data/site';
+import type { Site } from '../../api/types';
 import { formatHours } from '../../lib/hours';
 import { generalWhatsappMessage } from '../../lib/whatsapp';
 import WhatsAppButton from '../ui/WhatsAppButton.astro';
 import Button from '../ui/Button.astro';
 import Container from '../ui/Container.astro';
 
-const hoursLabel = formatHours();
+interface Props {
+  /** Identidad del negocio — la inyecta la página que lo monta. */
+  site: Site;
+}
+const { site } = Astro.props;
+const hoursLabel = formatHours(site.hours);
 const mapSrc = `https://maps.google.com/maps?q=${site.geo.lat},${site.geo.lng}&hl=es&z=15&output=embed`;
 const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${site.geo.lat},${site.geo.lng}`;
 ---
@@ -36,7 +41,7 @@ const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${site.geo.lat}
         </address>
       {/* Móvil: ambos botones viven antes del iframe en el DOM (§4). */}
       <div class="mt-6 flex flex-wrap gap-3">
-        <WhatsAppButton message={generalWhatsappMessage()} label="Escríbenos por WhatsApp" />
+        <WhatsAppButton {site} message={generalWhatsappMessage()} label="Escríbenos por WhatsApp" />
         <Button href={mapsUrl} variant="outline">Cómo llegar</Button>
       </div>
       </div>

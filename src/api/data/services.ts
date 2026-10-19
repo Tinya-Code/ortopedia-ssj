@@ -1,5 +1,5 @@
 import type { Service } from '../types';
-import { categoryWhatsappMessage, whatsappLink } from '../../lib/whatsapp';
+import { categoryWhatsappMessage } from '../../lib/whatsapp';
 import evaluacionImage from '../../assets/services/evaluacion-ortopedica.jpeg';
 import ortesisImage from '../../assets/services/ortesis-a-medida.jpeg';
 import rehabilitacionImage from '../../assets/services/rehabilitacion-asesoria.jpeg';
@@ -10,8 +10,8 @@ import rehabilitacionImage from '../../assets/services/rehabilitacion-asesoria.j
  * con la anotación `: Service[]`.
  * Las páginas NO importan este módulo: usan `api.services.*`, nunca el mock.
  *
- * `href` se calcula aquí (capa de datos) con whatsappLink(), no viaja crudo
- * del API. Los textos fueron extraídos de src/pages/servicios.astro.
+ * Solo se guarda el texto crudo del mensaje: el href lo arma el facade con
+ * el site vigente (ver src/api/index.ts). Textos extraídos de src/pages/servicios.astro.
  */
 export const services: Service[] = [
   {
@@ -36,7 +36,7 @@ export const services: Service[] = [
       { icon: 'user-check', label: 'Corrección de Apoyo' },
       { icon: 'clock', label: 'Resultados en Sesión Única' },
     ],
-    href: whatsappLink(categoryWhatsappMessage('Evaluación Biomecánica y Estudio de la Pisada')),
+    whatsappMessage: categoryWhatsappMessage('Evaluación Biomecánica y Estudio de la Pisada'),
     image: evaluacionImage,
     imageAlt: 'Ortopedista evaluando el pie de un paciente durante una valoración',
     accent: '#ffffff',
@@ -64,7 +64,7 @@ export const services: Service[] = [
       { icon: 'ruler', label: 'Ajuste Antropométrico' },
       { icon: 'shield-check', label: 'Prevención de Caídas' },
     ],
-    href: whatsappLink(categoryWhatsappMessage('Calibración, Ajuste y Adaptación de Ayudas Técnicas')),
+    whatsappMessage: categoryWhatsappMessage('Calibración, Ajuste y Adaptación de Ayudas Técnicas'),
     image: ortesisImage,
     imageAlt: 'Ajuste de una ortesis a medida en la pierna de un paciente infantil',
     accent: 'rgba(113, 192, 226, 0.10)',
@@ -92,7 +92,7 @@ export const services: Service[] = [
       { icon: 'clipboard-check', label: 'Servicio Técnico Certificado' },
       { icon: 'ruler', label: 'Alineación y Frenos' },
     ],
-    href: whatsappLink(categoryWhatsappMessage('Mantenimiento Preventivo y Optimización de Sillas de Ruedas')),
+    whatsappMessage: categoryWhatsappMessage('Mantenimiento Preventivo y Optimización de Sillas de Ruedas'),
     image: rehabilitacionImage,
     imageAlt: 'Profesional ajustando una férula de rodilla a una paciente en rehabilitación',
     accent: '#ffffff',

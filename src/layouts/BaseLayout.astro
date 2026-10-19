@@ -15,8 +15,13 @@ import WhatsAppButton from '../components/ui/WhatsAppButton.astro';
 import CookieConsent from '../components/layout/CookieConsent.astro';
 import { organizationSchema } from '../lib/schema';
 import { generalWhatsappMessage } from '../lib/whatsapp';
+import type { Legal, Site } from '../api/types';
 
 interface Props {
+  /** Identidad del negocio — la trae la página desde el facade y la baja a todo el árbol. */
+  site: Site;
+  /** Datos legales INDECOPI — para el JSON-LD de LocalBusiness. */
+  legal: Legal;
   title: string;
   description: string;
   image?: string;
@@ -24,10 +29,16 @@ interface Props {
   schemas?: Record<string, unknown>[]; // JSON-LD específico de cada página
   noindex?: boolean;
   /** Oculta el WhatsApp flotante en móvil y reserva el espacio final
-   *  (`pb-24 md:pb-0`): lo usa la ficha de producto con StickyProductBar. */
+   * (`pb-24 md:pb-0`): lo usa la ficha de producto con StickyProductBar. */
   hideFloatingCta?: boolean;
+  /** Página mínima (tipo bio link): sin header, sin footer, sin CTA flotante y
+   * sin drawer de cotización, para que los enlaces de la página sean lo único
+   * que se ve (la página redirige, no vende). */
+  minimal?: boolean;
 }
 const {
+  site,
+  legal,
   title,
   description,
   image,
@@ -35,6 +46,7 @@ const {
   schemas = [],
   noindex,
   hideFloatingCta = false,
+  minimal = false,
 } = Astro.props;
 ---
 <!doctype html>
@@ -46,8 +58,8 @@ const {
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="generator" content={Astro.generator} />
-    <SEO {title} {description} {image} {type} {noindex} />
-    <JsonLd data={[organizationSchema(), ...schemas]} />
+    <SEO {site} {title} {description} {image} {type} {noindex} />
+    <JsonLd data={[organizationSchema(site, legal), ...schemas]} />
   </head>
 
   <body
@@ -57,18 +69,22 @@ const {
     ]}
   >
     <SkipLink />
-    <Header />
+    {!minimal && <Header />}
     <main id="main" class="flex-1"><slot /></main>
-    <Footer />
-    <!-- CTA global de contacto -->
-    <WhatsAppButton
-      variant="floating"
-      label="Escríbenos"
-      message={generalWhatsappMessage()}
-      mobileHidden={hideFloatingCta}
-    />
-    <!-- Carrito global: drawer + checkout por WhatsApp -->
-    <Cart />
+    {!minimal && <Footer {site} />}
+    {/* CTA global: en layout minimal lo reemplazan los enlaces de la página. */}
+    {!minimal && (
+      <WhatsAppButton
+        {site}
+        variant="floating"
+        label="Escríbenos"
+        message={generalWhatsappMessage()}
+        mobileHidden={hideFloatingCta}
+      />
+    )}
+    {/* Carrito global: drawer + checkout por WhatsApp. En layout minimal no se
+        monta — la página no vende ni cotiza, solo redirige. */}
+    {!minimal && <Cart {site} />}
     <CookieConsent />
   </body>
 </html>

@@ -1,10 +1,11 @@
 import { db } from './data/db';
 import { services } from './data/services';
 import { legal, site } from './data/site';
-import type { Category, Database, Legal, Product, Service, Site } from './types';
+import type { Category, Database, Legal, LinkedService, Product, Service, Site } from './types';
 
 import { getJSONSafe } from './client';
 import { USE_API } from './config';
+import { whatsappLink } from '../lib/whatsapp';
 
 /**
  * Contracto de endpoints (solo GET) para `USE_API=true`:
@@ -94,10 +95,19 @@ export const api = {
     },
   },
   services: {
-    async list(): Promise<Service[]> {
-      return USE_API ? await getJSONSafe<Service[]>('/services', []) : services;
+    /**
+     * Servicios con el href de WhatsApp ya derivado del `site` vigente
+     * (el contrato crudo solo trae `whatsappMessage`). Así el mismo mock o
+     * JSON remoto sirve el número correcto en ambos modos.
+     */
+    async list(): Promise<LinkedService[]> {
+      const raw: Service[] = USE_API
+        ? await getJSONSafe<Service[]>('/services', [])
+        : services;
+      const current = await api.site.get();
+      return raw.map((s) => ({ ...s, href: whatsappLink(current, s.whatsappMessage) }));
     },
-    async bySlug(slug: string): Promise<Service | undefined> {
+    async bySlug(slug: string): Promise<LinkedService | undefined> {
       return (await this.list()).find((s) => s.slug === slug);
     },
   },

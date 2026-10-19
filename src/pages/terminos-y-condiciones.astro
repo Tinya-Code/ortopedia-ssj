@@ -1,18 +1,21 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { legal, site } from '../api/data/site';
+import { api } from '../api';
 import { formatHours } from '../lib/hours';
 import Container from '../components/ui/Container.astro';
 import PageHeader from '../components/ui/PageHeader.astro';
 import Callout from '../components/ui/Callout.astro';
 
+const site = await api.site.get();
+const legal = await api.site.legal();
+
 const title = 'Términos y condiciones';
 const description =
   'Condiciones de compra: cotización de precios, medios de pago, envíos y comprobante electrónico.';
-const hoursText = formatHours();
+const hoursText = formatHours(site.hours);
 ---
 
-<BaseLayout {title} {description}>
+<BaseLayout {site} {legal} {title} {description}>
   <article class="mx-auto max-w-prose pb-10">
     <Container size="narrow">
       <PageHeader title="Términos y condiciones" />

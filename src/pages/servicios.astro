@@ -17,6 +17,8 @@ const description =
 // Los datos viven en la capa api (mock de GET /services, src/api/data/services.ts);
 // la página solo renderiza el contrato Service[].
 const services = await api.services.list();
+const site = await api.site.get();
+const legal = await api.site.legal();
 
 const crumbs = [
   { name: 'Inicio', href: '/' },
@@ -24,7 +26,7 @@ const crumbs = [
 ];
 ---
 
-<BaseLayout {title} {description}>
+<BaseLayout {site} {legal} {title} {description}>
   <Breadcrumbs items={crumbs} />
 
   <section class="pb-4">
@@ -122,6 +124,7 @@ const crumbs = [
   ))}
 
   <CtaBand
+    {site}
     title="¿Necesitas orientación para elegir el mejor servicio?"
     text="Escríbenos por WhatsApp y te recomendamos la mejor solución según tu caso."
     message={categoryWhatsappMessage('Atención personalizada')} 

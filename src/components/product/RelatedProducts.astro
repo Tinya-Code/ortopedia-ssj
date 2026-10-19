@@ -2,12 +2,14 @@
 // Productos relacionados: mismas tarjetas del catálogo en versión compacta.
 // El título de cada card es h3 para no competir con el h2 de la sección.
 import ProductCard from '../catalog/ProductCard.astro';
-import type { Product } from '../../api/types';
+import type { Product, Site } from '../../api/types';
 
 interface Props {
+  /** Identidad del negocio — la baja al ProductCard (absUrl + WhatsApp). */
+  site: Site;
   products: Product[];
 }
-const { products } = Astro.props;
+const { site, products } = Astro.props;
 ---
 {products.length > 0 && (
   <section class="mt-10">
@@ -17,7 +19,7 @@ const { products } = Astro.props;
     <ul class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 lg:grid-cols-4">
       {products.map((p) => (
         <li>
-          <ProductCard product={p} compact titleTag="h3" />
+          <ProductCard {site} product={p} compact titleTag="h3" />
         </li>
       ))}
     </ul>

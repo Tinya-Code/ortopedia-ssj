@@ -1,14 +1,17 @@
 ---
-import { site } from '../../api/data/site';
+// Recibe `site` inyectado desde BaseLayout (baja del facade en la página).
+import type { Site } from '../../api/types';
 
 interface Props {
+  site: Site;
   title: string;
   description: string;
   image?: string;
   type?: 'website' | 'product' | 'article';
   noindex?: boolean;
 }
-const { title, description, image = '/og-default.jpg', type = 'website', noindex = false } = Astro.props;
+const { site, title, description, image = '/og-default.jpg', type = 'website', noindex = false } =
+  Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = new URL(image, Astro.site).href;

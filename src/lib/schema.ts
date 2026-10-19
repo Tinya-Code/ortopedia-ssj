@@ -1,4 +1,6 @@
-import { legal, site } from '../api/data/site';
+// Constructores JSON-LD puros: reciben site/legal/currency que bajan del
+// facade (src/api), sin importar ningún origen de datos directamente.
+import type { Legal, Site } from '../api/types';
 
 type Condition = 'new' | 'refurbished' | 'used';
 
@@ -7,7 +9,7 @@ const conditionToSchema = (condition: Condition = 'new') =>
     ? 'https://schema.org/NewCondition'
     : 'https://schema.org/UsedCondition';
 
-export const organizationSchema = () => ({
+export const organizationSchema = (site: Site, legal: Legal) => ({
   '@context': 'https://schema.org',
   '@type': ['MedicalBusiness', 'Store'],
   '@id': `${site.url}/#business`,
@@ -60,6 +62,8 @@ export const productSchema = (p: {
   price?: number | null;
   availability: string;
   condition?: Condition;
+  /** Moneda del sitio (PEN), inyectada por el caller desde site.currency. */
+  currency: string;
 }) => ({
   '@context': 'https://schema.org',
   '@type': 'Product',
@@ -74,7 +78,7 @@ export const productSchema = (p: {
     ? {
         '@type': 'Offer',
         url: p.url,
-        priceCurrency: site.currency,
+        priceCurrency: p.currency,
         price: p.price,
         availability: `https://schema.org/${p.availability}`,
         itemCondition: conditionToSchema(p.condition),

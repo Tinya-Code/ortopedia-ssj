@@ -1,0 +1,38 @@
+---
+// Página de enlaces (bio link / Linktree) — centraliza todos los canales de
+// contacto en un solo enlace, pensada para la bios de redes y para compartir.
+// Su objetivo es REDIRIGIR, no vender ni explicar: por eso lleva layout `minimal`
+// (sin header, sin footer, sin CTA flotante) y queda `noindex` (contenido de
+// enlaces, sin valor de búsqueda; se excluye también del sitemap en astro.config).
+import { api } from '../api';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProfileHeader from '../components/link/ProfileHeader.astro';
+import ActionGrid from '../components/link/ActionGrid.astro';
+import FeaturedLinkList from '../components/link/FeaturedLinkList.astro';
+import SocialBar from '../components/link/SocialBar.astro';
+import { absUrl } from '../lib/url';
+
+const site = await api.site.get();
+const legal = await api.site.legal();
+// Enlaces destacados: 3 productos con `featured` (los mismos que usa la home).
+const featured = await api.products.featured(3);
+
+const title = `${site.name} — Enlaces`;
+const description =
+  'Todos nuestros canales en un solo enlace: WhatsApp, ubicación, catálogo de productos ortopédicos y redes sociales.';
+
+// Lema de marca (copy de la página, no un campo del contrato Site).
+const tagline = 'Ayudando a mejorar tu calidad de vida';
+
+const websiteUrl = absUrl(site, '/');
+---
+
+<BaseLayout {site} {legal} {title} {description} noindex minimal>
+  {/* Ancho tipo bio link: una sola columna centrada, también en desktop. */}
+  <div class="mx-auto flex w-full max-w-md flex-col gap-8 px-4 py-10 sm:py-14">
+    <ProfileHeader name={site.name} description={site.description} {tagline} />
+    <ActionGrid {site} />
+    <FeaturedLinkList {featured} />
+    <SocialBar {site} {websiteUrl} />
+  </div>
+</BaseLayout>
